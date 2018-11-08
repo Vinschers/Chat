@@ -2,17 +2,22 @@ import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class Usuario
+public class Usuario extends Thread implements Cloneable, Comparable
 {
-    private String nickname;
+    protected String nickname;
 
-    private Salas salas;
-    private Socket conexao;
-    private PrintWriter transmissor;
-    private BufferedReader receptor;
+    protected Salas salas;
+    protected Socket conexao;
+    protected PrintWriter transmissor;
+    protected BufferedReader receptor;
 
-    public Usuario(Socket s, Salas salas)
+    public Usuario(Socket s, Salas salas) throws Exception
     {
+        if (s == null)
+            throw new Exception("Socket ausente");
+        if (salas == null)
+            throw new Exception("Objeto de salas ausente");
+
         this.conexao = s;
         this.salas = salas;
     }
@@ -20,14 +25,19 @@ public class Usuario
     {
         return this.nickname;
     }
-    public void setNickname(String nickname)
+    public void setNickname(String nickname) throws Exception
     {
+        if (nickname == null || nickname.equals(""))
+            throw new Exception("Nickname em branco!");
         this.nickname = nickname;
     }
+    public void run()
+    {
 
+    }
     public String toString() 
     {
-        return this.nickname;
+        return this.nickname + " - Conexao: " + this.conexao.toString();
     }
     public boolean equals(Object obj) 
     {
