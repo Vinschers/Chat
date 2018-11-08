@@ -67,4 +67,27 @@ public class Usuario
     {
         return this.nickname.compareTo(outro.nickname);
     }
+    public Usuario(Usuario modelo) throws Exception
+    {
+        if (modelo == null)
+            throw new Exception("Modelo ausente");
+        
+        this.nickname = modelo.nickname;
+        this.salas = modelo.salas.clone();
+        this.conexao = modelo.conexao;
+        this.transmissor = modelo.transmissor;
+        this.receptor = modelo.receptor;
+    }
+    public Object clone()
+    {
+        Object ret = null;
+
+        try
+        {
+            ret = new Usuario(this);
+        }
+        catch (Exception ex) {}
+
+        return ret;
+    }
 }
