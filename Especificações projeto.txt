@@ -1,0 +1,17 @@
+1) Class Salas: teria um ArrayList<Sala>
+2) Class Sala: teria um ArrayList<Usuario>
+3) Usuario teria:
+ - Socket
+ - PrintWriter
+ - BufferedReader
+
+Missão da main da class Servidor:
+1) Declarar e instanciar obj da class Salas
+
+2) Pôr nele objetos da classe Sala vindos do Banco de Dados
+
+3) Em loop: 
+ - fazer accept
+ - declarar Usuario
+ - instanciar Usuario(passando o Socket gerado no accept para o construtor e o objeto da class Salas)
+ - startar thread
