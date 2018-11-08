@@ -7,6 +7,7 @@ public class Usuario extends Thread implements Cloneable, Comparable
     protected String nickname;
 
     protected Salas salas;
+    protected Sala salaOndeEsta;
     protected Socket conexao;
     protected PrintWriter transmissor;
     protected BufferedReader receptor;
