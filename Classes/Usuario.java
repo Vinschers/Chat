@@ -84,7 +84,7 @@ public class Usuario extends Thread implements Cloneable, Comparable
             throw new Exception("Modelo ausente");
         
         this.nickname = modelo.nickname;
-        this.salas = modelo.salas.clone();
+        this.salas = (Salas)modelo.salas.clone();
         this.conexao = modelo.conexao;
         this.transmissor = modelo.transmissor;
         this.receptor = modelo.receptor;
