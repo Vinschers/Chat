@@ -2,25 +2,37 @@ import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class Usuario extends Thread implements Cloneable, Comparable
+public class Usuario implements Cloneable, Comparable
 {
     protected String nickname;
 
-    protected Salas salas;
-    protected Sala salaOndeEsta;
+    protected Sala sala;
     protected Socket conexao;
-    protected PrintWriter transmissor;
+    protected PrintWriter transmissor; 
     protected BufferedReader receptor;
 
-    public Usuario(Socket s, Salas salas) throws Exception
+    public Usuario(Socket s, 
+                   PrintWriter transmissor,
+                   BufferedReader receptor,
+                   String nickname, 
+                   Sala sala) throws Exception
     {
         if (s == null)
             throw new Exception("Socket ausente");
-        if (salas == null)
-            throw new Exception("Objeto de salas ausente");
+        if (transmissor == null)
+            throw new Exception("Transmissor ausente");
+        if (receptor == null)
+            throw new Exception("Receptor ausente");
+        if (nickname == null || nickname.equals(""))
+            throw new Exception("Nickname ausente");
+        if (sala == null)
+            throw new Exception("Sala ausente");
 
         this.conexao = s;
-        this.salas = salas;
+        this.transmissor = transmissor;
+        this.receptor = receptor;
+        this.nickname = nickname;
+        this.sala = sala;
     }
     public String getNickname()
     {
@@ -31,10 +43,6 @@ public class Usuario extends Thread implements Cloneable, Comparable
         if (nickname == null || nickname.equals(""))
             throw new Exception("Nickname em branco!");
         this.nickname = nickname;
-    }
-    public void run()
-    {
-
     }
     public String toString() 
     {

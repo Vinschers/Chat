@@ -9,8 +9,8 @@ public class Servidor
         for (;;)
         {
             Socket conexao = pedido.accept();
-            Usuario usuario = new Usuario(conexao, salas);
-            usuario.start();
+            CuidadoraDeUsuario cuidadora = new CuidadoraDeUsuario(conexao, salas);
+            cuidadora.start();
         }
     }
 }

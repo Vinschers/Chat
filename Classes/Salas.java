@@ -39,7 +39,7 @@ public class Salas implements Cloneable
         String ret = "";
         ret += "Salas disponíveis:\n";
         for (int i = 1; i <= this.qtd; i++)
-            ret += i + "- " + salas.get(i-1).toString() + "\n;";
+            ret += i + "- " + salas.get(i-1).toString() + ";\n";
         return ret;
     }
     public int hashCode()
