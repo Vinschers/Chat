@@ -1,4 +1,6 @@
 import java.io.BufferedReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 
@@ -8,12 +10,12 @@ public class Usuario implements Cloneable, Comparable
 
     protected Sala sala;
     protected Socket conexao;
-    protected PrintWriter transmissor; 
-    protected BufferedReader receptor;
+    protected ObjectOutputStream transmissor; 
+    protected ObjectInputStream receptor;
 
     public Usuario(Socket s, 
-                   PrintWriter transmissor,
-                   BufferedReader receptor,
+                   ObjectOutputStream transmissor,
+                   ObjectInputStream receptor,
                    String nickname, 
                    Sala sala) throws Exception
     {
@@ -44,6 +46,19 @@ public class Usuario implements Cloneable, Comparable
             throw new Exception("Nickname em branco!");
         this.nickname = nickname;
     }
+
+    //public Enviavel recebe();
+    public void envia(Enviavel x)
+    {
+
+    }
+    public void fechaTudo()
+    {
+        this.transmissor.close();
+        this.receptor.close();
+        this.conexao.close();
+    }
+
     public String toString() 
     {
         return this.nickname + " - Conexao: " + this.conexao.toString();
