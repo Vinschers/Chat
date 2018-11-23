@@ -1,7 +1,7 @@
-public class AvisoDeEntradaNaSala implements Enviavel
+public class AvisoDeEntradaNaSala extends Enviavel
 {
-    public AvisoDeEntradaNaSala(String nome)
+    public AvisoDeEntradaNaSala(Usuario u, )
     {
-        
+        //
     }
 }

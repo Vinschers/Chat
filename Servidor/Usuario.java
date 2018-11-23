@@ -47,10 +47,13 @@ public class Usuario implements Cloneable, Comparable
         this.nickname = nickname;
     }
 
-    //public Enviavel recebe();
-    public void envia(Enviavel x)
+    public Enviavel recebe()
     {
-
+        return this.receptor.readObject();
+    }
+    public void enviar(Enviavel x)
+    {
+        this.transmissor.writeObject(x);
     }
     public void fechaTudo()
     {
