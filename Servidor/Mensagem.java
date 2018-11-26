@@ -4,9 +4,9 @@ import java.util.*;
 public class Mensagem extends Enviavel
 {
     protected String mensagem;
-    public Mensagem(Usuario u, String t, String msg) throws Exception
+    public Mensagem(Usuario u, String msg) throws Exception
     {
-        super(u, t);
+        super(u);
         if (msg == null || msg.equals(""))
             throw new Exception("Mensagem inválida!");
         this.mensagem = msg;
@@ -15,7 +15,6 @@ public class Mensagem extends Enviavel
     {
         return this.mensagem;
     }
-    //equals, toString e hashCode
     public boolean equals(Object o)
     {
         if (!super.equals(o))
@@ -30,14 +29,12 @@ public class Mensagem extends Enviavel
 
     public String toString()
     {
-        return "[" + super.getHora() + "]" + super.getUsuario() + ": " + this.mensagem;
+        return super.getHora() + super.getUsuario() + ": " + this.mensagem;
     }
 
     public int hashCode()
     {
-        int ret = 666;
-
-        ret = 2 * ret + super.hashCode();
+        int ret = super.hashCode();
         ret = 5 * ret + this.mensagem.hashCode();
 
         return ret;

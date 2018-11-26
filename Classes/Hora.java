@@ -4,6 +4,7 @@ public class Hora extends Thread implements Cloneable
     protected String hora = "00";
     protected String minutos = "00";
     protected String segundos = "00";
+    protected boolean viva = true;
     public Hora()
     {
         Calendar c = Calendar.getInstance();
@@ -87,7 +88,11 @@ public class Hora extends Thread implements Cloneable
     }
     public void run()
     {
-        this.setHoraAtual();
-        System.out.println(this.toString());
+        while(this.viva)
+            this.setHoraAtual();
+    }
+    public void morra()
+    {
+        this.viva = false;
     }
 }
