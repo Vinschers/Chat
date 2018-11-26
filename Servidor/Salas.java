@@ -80,4 +80,8 @@ public class Salas implements Cloneable
         if (!removido)
             throw new Exception("Não foi possível localizar nenhuma sala com o nome \"" + nome + "\".");
     }
+    public ArrayList<Sala> getSalas()
+    {
+        return this.salas;
+    }
 }

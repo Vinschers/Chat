@@ -3,16 +3,14 @@ import java.io.*;
 public class Enviavel
 {
     protected Usuario usuario;
-    protected String hora;
+    protected Hora hora;
 
-    public Enviavel(Usuario u, String h) throws Exception
+    public Enviavel(Usuario u) throws Exception
     {
         if (u == null)
             throw new Exception("Usuário inválido!");
-        if (h == null || h.equals(""))
-            throw new Exception("Hora inválida!");
         this.usuario = u;
-        this.hora = h;
+        this.hora = new Hora();
     }
 
     public boolean equals(Object obj)
@@ -32,7 +30,7 @@ public class Enviavel
     }
     public String toString()
     {
-        String str = "Enviado às " + this.hora + " por " + this.usuario.toString();
+        String str = "Enviado às " + this.hora.toString() + " por " + this.usuario.toString();
         return str;
     }
     public int hashCode()
