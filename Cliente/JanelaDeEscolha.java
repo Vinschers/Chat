@@ -21,6 +21,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 import java.net.*;
+import java.util.ArrayList;
 import java.io.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -71,10 +72,13 @@ public class JanelaDeEscolha extends JFrame {
 		lblStatus.setFont(new Font("Century Gothic", Font.BOLD, 16));
 		contentPane.add(lblStatus, BorderLayout.NORTH);
 		
+		JanelaDeEscolha este = this;
+
 		JButton btnEntrar = new JButton("Entrar");
 		btnEntrar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				new Chat().setVisible(true);
+				new Chat(este).setVisible(true);
+				setVisible(false);
 			}
 		});
 		btnEntrar.setFont(new Font("Century Gothic", Font.PLAIN, 16));
@@ -167,6 +171,11 @@ public class JanelaDeEscolha extends JFrame {
 					{
 						conexao = new Socket(txtIP.getText(), 12345);
 						receptor = new ObjectInputStream(conexao.getInputStream());
+
+						SalasDisponiveis recebido = (SalasDisponiveis) receptor.readObject();
+						ArrayList<Sala> salasDisponiveis =  recebido.getSalas().getSalas();
+						for (int i = 0; i < salasDisponiveis.size(); i++)
+							cbxSalas.addItem(salasDisponiveis.get(i).toString());
 					}
 					else
 					{

@@ -17,6 +17,8 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class Chat extends JFrame {
 
@@ -30,7 +32,7 @@ public class Chat extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Chat frame = new Chat();
+					Chat frame = new Chat(new JanelaDeEscolha());
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -42,13 +44,7 @@ public class Chat extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public Chat() {
-		addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent arg0) {
-				
-			}
-		});
+	public Chat(JanelaDeEscolha escolha) {
 		setTitle("Chat - Sala conectada: ");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 910, 525);
@@ -108,10 +104,6 @@ public class Chat extends JFrame {
 		contentPane.add(panel_2, BorderLayout.CENTER);
 		panel_2.setLayout(new BorderLayout(0, 0));
 		
-		JLabel lblNewLabel = new JLabel(" ");
-		lblNewLabel.setFont(new Font("Century Gothic", Font.BOLD, 23));
-		panel_2.add(lblNewLabel, BorderLayout.NORTH);
-		
 		JLabel label = new JLabel(" ");
 		panel_2.add(label, BorderLayout.SOUTH);
 		
@@ -124,6 +116,22 @@ public class Chat extends JFrame {
 		JTextArea textArea = new JTextArea();
 		textArea.setEditable(false);
 		panel_2.add(textArea, BorderLayout.CENTER);
+		
+		JPanel panel_3 = new JPanel();
+		panel_3.setBackground(Color.DARK_GRAY);
+		panel_2.add(panel_3, BorderLayout.NORTH);
+		panel_3.setLayout(new BorderLayout(0, 0));
+		
+		JButton btnSairDaSala = new JButton("Sair da sala");
+		btnSairDaSala.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				escolha.setVisible(true);
+				dispose();
+			}
+		});
+		btnSairDaSala.setBackground(Color.LIGHT_GRAY);
+		btnSairDaSala.setFont(new Font("Century Gothic", Font.PLAIN, 18));
+		panel_3.add(btnSairDaSala, BorderLayout.EAST);
 	}
 
 }
