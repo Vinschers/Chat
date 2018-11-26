@@ -124,4 +124,8 @@ public class Sala implements Cloneable
         if (!removido)
             throw new Exception("Nickname não encontrado.");
     }
+    public boolean isCheia()
+    {
+        return this.qtdMaxima == this.numeroUsuarios;
+    }
 }
