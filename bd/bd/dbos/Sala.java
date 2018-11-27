@@ -1,18 +1,9 @@
 package bd.dbos;
 
-public class Livro implements Cloneable
+public class Sala implements Cloneable
 {
-    private int    codigo;
     private String nome;
-    private float  preco;
- 
-    public void setCodigo (int codigo) throws Exception
-    {
-        if (codigo <= 0)
-            throw new Exception ("Codigo invalido");
-
-        this.codigo = codigo;
-    }   
+    private int  capacidade;
 
     public void setNome (String nome) throws Exception
     {
@@ -22,7 +13,7 @@ public class Livro implements Cloneable
         this.nome = nome;
     }
 
-    public void setPreco (float preco) throws Exception
+    public void setCapacidade (int capacidade) throws Exception
     {
         if (preco <= 0)
             throw new Exception ("Preco invalido");
@@ -40,25 +31,25 @@ public class Livro implements Cloneable
         return this.nome;
     }
 
-    public float getPreco ()
+    public float getCapacidade ()
     {
-        return this.preco;
+        return this.capacidade;
     }
 
-    public Livro (int codigo, String nome, float preco) throws Exception
+    public Sala (int codigo, String nome, int capacidade) throws Exception
     {
-        this.setCodigo (codigo);
-        this.setNome   (nome);
-        this.setPreco  (preco);
+        this.setCodigo     (codigo);
+        this.setNome       (nome);
+        this.setCapacidade (capacidade);
     }
 
     public String toString ()
     {
         String ret="";
 
-        ret+="Codigo: "+this.codigo+"\n";
-        ret+="Nome..: "+this.nome  +"\n";
-        ret+="Preco.: "+this.preco;
+        ret+="Codigo....: "+this.codigo+"\n";
+        ret+="Nome......: "+this.nome  +"\n";
+        ret+="Capacidade: "+this.capacidade;
 
         return ret;
     }
@@ -71,10 +62,10 @@ public class Livro implements Cloneable
         if (obj==null)
             return false;
 
-        if (!(obj instanceof Livro))
+        if (!(obj instanceof Sala))
             return false;
 
-        Livro liv = (Livro)obj;
+        Sala liv = (Sala)obj;
 
         if (this.codigo!=liv.codigo)
             return false;
@@ -82,7 +73,7 @@ public class Livro implements Cloneable
         if (this.nome.equals(liv.nome))
             return false;
 
-        if (this.preco!=liv.preco)
+        if (this.capacidade!=liv.capacidade)
             return false;
 
         return true;
@@ -94,29 +85,29 @@ public class Livro implements Cloneable
 
         ret = 7*ret + new Integer(this.codigo).hashCode();
         ret = 7*ret + this.nome.hashCode();
-        ret = 7*ret + new Float(this.preco).hashCode();
+        ret = 7*ret + new Integer(this.capacidade).hashCode();
 
         return ret;
     }
 
 
-    public Livro (Livro modelo) throws Exception
+    public Sala (Sala modelo) throws Exception
     {
-        this.codigo = modelo.codigo; // nao clono, pq nao eh objeto
-        this.nome   = modelo.nome;   // nao clono, pq nao eh clonavel
-        this.preco  = modelo.preco;  // nao clono, pq nao eh objeto
+        this.codigo      = modelo.codigo; // nao clono, pq nao eh objeto
+        this.nome        = modelo.nome;   // nao clono, pq nao eh clonavel
+        this.capacidade  = modelo.capacidade;  // nao clono, pq nao eh objeto
     }
 
     public Object clone ()
     {
-        Livro ret=null;
+        Sala ret = null;
 
         try
         {
-            ret = new Livro (this);
+            ret = new Sala (this);
         }
         catch (Exception erro)
-        {} // nao trato, pq this nunca é null e construtor de
+        {} // nao trato, pq this nunca ï¿½ null e construtor de
            // copia da excecao qdo seu parametro for null
 
         return ret;
