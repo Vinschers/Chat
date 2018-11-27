@@ -92,7 +92,7 @@ public class Sala implements Cloneable
         return this.qtdMaxima;
     }
 
-    public Object getUsuarios()
+    public ArrayList<Usuario> getUsuarios()
     {
         return this.usuarios;
     }

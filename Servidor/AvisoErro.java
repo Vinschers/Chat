@@ -26,7 +26,7 @@ public class AvisoErro
         if (obj.getClass() != this.getClass())
             return false;
         AvisoErro a = (AvisoErro)obj;
-        if (!this.erro.equals(obj.erro))
+        if (!this.erro.equals(a.erro))
             return false;
         return true;
     }
