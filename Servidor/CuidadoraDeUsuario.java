@@ -43,15 +43,20 @@ public class CuidadoraDeUsuario extends Thread
                 nomeEscolhido = (String)ois.readObject();
                 System.out.println("Esperando o nome da sala");
                 nomeSala = (String)ois.readObject();
-                System.out.println("Leu tudo, vai comecar a verificar");
+                System.out.println("Leu tudo");
                 vetSalas = this.salas.getSalas();
                 salaEscolhida = null;
                 int codErro = 0;
                 for (int i = 0; i < vetSalas.size(); i++)
                 {
                     if(vetSalas.get(i).getNome().equals(nomeSala))
+                    {
                         salaEscolhida = vetSalas.get(i);
+                        System.out.println("Achou a sala");
+                        break;
+                    }
                 }
+                System.out.println("Saiu do loop, vai comecar a verificar");
                 if (salaEscolhida == null)
                 {
                     oos.writeObject(new AvisoErro("Sala nao encontrada"));
@@ -73,22 +78,20 @@ public class CuidadoraDeUsuario extends Thread
                 else
                 {
                     us = salaEscolhida.getUsuarios();
-                    jaExiste = false;
                     for (int i = 0; i < us.size(); i++)
                     {
                         if (us.get(i).getNickname() == nomeEscolhido)
-                            jaExiste = true;
-                    }
-                    if (jaExiste)
-                    {
-                        oos.writeObject(new AvisoErro("Nome de usuário já existe na sala!"));
-                        houveErro = true;
-                        codErro = 3;
+                        {
+                            oos.writeObject(new AvisoErro("Nome de usuário já existe na sala!"));
+                            houveErro = true;
+                            codErro = 3;
+                            break;
+                        }
                     }
                 }
                 oos.flush();
                 if (houveErro)
-                    System.out.println("Deu erro");
+                    System.out.println("Deu erro. Codigo: " + codErro);
             }
             System.out.println("Tudo certo, vai mandar ok");
             oos.writeObject("ok");

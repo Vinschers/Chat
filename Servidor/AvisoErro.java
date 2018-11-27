@@ -1,5 +1,5 @@
-public class AvisoErro
-{
+public class AvisoErro extends Enviavel
+{    
     protected String erro;
     public AvisoErro(String e) throws Exception
     {

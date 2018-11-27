@@ -138,27 +138,28 @@ public class JanelaDeEscolha extends JFrame {
 		gbc_lblDigiteSeuNome.gridy = 2;
 		panel.add(lblDigiteSeuNome, gbc_lblDigiteSeuNome);
 
+
 		JButton btnEntrar = new JButton("Entrar");
 		btnEntrar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				try
 				{
-					ObjectOutputStream transmissor = new ObjectOutputStream(conexao.getOutputStream());
 					Object recebido = null;
 
-					do
-					{
-						transmissor.writeObject(txtNome.getText());
-						transmissor.writeObject(cbxSalas.getSelectedItem().toString());
-						transmissor.flush();
-						
-						if (recebido instanceof AvisoErro)
-							JOptionPane.showMessageDialog(null, ((AvisoErro)recebido).toString());
-					} while (recebido instanceof AvisoErro);
+					ObjectOutputStream transmissor = new ObjectOutputStream(conexao.getOutputStream());
+
+					transmissor.writeObject(txtNome.getText());
+					transmissor.writeObject(cbxSalas.getSelectedItem().toString());
+					transmissor.flush();
 					
-					chat = new Chat(este, cbxSalas.getSelectedItem().toString().split("\"")[1], transmissor);
-					chat.setVisible(true);
-					setVisible(false);
+					if (recebido instanceof AvisoErro)
+						JOptionPane.showMessageDialog(null, ((AvisoErro)recebido).toString());
+					else
+					{		
+						chat = new Chat(este, cbxSalas.getSelectedItem().toString().split("\"")[1], transmissor);
+						chat.setVisible(true);
+						setVisible(false);
+					}
 				}
 				catch (Exception ex) {JOptionPane.showMessageDialog(null, "Deu esse erro: " + ex.getMessage());}
 			}
