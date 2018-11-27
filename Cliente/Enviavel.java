@@ -1,9 +1,11 @@
 import java.net.*;
 import java.io.*;
-public class Enviavel
+public class Enviavel implements Serializable
 {
     protected Usuario usuario;
     protected Hora hora;
+
+    private static final long serialVersionUID = 1L;
 
     public Enviavel()
     {

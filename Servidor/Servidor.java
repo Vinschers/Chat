@@ -10,9 +10,11 @@ public class Servidor
             // Adicionar salas do banco de dados
 
             ServerSocket pedido = new ServerSocket(12345);
+            System.out.println("Servidor iniciado!");
             for (;;)
             {
                 Socket conexao = pedido.accept();
+                System.out.println("Pedido aceito");
                 CuidadoraDeUsuario cuidadora = new CuidadoraDeUsuario(conexao, salas);
                 cuidadora.start();
             }
