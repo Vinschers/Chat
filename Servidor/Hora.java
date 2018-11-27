@@ -1,6 +1,7 @@
 import java.util.*;
-public class Hora extends Thread implements Cloneable
+public class Hora extends Thread implements Cloneable, Serializable
 {
+    private static final long serialVersionUID = 1L;
     protected String hora = "00";
     protected String minutos = "00";
     protected String segundos = "00";
