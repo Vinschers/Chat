@@ -4,12 +4,16 @@ import java.util.*;
 public class Mensagem extends Enviavel
 {
     protected String mensagem;
-    public Mensagem(Usuario u, String msg) throws Exception
+    protected Usuario[] destinatarios;
+    public Mensagem(Usuario u, String msg, Usuario[] dest) throws Exception
     {
         super(u);
         if (msg == null || msg.equals(""))
             throw new Exception("Mensagem inválida!");
+        if (dest == null || dest.length() == 0)
+            throw new Exception("Destinatário inválido");
         this.mensagem = msg;
+        this.destinatarios = dest;
     }
     public String getMensagem()
     {
@@ -38,5 +42,10 @@ public class Mensagem extends Enviavel
         ret = 5 * ret + this.mensagem.hashCode();
 
         return ret;
+    }
+
+    public Usuario[] getDestinatarios()
+    {
+        return this.destinatarios;
     }
 }

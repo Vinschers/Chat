@@ -1,10 +1,11 @@
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class Usuario implements Cloneable, Comparable
+public class Usuario implements Cloneable
 {
     protected String nickname;
 
@@ -47,15 +48,16 @@ public class Usuario implements Cloneable, Comparable
         this.nickname = nickname;
     }
 
-    public Enviavel recebe()
-    {
-        return this.receptor.readObject();
-    }
-    public void enviar(Enviavel x)
+    public void recebe(Enviavel x) throws IOException, ClassNotFoundException
     {
         this.transmissor.writeObject(x);
+        this.transmissor.flush();
     }
-    public void fechaTudo()
+    public void envia(Enviavel x, Usuario destino) throws IOException
+    {
+        destino.recebe(x);
+    }
+    public void fechaTudo() throws IOException
     {
         this.transmissor.close();
         this.receptor.close();
@@ -77,7 +79,7 @@ public class Usuario implements Cloneable, Comparable
 
         if (!this.nickname.equals(us.nickname))
             return false;
-        if (!this.salas.equals(us.salas))
+        if (!this.sala.equals(us.sala))
             return false;
         if (!this.conexao.equals(us.conexao))
             return false;
@@ -93,16 +95,12 @@ public class Usuario implements Cloneable, Comparable
         int ret = 666;
 
         ret = 2 * ret + this.nickname.hashCode();
-        ret = 2 * ret + this.salas.hashCode();
+        ret = 2 * ret + this.sala.hashCode();
         ret = 2 * ret + this.conexao.hashCode();
         ret = 2 * ret + this.transmissor.hashCode();
         ret = 2 * ret + this.receptor.hashCode();
 
         return ret;
-    }
-    public int compareTo(Usuario outro)
-    {
-        return this.nickname.compareTo(outro.nickname);
     }
     public Usuario(Usuario modelo) throws Exception
     {
@@ -110,7 +108,7 @@ public class Usuario implements Cloneable, Comparable
             throw new Exception("Modelo ausente");
         
         this.nickname = modelo.nickname;
-        this.salas = (Salas)modelo.salas.clone();
+        this.sala = (Sala)modelo.sala.clone();
         this.conexao = modelo.conexao;
         this.transmissor = modelo.transmissor;
         this.receptor = modelo.receptor;

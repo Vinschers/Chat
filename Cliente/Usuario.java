@@ -48,13 +48,14 @@ public class Usuario implements Cloneable
         this.nickname = nickname;
     }
 
-    public Enviavel recebe() throws IOException, ClassNotFoundException
-    {
-        return (Enviavel) this.receptor.readObject();
-    }
-    public void enviar(Enviavel x) throws IOException
+    public void recebe(Enviavel x) throws IOException, ClassNotFoundException
     {
         this.transmissor.writeObject(x);
+        this.transmissor.flush();
+    }
+    public void envia(Enviavel x, Usuario destino) throws IOException
+    {
+        destino.recebe(x);
     }
     public void fechaTudo() throws IOException
     {

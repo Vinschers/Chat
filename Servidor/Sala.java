@@ -109,20 +109,12 @@ public class Sala implements Cloneable
         usuarios.add(u);
         this.numeroUsuarios++;
     }
-    public void removerUsuario(String nick) throws Exception
+    public void removerUsuario(Usuario u) throws Exception
     {
-        if (nick == null || nick.equals(""))
-            throw new Exception("Nickname estava vazio ou null.");
-        boolean removido = false;
-        for (int i = 0; i < this.qtdMaxima; i++)
-            if (usuarios.get(i).getNickname() == nick)
-            {
-                usuarios.remove(i);
-                removido = true;
-                break;
-            }
-        if (!removido)
-            throw new Exception("Nickname não encontrado.");
+        if (u == null)
+            throw new Exception("Usuário inválido");
+        this.numeroUsuarios--;
+        this.usuarios.remove(u);
     }
     public boolean isCheia()
     {

@@ -21,6 +21,8 @@ public class CuidadoraDeUsuario extends Thread
 
     public void run()
     {
+        this.salas = new Salas();
+        this.salas.adicionarSala(new Sala("teste"), 2);
         boolean houveErro = true;
         ObjectOutputStream oos = new ObjectOutputStream(conexao.getOutputStream());
         ObjectInputStream ois = new ObjectInputStream(new InputStreamReader(conexao.getInputStream()));
@@ -31,7 +33,6 @@ public class CuidadoraDeUsuario extends Thread
         ArrayList<Sala> vetSalas;
         Sala salaEscolhida;
         boolean jaExiste;
-        // Instanciar o Usuario, fornecendo a conexao, OOS, OIS, nome e sala
         while(houveErro)
         {
             houveErro = false;
@@ -72,14 +73,30 @@ public class CuidadoraDeUsuario extends Thread
             }
         }
         this.usuario = new Usuario(this.conexao, oos, ois, nomeEscolhido, salaEscolhida);
+        for (int i = 0; i < us.size(); i++)
+        {
+            this.usuario.envia(new AvisoDeEntradaNaSala(this.usuario), us.get(i));
+            us.get(i).envia(new AvisoDeEntradaNaSala(us.get(i)), this.usuario);
+        }
+        salaEscolhida.adicionarUsuario(this.usuario);
         // Fazer várias vezes this.usuario.envia(new AvisoDeEntradaNaSala(i)), onde i é o nome de algum usuário na sala
         // Fazer várias vezes i.envia(new AvisoDeEntradaNaSala(usuario.getNome())), onde i é o nome de algum usuário na sala
         // Incluir o usuario na sala
 
         Enviavel recebido = null;
+        Object aux;
+        Usuario[] dest;
 
         do
         {
+            aux = ois.readObject();
+            if (aux instanceof Mensagem)
+            {
+                recebido = (Mensagem)aux;
+                dest = recebido.getDestinatarios();
+                for (int i = 0; i < dest.length(); i++)
+                    this.usuario.envia(recebido, dest[i]);
+            }
             // receber mensagens, avisos de entrada na e de saida da sala
             // se for mensagem, pega nela o destinatario, acha o destinatario na sala e manda para ele a mensagem
         }
@@ -87,6 +104,13 @@ public class CuidadoraDeUsuario extends Thread
 
         // Remover this.usuario da sala
         // Mandar para todos da sala: new AvisoDeSaidaDaSala(this.usuario.getNome())
+        salaEscolhida.removerUsuario(this.usuario);
+        us = salaEscolhida.getUsuarios();
+        for (int i = 0; i < us.size(); i++)
+        {
+            this.usuario.envia(new AvisoDeEntradaNaSala(this.usuario), us.get(i));
+            us.get(i).envia(new AvisoDeEntradaNaSala(us.get(i)), this.usuario);
+        }
         this.usuario.fechaTudo();
     }
 }
