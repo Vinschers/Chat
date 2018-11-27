@@ -1,7 +1,7 @@
 public class PedidoParaSairDaSala extends Enviavel
 {
-    public PedidoParaSairDaSala(Usuario u) throws Exception
+    public PedidoParaSairDaSala() throws Exception
     {
-        super(u);
+        super();
     }
 }

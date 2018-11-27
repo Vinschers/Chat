@@ -81,8 +81,8 @@ public class CuidadoraDeUsuario extends Thread
             this.usuario = new Usuario(this.conexao, oos, ois, nomeEscolhido, salaEscolhida);
             for (int i = 0; i < us.size(); i++)
             {
-                this.usuario.envia(new AvisoDeEntradaNaSala(this.usuario), us.get(i));
-                us.get(i).envia(new AvisoDeEntradaNaSala(us.get(i)), this.usuario);
+                this.usuario.envia(new AvisoDeEntradaNaSala(), us.get(i).getNickname());
+                us.get(i).envia(new AvisoDeEntradaNaSala(), this.usuario.getNickname());
             }
             salaEscolhida.adicionarUsuario(this.usuario);
             // Fazer várias vezes this.usuario.envia(new AvisoDeEntradaNaSala(i)), onde i é o nome de algum usuário na sala
@@ -91,7 +91,7 @@ public class CuidadoraDeUsuario extends Thread
 
             Enviavel recebido = null;
             Mensagem aux;
-            ArrayList<Usuario> dest;
+            ArrayList<String> dest;
 
             do
             {
@@ -114,8 +114,8 @@ public class CuidadoraDeUsuario extends Thread
             us = salaEscolhida.getUsuarios();
             for (int i = 0; i < us.size(); i++)
             {
-                this.usuario.envia(new AvisoDeEntradaNaSala(this.usuario), us.get(i));
-                us.get(i).envia(new AvisoDeEntradaNaSala(us.get(i)), this.usuario);
+                this.usuario.envia(new AvisoDeEntradaNaSala(), us.get(i).getNickname());
+                us.get(i).envia(new AvisoDeEntradaNaSala(), this.usuario.getNickname());
             }
             this.usuario.fechaTudo();
         }

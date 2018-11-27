@@ -49,8 +49,9 @@ public class Usuario implements Cloneable, Serializable
         this.transmissor.writeObject(x);
         this.transmissor.flush();
     }
-    public void envia(Enviavel x, Usuario destino) throws IOException, ClassNotFoundException
+    public void envia(Enviavel x, String usuarioDest) throws Exception
     {
+        Usuario destino = this.sala.getUsuario(usuarioDest);
         x.setUsuario(this);
         destino.recebe(x);
     }

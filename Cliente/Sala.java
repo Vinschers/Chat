@@ -122,4 +122,18 @@ public class Sala implements Cloneable, Serializable
     {
         return this.qtdMaxima == this.numeroUsuarios;
     }
+    public Usuario getUsuario(String nome) throws Exception
+    {
+        if (nome == null || nome.equals(""))
+            throw new Exception("Nome inválido");
+        Usuario ret = null;
+        for (int i = 0; i < this.usuarios.size(); i++)
+        {
+            if (this.usuarios.get(i).getNickname().equals(nome))
+                ret = new Usuario(this.usuarios.get(i));
+        }
+        if (ret == null)
+            throw new Exception("Usuário não encontrado");
+        return ret;
+    }
 }

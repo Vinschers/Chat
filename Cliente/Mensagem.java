@@ -4,8 +4,8 @@ import java.util.*;
 public class Mensagem extends Enviavel
 {
     protected String mensagem;
-    protected ArrayList<Usuario> destinatarios;
-    public Mensagem(String msg, ArrayList<Usuario> dest) throws Exception
+    protected ArrayList<String> destinatarios;
+    public Mensagem(String msg, ArrayList<String> dest) throws Exception
     {
         super();
         if (msg == null || msg.equals(""))
@@ -44,7 +44,7 @@ public class Mensagem extends Enviavel
         return ret;
     }
 
-    public ArrayList<Usuario> getDestinatarios()
+    public ArrayList<String> getDestinatarios()
     {
         return this.destinatarios;
     }
