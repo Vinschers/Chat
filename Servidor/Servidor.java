@@ -7,6 +7,7 @@ public class Servidor
         try
         {
             Salas salas = new Salas();
+            salas.adicionarSala(new Sala("teste", 2));
             // Adicionar salas do banco de dados
 
             ServerSocket pedido = new ServerSocket(12345);
@@ -14,7 +15,7 @@ public class Servidor
             for (;;)
             {
                 Socket conexao = pedido.accept();
-                System.out.println("Pedido aceito");
+                System.out.println("O usuario de IP " + conexao.getInetAddress() + " conectou-se ao servidor");
                 CuidadoraDeUsuario cuidadora = new CuidadoraDeUsuario(conexao, salas);
                 cuidadora.start();
             }

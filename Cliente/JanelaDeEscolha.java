@@ -45,9 +45,11 @@ public class JanelaDeEscolha extends JFrame {
 		try {
 			JanelaDeEscolha frame = new JanelaDeEscolha();
 			frame.setVisible(true);
-
 			while (true)
+			{
 				frame.receber();
+				Thread.sleep(100);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -223,8 +225,13 @@ public class JanelaDeEscolha extends JFrame {
 	}
 	public void receber() throws Exception
 	{
-			if (chat != null)
-				chat.receber((Enviavel) receptor.readObject());
+		if (chat != null)
+		{
+			System.out.println("Chat nao e mais nulo");
+			Enviavel recebido = (Enviavel) receptor.readObject();
+			System.out.println("Recebeu");
+			chat.receber(recebido);
+		}
 	}
 
 }
