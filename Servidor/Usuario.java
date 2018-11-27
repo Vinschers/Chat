@@ -53,7 +53,7 @@ public class Usuario implements Cloneable
         this.transmissor.writeObject(x);
         this.transmissor.flush();
     }
-    public void envia(Enviavel x, Usuario destino) throws IOException
+    public void envia(Enviavel x, Usuario destino) throws IOException, ClassNotFoundException
     {
         destino.recebe(x);
     }
