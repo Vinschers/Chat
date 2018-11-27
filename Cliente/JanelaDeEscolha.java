@@ -32,7 +32,7 @@ public class JanelaDeEscolha extends JFrame {
 	private JTextField txtNome;
 	private JTextField txtIP;
 	
-	protected boolean estaEmTesteSemConexao = true;
+	protected boolean estaEmTesteSemConexao = false;
 	
 	protected Socket conexao;
 	protected ObjectInputStream receptor;
@@ -183,7 +183,7 @@ public class JanelaDeEscolha extends JFrame {
 						cbxSalas.addItem("Sala 2                            0/10 lugares preenchidos");
 						cbxSalas.addItem("Sala 3                            0/10 lugares preenchidos");
 					}
-					lblStatus.setText("Servidor conectado. Selecione uma sala e digite seu nome para come�ar");
+					lblStatus.setText("Servidor conectado. Selecione uma sala e digite seu nome para come?ar");
 					
 					lblDigiteOIp.setEnabled(false);
 					txtIP.setEnabled(false);
