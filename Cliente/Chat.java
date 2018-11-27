@@ -26,26 +26,10 @@ public class Chat extends JFrame {
 	private JTextField textField;
 
 	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Chat frame = new Chat(new JanelaDeEscolha());
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
 	 * Create the frame.
 	 */
-	public Chat(JanelaDeEscolha escolha) {
-		setTitle("Chat - Sala conectada: ");
+	public Chat(JanelaDeEscolha escolha, String nomeSala) {
+		setTitle("Chat - Sala conectada: " + nomeSala);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 910, 525);
 		contentPane = new JPanel();
@@ -133,5 +117,8 @@ public class Chat extends JFrame {
 		btnSairDaSala.setFont(new Font("Century Gothic", Font.PLAIN, 18));
 		panel_3.add(btnSairDaSala, BorderLayout.EAST);
 	}
+	public void receber(Enviavel recebido)
+	{
 
+	}
 }
