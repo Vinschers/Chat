@@ -2,8 +2,6 @@ public class AvisoDeEntradaNaSala extends Enviavel
 {
     public AvisoDeEntradaNaSala(Usuario u) throws Exception
     {
-        if (u == null)
-            throw new Exception("Usuário inválido");
         super(u);
     }
     public String toString()

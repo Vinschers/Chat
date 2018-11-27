@@ -5,6 +5,11 @@ public class Enviavel
     protected Usuario usuario;
     protected Hora hora;
 
+    public Enviavel()
+    {
+        this.hora = new Hora();
+    }
+
     public Enviavel(Usuario u) throws Exception
     {
         if (u == null)
@@ -42,10 +47,12 @@ public class Enviavel
     }
     public String getHora()
     {
-        return this.hora;
+        return this.hora.toString();
     }
-    public Usuario getUsuario()
+    public Usuario getUsuario() throws NullPointerException
     {
+        if (this.usuario == null)
+            throw new NullPointerException("Usuario nao determinado");
         return this.usuario;
     }
 }

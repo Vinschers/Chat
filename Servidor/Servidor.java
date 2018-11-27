@@ -1,16 +1,22 @@
+import java.net.*;
+
 public class Servidor
 {
     public static void main(String[] args) 
     {
-        Salas salas = new Salas();
-        // Adicionar salas do banco de dados
-
-        ServerSocket pedido = new ServerSocket(12345);
-        for (;;)
+        try
         {
-            Socket conexao = pedido.accept();
-            CuidadoraDeUsuario cuidadora = new CuidadoraDeUsuario(conexao, salas);
-            cuidadora.start();
+            Salas salas = new Salas();
+            // Adicionar salas do banco de dados
+
+            ServerSocket pedido = new ServerSocket(12345);
+            for (;;)
+            {
+                Socket conexao = pedido.accept();
+                CuidadoraDeUsuario cuidadora = new CuidadoraDeUsuario(conexao, salas);
+                cuidadora.start();
+            }
         }
+        catch(Exception e) {System.err.println(e.getMessage());}
     }
 }
