@@ -5,9 +5,9 @@ public class Mensagem extends Enviavel
 {
     protected String mensagem;
     protected ArrayList<Usuario> destinatarios;
-    public Mensagem(Usuario u, String msg, ArrayList<Usuario> dest) throws Exception
+    public Mensagem(String msg, ArrayList<Usuario> dest) throws Exception
     {
-        super(u);
+        super();
         if (msg == null || msg.equals(""))
             throw new Exception("Mensagem inválida!");
         if (dest == null || dest.size() == 0)

@@ -29,11 +29,9 @@ public class CuidadoraDeUsuario extends Thread
             this.salas.adicionarSala(new Sala("teste", 2));
             boolean houveErro = true;
             ObjectOutputStream oos = new ObjectOutputStream(conexao.getOutputStream());
-            System.out.println("cheguei ate aqui");
             oos.writeObject(new SalasDisponiveis(this.salas));
             oos.flush();
             ObjectInputStream ois = new ObjectInputStream(conexao.getInputStream());
-            System.out.println("cheguei ate aqui");
             ArrayList<Usuario> us = null;
             String nomeEscolhido = null;
             String nomeSala;
@@ -79,6 +77,7 @@ public class CuidadoraDeUsuario extends Thread
                     }
                 }
             }
+            oos.writeObject("ok");
             this.usuario = new Usuario(this.conexao, oos, ois, nomeEscolhido, salaEscolhida);
             for (int i = 0; i < us.size(); i++)
             {

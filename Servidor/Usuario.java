@@ -51,6 +51,7 @@ public class Usuario implements Cloneable, Serializable
     }
     public void envia(Enviavel x, Usuario destino) throws IOException, ClassNotFoundException
     {
+        x.setUsuario(this);
         destino.recebe(x);
     }
     public void fechaTudo() throws IOException

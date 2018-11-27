@@ -2,7 +2,8 @@ public class AvisoDeEntradaNaSala extends Enviavel
 {
     public AvisoDeEntradaNaSala(Usuario u) throws Exception
     {
-        super(u);
+        super();
+        super.setUsuario(u);
     }
     public String toString()
     {

@@ -32,7 +32,7 @@ public class JanelaDeEscolha extends JFrame {
 	private JTextField txtNome;
 	private JTextField txtIP;
 	
-	protected boolean estaEmTesteSemConexao = true;
+	protected boolean estaEmTesteSemConexao = false;
 	
 	protected Socket conexao;
 	protected ObjectInputStream receptor;
@@ -73,17 +73,6 @@ public class JanelaDeEscolha extends JFrame {
 		contentPane.add(lblStatus, BorderLayout.NORTH);
 		
 		JanelaDeEscolha este = this;
-
-		JButton btnEntrar = new JButton("Entrar");
-		btnEntrar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				new Chat(este).setVisible(true);
-				setVisible(false);
-			}
-		});
-		btnEntrar.setFont(new Font("Century Gothic", Font.PLAIN, 16));
-		btnEntrar.setEnabled(false);
-		contentPane.add(btnEntrar, BorderLayout.SOUTH);
 		
 		JPanel panel = new JPanel();
 		contentPane.add(panel, BorderLayout.CENTER);
@@ -146,6 +135,34 @@ public class JanelaDeEscolha extends JFrame {
 		gbc_lblDigiteSeuNome.gridx = 0;
 		gbc_lblDigiteSeuNome.gridy = 2;
 		panel.add(lblDigiteSeuNome, gbc_lblDigiteSeuNome);
+
+		JButton btnEntrar = new JButton("Entrar");
+		btnEntrar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try
+				{
+					ObjectOutputStream transmissor = new ObjectOutputStream(conexao.getOutputStream());
+					Object recebido = null;
+
+					do
+					{
+						transmissor.writeObject(txtNome.getText());
+						transmissor.writeObject(cbxSalas.getSelectedItem().toString());
+						transmissor.flush();
+						
+						if (recebido instanceof AvisoErro)
+							JOptionPane.showMessageDialog(null, ((AvisoErro)recebido).toString());
+					} while (recebido instanceof AvisoErro);
+					
+					new Chat(este, cbxSalas.getSelectedItem().toString().split("\"")[1]).setVisible(true);
+					setVisible(false);
+				}
+				catch (Exception ex) {JOptionPane.showMessageDialog(null, "Deu esse erro: " + ex.getMessage());}
+			}
+		});
+		btnEntrar.setFont(new Font("Century Gothic", Font.PLAIN, 16));
+		btnEntrar.setEnabled(false);
+		contentPane.add(btnEntrar, BorderLayout.SOUTH);
 		
 		txtNome = new JTextField();
 		txtNome.addKeyListener(new KeyAdapter() {
@@ -173,7 +190,7 @@ public class JanelaDeEscolha extends JFrame {
 						receptor = new ObjectInputStream(conexao.getInputStream());
 
 						SalasDisponiveis recebido = (SalasDisponiveis) receptor.readObject();
-						ArrayList<Sala> salasDisponiveis =  recebido.getSalas().getSalas();
+						ArrayList<Sala> salasDisponiveis = recebido.getSalas().getSalas();
 						for (int i = 0; i < salasDisponiveis.size(); i++)
 							cbxSalas.addItem(salasDisponiveis.get(i).toString());
 					}
@@ -183,7 +200,7 @@ public class JanelaDeEscolha extends JFrame {
 						cbxSalas.addItem("Sala 2                            0/10 lugares preenchidos");
 						cbxSalas.addItem("Sala 3                            0/10 lugares preenchidos");
 					}
-					lblStatus.setText("Servidor conectado. Selecione uma sala e digite seu nome para come�ar");
+					lblStatus.setText("Servidor conectado. Selecione uma sala e digite seu nome para come?ar");
 					
 					lblDigiteOIp.setEnabled(false);
 					txtIP.setEnabled(false);
@@ -199,6 +216,7 @@ public class JanelaDeEscolha extends JFrame {
 				}
 			}
 		});
+		
 		btnConectar.setFont(new Font("Century Gothic", Font.PLAIN, 16));
 		panel_1.add(btnConectar, BorderLayout.EAST);
 	}
