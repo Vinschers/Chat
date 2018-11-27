@@ -4,13 +4,13 @@ import java.util.*;
 public class Mensagem extends Enviavel
 {
     protected String mensagem;
-    protected Usuario[] destinatarios;
-    public Mensagem(Usuario u, String msg, Usuario[] dest) throws Exception
+    protected ArrayList<Usuario> destinatarios;
+    public Mensagem(Usuario u, String msg, ArrayList<Usuario> dest) throws Exception
     {
         super(u);
         if (msg == null || msg.equals(""))
             throw new Exception("Mensagem inválida!");
-        if (dest == null || dest.length() == 0)
+        if (dest == null || dest.size() == 0)
             throw new Exception("Destinatário inválido");
         this.mensagem = msg;
         this.destinatarios = dest;
@@ -44,7 +44,7 @@ public class Mensagem extends Enviavel
         return ret;
     }
 
-    public Usuario[] getDestinatarios()
+    public ArrayList<Usuario> getDestinatarios()
     {
         return this.destinatarios;
     }

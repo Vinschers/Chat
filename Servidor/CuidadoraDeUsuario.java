@@ -85,7 +85,7 @@ public class CuidadoraDeUsuario extends Thread
 
         Enviavel recebido = null;
         Object aux;
-        Usuario[] dest;
+        ArrayList<Usuario> dest;
 
         do
         {
@@ -94,8 +94,8 @@ public class CuidadoraDeUsuario extends Thread
             {
                 recebido = (Mensagem)aux;
                 dest = recebido.getDestinatarios();
-                for (int i = 0; i < dest.length(); i++)
-                    this.usuario.envia(recebido, dest[i]);
+                for (int i = 0; i < dest.size(); i++)
+                    this.usuario.envia(recebido, dest.get(i));
             }
             // receber mensagens, avisos de entrada na e de saida da sala
             // se for mensagem, pega nela o destinatario, acha o destinatario na sala e manda para ele a mensagem
