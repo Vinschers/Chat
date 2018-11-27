@@ -5,7 +5,7 @@ import BD.*;
 import BD.core.*;
 import BD.dbos.*;
 
-public class Livros
+public class Salas
 {
     public static boolean cadastrado (int codigo) throws Exception
     {
@@ -16,7 +16,7 @@ public class Livros
             String sql;
 
             sql = "SELECT * " +
-                  "FROM LIVROS " +
+                  "FROM SALAS " +
                   "WHERE CODIGO = ?";
 
             BDSQLServer.COMANDO.prepareStatement (sql);
@@ -25,27 +25,7 @@ public class Livros
 
             MeuResultSet resultado = (MeuResultSet)BDSQLServer.COMANDO.executeQuery ();
 
-            retorno = resultado.first(); // pode-se usar resultado.last() ou resultado.next() ou resultado.previous() ou resultado.absolute(numeroDaLinha)
-
-            /* // ou, se preferirmos,
-
-            String sql;
-
-            sql = "SELECT COUNT(*) AS QUANTOS " +
-                  "FROM LIVROS " +
-                  "WHERE CODIGO = ?";
-
-            BDSQLServer.COMANDO.prepareStatement (sql);
-
-            BDSQLServer.COMANDO.setInt (1, codigo);
-
-            MeuResultSet resultado = (MeuResultSet)BDSQLServer.COMANDO.executeQuery ();
-
-            resultado.first();
-
-            retorno = resultado.getInt("QUANTOS") != 0;
-
-            */
+            retorno = resultado.first(); 
         }
         catch (SQLException erro)
         {
@@ -55,32 +35,32 @@ public class Livros
         return retorno;
     }
 
-    public static void incluir (Livro livro) throws Exception
+    public static void incluir (Sala sala) throws Exception
     {
-        if (livro==null)
-            throw new Exception ("Livro nao fornecido");
+        if (sala==null)
+            throw new Exception ("Sala nao fornecida");
 
         try
         {
             String sql;
 
-            sql = "INSERT INTO LIVROS " +
-                  "(CODIGO,NOME,PRECO) " +
+            sql = "INSERT INTO SALAS " +
+                  "(CODIGO,NOME,CAPACIDADE) " +
                   "VALUES " +
                   "(?,?,?)";
 
             BDSQLServer.COMANDO.prepareStatement (sql);
 
-            BDSQLServer.COMANDO.setInt    (1, livro.getCodigo ());
-            BDSQLServer.COMANDO.setString (2, livro.getNome ());
-            BDSQLServer.COMANDO.setFloat  (3, livro.getPreco ());
+            BDSQLServer.COMANDO.setInt    (1, sala.getCodigo ());
+            BDSQLServer.COMANDO.setString (2, sala.getNome ());
+            BDSQLServer.COMANDO.setFloat  (3, sala.getPreco ());
 
             BDSQLServer.COMANDO.executeUpdate ();
             BDSQLServer.COMANDO.commit        ();
         }
         catch (SQLException erro)
         {
-            throw new Exception ("Erro ao inserir livro");
+            throw new Exception ("Erro ao inserir sala");
         }
     }
 
@@ -93,7 +73,7 @@ public class Livros
         {
             String sql;
 
-            sql = "DELETE FROM LIVROS " +
+            sql = "DELETE FROM SALAS " +
                   "WHERE CODIGO=?";
 
             BDSQLServer.COMANDO.prepareStatement (sql);
@@ -104,52 +84,52 @@ public class Livros
             BDSQLServer.COMANDO.commit        ();        }
         catch (SQLException erro)
         {
-            throw new Exception ("Erro ao excluir livro");
+            throw new Exception ("Erro ao excluir sala");
         }
     }
 
-    public static void alterar (Livro livro) throws Exception
+    public static void alterar (Sala sala) throws Exception
     {
-        if (livro==null)
-            throw new Exception ("Livro nao fornecido");
+        if (sala==null)
+            throw new Exception ("Sala nao fornecido");
 
-        if (!cadastrado (livro.getCodigo()))
-            throw new Exception ("Nao cadastrado");
+        if (!cadastrado (sala.getCodigo()))
+            throw new Exception ("Nao cadastrada");
 
         try
         {
             String sql;
 
-            sql = "UPDATE LIVROS " +
+            sql = "UPDATE SALAS " +
                   "SET NOME=? " +
                   "SET PRECO=? " +
                   "WHERE CODIGO = ?";
 
             BDSQLServer.COMANDO.prepareStatement (sql);
 
-            BDSQLServer.COMANDO.setString (1, livro.getNome ());
-            BDSQLServer.COMANDO.setFloat  (2, livro.getPreco ());
-            BDSQLServer.COMANDO.setInt    (3, livro.getCodigo ());
+            BDSQLServer.COMANDO.setString (1, sala.getNome ());
+            BDSQLServer.COMANDO.setFloat  (2, sala.getPreco ());
+            BDSQLServer.COMANDO.setInt    (3, sala.getCodigo ());
 
             BDSQLServer.COMANDO.executeUpdate ();
             BDSQLServer.COMANDO.commit        ();
         }
         catch (SQLException erro)
         {
-            throw new Exception ("Erro ao atualizar dados de livro");
+            throw new Exception ("Erro ao atualizar dados de sala");
         }
     }
 
-    public static Livro getLivro (int codigo) throws Exception
+    public static Sala getSala (int codigo) throws Exception
     {
-        Livro livro = null;
+        Sala sala = null;
 
         try
         {
             String sql;
 
             sql = "SELECT * " +
-                  "FROM LIVROS " +
+                  "FROM SALAS " +
                   "WHERE CODIGO = ?";
 
             BDSQLServer.COMANDO.prepareStatement (sql);
@@ -159,21 +139,21 @@ public class Livros
             MeuResultSet resultado = (MeuResultSet)BDSQLServer.COMANDO.executeQuery ();
 
             if (!resultado.first())
-                throw new Exception ("Nao cadastrado");
+                throw new Exception ("Nao cadastrada");
 
-            livro = new Livro (resultado.getInt   ("CODIGO"),
+            sala = new Sala (resultado.getInt   ("CODIGO"),
                                resultado.getString("NOME"),
-                               resultado.getFloat ("PRECO"));
+                               resultado.getInt ("CAPACIDADE"));
         }
         catch (SQLException erro)
         {
-            throw new Exception ("Erro ao procurar livro");
+            throw new Exception ("Erro ao procurar sala");
         }
 
-        return livro;
+        return sala;
     }
 
-    public static MeuResultSet getLivros () throws Exception
+    public static MeuResultSet getSalas () throws Exception
     {
         MeuResultSet resultado = null;
 
@@ -182,7 +162,7 @@ public class Livros
             String sql;
 
             sql = "SELECT * " +
-                  "FROM LIVROS";
+                  "FROM SALAS";
 
             BDSQLServer.COMANDO.prepareStatement (sql);
 
@@ -190,7 +170,7 @@ public class Livros
         }
         catch (SQLException erro)
         {
-            throw new Exception ("Erro ao recuperar livros");
+            throw new Exception ("Erro ao recuperar salas");
         }
 
         return resultado;
