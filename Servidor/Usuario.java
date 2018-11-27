@@ -1,14 +1,10 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 
-public class Usuario implements Cloneable
+public class Usuario implements Cloneable, Serializable
 {
     protected String nickname;
-
+    private static final long serialVersionUID = 1L;
     protected Sala sala;
     protected Socket conexao;
     protected ObjectOutputStream transmissor; 

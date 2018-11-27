@@ -1,8 +1,10 @@
 import java.util.*;
 import java.lang.*;
+import java.io.*;
 
-public class Salas implements Cloneable
+public class Salas implements Cloneable, Serializable
 {
+    private static final long serialVersionUID = 1L;
     protected ArrayList<Sala> salas;
     protected int qtd;
 
