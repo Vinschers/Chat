@@ -36,21 +36,21 @@ public class JanelaDeEscolha extends JFrame {
 	
 	protected Socket conexao;
 	protected ObjectInputStream receptor;
+	protected Chat chat = null;
 
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					JanelaDeEscolha frame = new JanelaDeEscolha();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+		try {
+			JanelaDeEscolha frame = new JanelaDeEscolha();
+			frame.setVisible(true);
+
+			while (true)
+				frame.receber();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -154,7 +154,8 @@ public class JanelaDeEscolha extends JFrame {
 							JOptionPane.showMessageDialog(null, ((AvisoErro)recebido).toString());
 					} while (recebido instanceof AvisoErro);
 					
-					new Chat(este, cbxSalas.getSelectedItem().toString().split("\"")[1]).setVisible(true);
+					chat = new Chat(este, cbxSalas.getSelectedItem().toString().split("\"")[1], transmissor);
+					chat.setVisible(true);
 					setVisible(false);
 				}
 				catch (Exception ex) {JOptionPane.showMessageDialog(null, "Deu esse erro: " + ex.getMessage());}
@@ -219,6 +220,11 @@ public class JanelaDeEscolha extends JFrame {
 		
 		btnConectar.setFont(new Font("Century Gothic", Font.PLAIN, 16));
 		panel_1.add(btnConectar, BorderLayout.EAST);
+	}
+	public void receber() throws Exception
+	{
+			if (chat != null)
+				chat.receber((Enviavel) receptor.readObject());
 	}
 
 }
