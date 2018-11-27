@@ -1,4 +1,5 @@
 import java.util.*;
+import java.io.*;
 public class Hora extends Thread implements Cloneable, Serializable
 {
     private static final long serialVersionUID = 1L;
