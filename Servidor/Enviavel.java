@@ -12,14 +12,6 @@ public class Enviavel implements Serializable
         this.hora = new Hora();
     }
 
-    public Enviavel(Usuario u) throws Exception
-    {
-        if (u == null)
-            throw new Exception("Usuário inválido!");
-        this.usuario = u;
-        this.hora = new Hora();
-    }
-
     public boolean equals(Object obj)
     {
         if (obj == this)
@@ -56,5 +48,11 @@ public class Enviavel implements Serializable
         if (this.usuario == null)
             throw new NullPointerException("Usuario nao determinado");
         return this.usuario;
+    }
+    public void setUsuario (Usuario u) throws Exception
+    {
+        if (u == null)
+            throw new Exception("Usuário inválido");
+        this.usuario = u;
     }
 }
