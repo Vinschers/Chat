@@ -10,7 +10,7 @@ public class Mensagem extends Enviavel
         super();
         if (msg == null || msg.equals(""))
             throw new Exception("Mensagem inválida!");
-        if (dest == null || dest.size() == 0)
+        if (dest == null)
             throw new Exception("Destinatário inválido");
         this.mensagem = msg;
         this.destinatarios = dest;
