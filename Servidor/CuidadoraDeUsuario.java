@@ -80,7 +80,8 @@ public class CuidadoraDeUsuario extends Thread
                         }
                     }
                 }
-                oos.flush();
+                if (houveErro)
+                    oos.flush();
             }
             oos.writeObject("ok");
             oos.flush();

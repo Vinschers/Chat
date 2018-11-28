@@ -28,9 +28,9 @@ public class Chat extends JFrame {
 
 	protected JPanel contentPane;
 	protected JTextField txtMensagem;
-	protected JList<String> listUsuarios;
 	protected JComboBox cbxDestino;
 	protected JTextArea textArea;
+	protected DefaultListModel modelo;
 
 	/**
 	 * Create the frame.
@@ -52,7 +52,7 @@ public class Chat extends JFrame {
 		contentPane.add(panel, BorderLayout.SOUTH);
 		panel.setLayout(new BorderLayout(0, 0));
 		
-		JComboBox cbxDestino = new JComboBox();
+		cbxDestino = new JComboBox();
 		cbxDestino.setModel(new DefaultComboBoxModel(new String[] {"Mensagem Geral                           "}));
 		cbxDestino.setFont(new Font("Century Gothic", Font.PLAIN, 16));
 		panel.add(cbxDestino, BorderLayout.WEST);
@@ -92,17 +92,11 @@ public class Chat extends JFrame {
 		lblUsuriosConectados.setFont(new Font("Century Gothic", Font.BOLD, 23));
 		panel_1.add(lblUsuriosConectados, BorderLayout.NORTH);
 		
-		listUsuarios = new JList<String>(new DefaultListModel<String>());
+		modelo = new DefaultListModel();
+
+		JList listUsuarios = new JList(modelo);
 		listUsuarios.setFont(new Font("Century Gothic", Font.PLAIN, 19));
-		listUsuarios.setModel(new AbstractListModel() {
-			String[] values = new String[50];
-			public int getSize() {
-				return values.length;
-			}
-			public Object getElementAt(int index) {
-				return values[index];
-			}
-		});
+		listUsuarios.setVisibleRowCount(15);
 		listUsuarios.setBackground(Color.LIGHT_GRAY);
 		panel_1.add(listUsuarios, BorderLayout.CENTER);
 		
@@ -151,7 +145,7 @@ public class Chat extends JFrame {
 		textArea.setText(textArea.getText() + recebido.toString() + "\n");
 		if (recebido instanceof AvisoDeEntradaNaSala)
 		{
-			((DefaultListModel)listUsuarios.getModel()).addElement(recebido.getUsuario());
+			modelo.addElement(recebido.getUsuario());
 			cbxDestino.addItem(recebido.getUsuario());
 		}
 		else if (recebido instanceof AvisoDeSaidaDaSala)
@@ -160,7 +154,7 @@ public class Chat extends JFrame {
 				if (cbxDestino.getItemAt(i).equals(recebido.getUsuario()))
 				{
 					cbxDestino.removeItemAt(i);
-					listUsuarios.remove(i);
+					modelo.remove(i);
 				}
 		}
 	}

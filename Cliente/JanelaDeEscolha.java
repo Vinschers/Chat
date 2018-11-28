@@ -200,7 +200,6 @@ public class JanelaDeEscolha extends JFrame {
 						SalasDisponiveis recebido = (SalasDisponiveis) receptor.readObject();
 						ArrayList<SalaSerializable> salasDisponiveis = recebido.getSalas();
 
-						JOptionPane.showMessageDialog(null, "Salas disponiveis obtidas: " + salasDisponiveis.toString());
 						for (int i = 0; i < salasDisponiveis.size(); i++)
 							cbxSalas.addItem(salasDisponiveis.get(i).toString());
 					}
