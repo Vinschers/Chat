@@ -68,11 +68,13 @@ public class Chat extends JFrame {
 				{
 					ArrayList<String> destino = new ArrayList<String>();
 					if (cbxDestino.getSelectedIndex() == 0)				
-						for (int i = 1; i < cbxDestino.getItemCount() - 1; i++)
+						for (int i = 1; i < cbxDestino.getItemCount(); i++)
 							destino.add(cbxDestino.getItemAt(i).toString());
 					else
 						destino.add(cbxDestino.getSelectedItem().toString());
-					transmissor.writeObject(new Mensagem(txtMensagem.getText(), destino));
+
+					JOptionPane.showMessageDialog(null, novaMensagem.getDestinatarios().size());
+					transmissor.writeObject(novaMensagem);
 					transmissor.flush();
 				}
 				catch (Exception ex) {JOptionPane.showMessageDialog(null, ex.getMessage());}

@@ -88,7 +88,9 @@ public class CuidadoraDeUsuario extends Thread
             this.usuario = new Usuario(this.conexao, oos, ois, nomeEscolhido, salaEscolhida);
 
             System.out.println("Usuario " + nomeEscolhido + " criado. Iniciando o loop com " + us.size() + " usuario(s) ja conectados.");
-            for (int i = 0; i < us.size(); i++)
+            
+            salaEscolhida.adicionarUsuario(this.usuario);
+            for (int i = 0; i < us.size() - 1; i++)
             {
                 System.out.println(nomeEscolhido + " mandando para " + us.get(i).getNickname());
                 this.usuario.envia(new AvisoDeEntradaNaSala(), us.get(i).getNickname());
@@ -96,7 +98,6 @@ public class CuidadoraDeUsuario extends Thread
                 us.get(i).envia(new AvisoDeEntradaNaSala(), this.usuario.getNickname());
                 System.out.println("Mandou");
             }
-            salaEscolhida.adicionarUsuario(this.usuario);
             // Fazer várias vezes this.usuario.envia(new AvisoDeEntradaNaSala(i)), onde i é o nome de algum usuário na sala
             // Fazer várias vezes i.envia(new AvisoDeEntradaNaSala(usuario.getNome())), onde i é o nome de algum usuário na sala
             // Incluir o usuario na sala
@@ -108,10 +109,14 @@ public class CuidadoraDeUsuario extends Thread
             do
             {
                 recebido = (Enviavel)ois.readObject();
+                System.out.println(recebido);
                 if (recebido instanceof Mensagem)
                 {
+                    System.out.println("Ola, passou do if");
                     aux = (Mensagem)recebido;
+                    System.out.println("Atribuiu a aux");      
                     dest = aux.getDestinatarios();
+                    System.out.println("Mensagem: " + aux.toString() + "; " + dest.size());
                     for (int i = 0; i < dest.size(); i++)
                         this.usuario.envia(aux, dest.get(i));
                 }
@@ -126,8 +131,8 @@ public class CuidadoraDeUsuario extends Thread
             us = salaEscolhida.getUsuarios();
             for (int i = 0; i < us.size(); i++)
             {
-                this.usuario.envia(new AvisoDeEntradaNaSala(), us.get(i).getNickname());
-                us.get(i).envia(new AvisoDeEntradaNaSala(), this.usuario.getNickname());
+                this.usuario.envia(new AvisoDeSaidaDaSala(), us.get(i).getNickname());
+                us.get(i).envia(new AvisoDeSaidaDaSala(), this.usuario.getNickname());
             }
             this.usuario.fechaTudo();
         }
