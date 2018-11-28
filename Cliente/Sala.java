@@ -2,12 +2,10 @@ import java.util.*;
 import java.lang.*;
 import java.io.*;
 
-public class Sala implements Cloneable, Serializable
+public class Sala implements Cloneable
 {
-    private static final long serialVersionUID = 1L;
     protected String nome;
     protected int qtdMaxima;
-    protected int numeroUsuarios;
     protected ArrayList<Usuario> usuarios;
 
     public Sala(String nome, int qtd) throws Exception
@@ -18,7 +16,6 @@ public class Sala implements Cloneable, Serializable
             throw new Exception("Quantidade máxima de usuários menor ou igual a 0.");
         this.nome = nome;
         this.qtdMaxima = qtd;
-        numeroUsuarios = 0;
         usuarios = new ArrayList<Usuario>();
     }
 
@@ -28,7 +25,6 @@ public class Sala implements Cloneable, Serializable
             throw new Exception("Sala era null.");
         this.nome = s.nome;
         this.qtdMaxima = s.qtdMaxima;
-        this.numeroUsuarios = s.numeroUsuarios;
         this.usuarios = new ArrayList<Usuario>(s.usuarios);
     }
     public boolean equals(Object obj)
@@ -44,8 +40,6 @@ public class Sala implements Cloneable, Serializable
             return false;
         if (s.qtdMaxima != this.qtdMaxima)
             return false;
-        if (s.numeroUsuarios != this.numeroUsuarios)
-            return false;
         if (!this.usuarios.equals(s.usuarios))
             return false;
         return true;
@@ -55,8 +49,7 @@ public class Sala implements Cloneable, Serializable
         int ret = 1;
         ret = ret * 3 + nome.hashCode();
         ret = ret * 5 + new Integer(this.qtdMaxima).hashCode();
-        ret = ret * 7 + new Integer(this.numeroUsuarios).hashCode();
-        ret = ret * 11 + usuarios.hashCode();
+        ret = ret * 7 + usuarios.hashCode();
         return ret;
     }
     public Object clone()
@@ -69,7 +62,7 @@ public class Sala implements Cloneable, Serializable
     public String toString()
     {
         String ret = "";
-        ret += "\"" + this.nome + "\" --> Usuários adicionados: " + this.numeroUsuarios + "/" + this.qtdMaxima;
+        ret += "\"" + this.nome + "\"            Usu\u00E1rios conectados: " + this.usuarios.size() + "/" + this.qtdMaxima;
         return ret;
     }
 
@@ -86,7 +79,7 @@ public class Sala implements Cloneable, Serializable
 
     public int getNumeroUsuarios()
     {
-        return this.numeroUsuarios;
+        return this.usuarios.size();
     }
     
     public int getCapacidade()
@@ -102,30 +95,28 @@ public class Sala implements Cloneable, Serializable
     public void adicionarUsuario(Usuario u) throws Exception
     {
         if (u == null)
-            throw new Exception("Usuário estava null.");
-        if (this.numeroUsuarios + 1 > this.qtdMaxima)
-            throw new Exception("Capacidade máxima atingida.");
-        for (int i = 0; i < this.numeroUsuarios; i++)
+            throw new Exception("Usu\u00E1rio estava null.");
+        if (this.usuarios.size() + 1 > this.qtdMaxima)
+            throw new Exception("Capacidade m\u00E1xima atingida.");
+        for (int i = 0; i < this.usuarios.size(); i++)
             if (usuarios.get(i).getNickname() == u.getNickname())
-                throw new Exception("Nickname já existe");
+                throw new Exception("Nickname j\u00E1 existe");
         usuarios.add(u);
-        this.numeroUsuarios++;
     }
     public void removerUsuario(Usuario u) throws Exception
     {
         if (u == null)
-            throw new Exception("Usuário inválido");
-        this.numeroUsuarios--;
+            throw new Exception("Usu\u00E1rio inv\u00E1lido");
         this.usuarios.remove(u);
     }
     public boolean isCheia()
     {
-        return this.qtdMaxima == this.numeroUsuarios;
+        return this.qtdMaxima == this.usuarios.size();
     }
     public Usuario getUsuario(String nome) throws Exception
     {
         if (nome == null || nome.equals(""))
-            throw new Exception("Nome inválido");
+            throw new Exception("Nome inv\u00E1lido");
         Usuario ret = null;
         for (int i = 0; i < this.usuarios.size(); i++)
         {
@@ -133,7 +124,7 @@ public class Sala implements Cloneable, Serializable
                 ret = new Usuario(this.usuarios.get(i));
         }
         if (ret == null)
-            throw new Exception("Usuário não encontrado");
+            throw new Exception("Usu\u00E1rio nao encontrado");
         return ret;
     }
 }

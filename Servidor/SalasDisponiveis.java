@@ -1,19 +1,30 @@
+import java.util.*;
+
 public class SalasDisponiveis extends Enviavel
 {
-    protected Salas salas;
+    protected ArrayList<SalaSerializable> salas;
+    
     public SalasDisponiveis(Salas s) throws Exception
     {
         if (s == null)
             throw new Exception("Salas vazias");
-        this.salas = new Salas(s);
+
+        ArrayList<Sala> salasNaoSerializable = s.getSalas();
+
+        this.salas = new ArrayList<SalaSerializable>();
+
+        for (int i = 0; i < salasNaoSerializable.size(); i++)
+            this.salas.add(new SalaSerializable(salasNaoSerializable.get(i)));
+
+            System.out.println(this.salas.get(0).toString());
     }
-    public Salas getSalas()
+    public ArrayList<SalaSerializable> getSalas()
     {
         return this.salas;
     }
     public String toString()
     {
-        return this.salas.toString();
+        return this.salas.size() + " salas disponiveis.";
     }
     public int hashCode()
     {

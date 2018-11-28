@@ -2,7 +2,7 @@ import java.net.*;
 import java.io.*;
 public class Enviavel implements Serializable
 {
-    protected Usuario usuario;
+    protected String usuario;
     protected Hora hora;
 
     private static final long serialVersionUID = 1L;
@@ -29,7 +29,7 @@ public class Enviavel implements Serializable
     }
     public String toString()
     {
-        String str = "Enviado às " + this.hora.toString() + " por " + this.usuario.toString();
+        String str = "Enviado às " + this.hora.toString() + " por " + this.usuario;
         return str;
     }
     public int hashCode()
@@ -43,13 +43,13 @@ public class Enviavel implements Serializable
     {
         return this.hora.toString();
     }
-    public Usuario getUsuario() throws NullPointerException
+    public String getUsuario() throws NullPointerException
     {
         if (this.usuario == null)
             throw new NullPointerException("Usuario nao determinado");
         return this.usuario;
     }
-    public void setUsuario (Usuario u) throws Exception
+    public void setUsuario (String u) throws Exception
     {
         if (u == null)
             throw new Exception("Usuário inválido");

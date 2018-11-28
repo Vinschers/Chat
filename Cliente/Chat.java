@@ -28,8 +28,9 @@ public class Chat extends JFrame {
 
 	protected JPanel contentPane;
 	protected JTextField txtMensagem;
-	protected JList<String> list;
-	protected JComboBox comboBox;
+	protected JList<String> listUsuarios;
+	protected JComboBox cbxDestino;
+	protected JTextArea textArea;
 
 	/**
 	 * Create the frame.
@@ -91,9 +92,9 @@ public class Chat extends JFrame {
 		lblUsuriosConectados.setFont(new Font("Century Gothic", Font.BOLD, 23));
 		panel_1.add(lblUsuriosConectados, BorderLayout.NORTH);
 		
-		list = new JList<String>(new DefaultListModel<String>());
-		list.setFont(new Font("Century Gothic", Font.PLAIN, 19));
-		list.setModel(new AbstractListModel() {
+		listUsuarios = new JList<String>(new DefaultListModel<String>());
+		listUsuarios.setFont(new Font("Century Gothic", Font.PLAIN, 19));
+		listUsuarios.setModel(new AbstractListModel() {
 			String[] values = new String[50];
 			public int getSize() {
 				return values.length;
@@ -102,8 +103,8 @@ public class Chat extends JFrame {
 				return values[index];
 			}
 		});
-		list.setBackground(Color.LIGHT_GRAY);
-		panel_1.add(list, BorderLayout.CENTER);
+		listUsuarios.setBackground(Color.LIGHT_GRAY);
+		panel_1.add(listUsuarios, BorderLayout.CENTER);
 		
 		JPanel panel_2 = new JPanel();
 		panel_2.setBackground(Color.DARK_GRAY);
@@ -119,7 +120,7 @@ public class Chat extends JFrame {
 		JLabel label_2 = new JLabel("     ");
 		panel_2.add(label_2, BorderLayout.EAST);
 		
-		JTextArea textArea = new JTextArea();
+		textArea = new JTextArea();
 		textArea.setEditable(false);
 		panel_2.add(textArea, BorderLayout.CENTER);
 		
@@ -147,19 +148,19 @@ public class Chat extends JFrame {
 	}
 	public void receber(Enviavel recebido)
 	{
-		txtMensagem.setText(txtMensagem.getText() + recebido.toString() + "\n");
+		textArea.setText(textArea.getText() + recebido.toString() + "\n");
 		if (recebido instanceof AvisoDeEntradaNaSala)
 		{
-			((DefaultListModel)list.getModel()).addElement(recebido.getUsuario().getNickname());
-			comboBox.addItem(recebido.getUsuario().getNickname());
+			((DefaultListModel)listUsuarios.getModel()).addElement(recebido.getUsuario());
+			cbxDestino.addItem(recebido.getUsuario());
 		}
 		else if (recebido instanceof AvisoDeSaidaDaSala)
 		{
-			for (int i = 0; i < comboBox.getItemCount(); i++)
-				if (comboBox.getItemAt(i).equals(recebido.getUsuario().getNickname()))
+			for (int i = 0; i < cbxDestino.getItemCount(); i++)
+				if (cbxDestino.getItemAt(i).equals(recebido.getUsuario()))
 				{
-					comboBox.removeItemAt(i);
-					list.remove(i);
+					cbxDestino.removeItemAt(i);
+					listUsuarios.remove(i);
 				}
 		}
 	}

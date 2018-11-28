@@ -52,7 +52,7 @@ public class Usuario implements Cloneable, Serializable
     public void envia(Enviavel x, String usuarioDest) throws Exception
     {
         Usuario destino = this.sala.getUsuario(usuarioDest);
-        x.setUsuario(this);
+        x.setUsuario(this.nickname);
         destino.recebe(x);
     }
     public void fechaTudo() throws IOException

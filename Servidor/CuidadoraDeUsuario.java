@@ -27,13 +27,14 @@ public class CuidadoraDeUsuario extends Thread
         {
             boolean houveErro = true;
             ObjectOutputStream oos = new ObjectOutputStream(conexao.getOutputStream());
-            oos.writeObject(new SalasDisponiveis(this.salas));
+            SalasDisponiveis sds = new SalasDisponiveis(this.salas);
+            oos.writeObject(sds);
             oos.flush();
             ObjectInputStream ois = new ObjectInputStream(conexao.getInputStream());
             ArrayList<Usuario> us = null;
             String nomeEscolhido = null;
             String nomeSala;
-            ArrayList<Sala> vetSalas;
+            ArrayList<Sala> vetSalas = this.salas.getSalas();
             Sala salaEscolhida = null;
             boolean jaExiste;
             while(houveErro)
@@ -41,39 +42,30 @@ public class CuidadoraDeUsuario extends Thread
                 houveErro = false;
                 System.out.println("Esperando o nome");
                 nomeEscolhido = (String)ois.readObject();
-                System.out.println("Esperando o nome da sala");
                 nomeSala = (String)ois.readObject();
-                System.out.println("Leu tudo");
-                vetSalas = this.salas.getSalas();
                 salaEscolhida = null;
-                int codErro = 0;
                 for (int i = 0; i < vetSalas.size(); i++)
                 {
                     if(vetSalas.get(i).getNome().equals(nomeSala))
                     {
                         salaEscolhida = vetSalas.get(i);
-                        System.out.println("Achou a sala");
                         break;
                     }
                 }
-                System.out.println("Saiu do loop, vai comecar a verificar");
                 if (salaEscolhida == null)
                 {
                     oos.writeObject(new AvisoErro("Sala nao encontrada"));
                     houveErro = true;
-                    codErro = 0;
                 }
                 else if (salaEscolhida.isCheia())
                 {
                     oos.writeObject(new AvisoErro("Sala ja esta cheia!"));
                     houveErro = true;
-                    codErro = 1;
                 }
                 else if (nomeEscolhido == null || nomeEscolhido.equals(""))
                 {
                     oos.writeObject(new AvisoErro("Nome invalido!"));
                     houveErro = true;
-                    codErro = 2;
                 }
                 else
                 {
@@ -84,19 +76,14 @@ public class CuidadoraDeUsuario extends Thread
                         {
                             oos.writeObject(new AvisoErro("Nome de usuário já existe na sala!"));
                             houveErro = true;
-                            codErro = 3;
                             break;
                         }
                     }
                 }
                 oos.flush();
-                if (houveErro)
-                    System.out.println("Deu erro. Codigo: " + codErro);
             }
-            System.out.println("Tudo certo, vai mandar ok");
             oos.writeObject("ok");
             oos.flush();
-            System.out.println("Mandou.");
             this.usuario = new Usuario(this.conexao, oos, ois, nomeEscolhido, salaEscolhida);
 
             System.out.println("Usuario " + nomeEscolhido + " criado. Iniciando o loop com " + us.size() + " usuario(s) ja conectados.");

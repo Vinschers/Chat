@@ -51,9 +51,13 @@ public class Usuario implements Cloneable, Serializable
     }
     public void envia(Enviavel x, String usuarioDest) throws Exception
     {
+        System.out.println(this.nickname + " mandando " + x.getClass() + " para " + usuarioDest);
         Usuario destino = this.sala.getUsuario(usuarioDest);
-        x.setUsuario(this);
+        System.out.println("Achou o destino");
+        x.setUsuario(this.nickname);
+        System.out.println("Deu setUsuario no Enviavel. Esperando o destino receber");
         destino.recebe(x);
+        System.out.println("Recebeu");
     }
     public void fechaTudo() throws IOException
     {

@@ -1,19 +1,32 @@
+import java.util.*;
+
 public class SalasDisponiveis extends Enviavel
 {
-    protected Salas salas;
+    protected ArrayList<SalaSerializable> salas;
+    
     public SalasDisponiveis(Salas s) throws Exception
     {
+        try
+        {
         if (s == null)
             throw new Exception("Salas vazias");
-        this.salas = new Salas(s);
+
+        ArrayList<Sala> salasNaoSeralizable = s.getSalas();
+
+        this.salas = new ArrayList<SalaSerializable>();
+
+        for (int i = 0; i < salasNaoSeralizable.size(); i++)
+            this.salas.add(new SalaSerializable(salasNaoSeralizable.get(i)));
+        }
+        catch (Exception ex) {System.out.println("Erro no construtor: " + ex.getMessage());}
     }
-    public Salas getSalas()
+    public ArrayList<SalaSerializable> getSalas()
     {
         return this.salas;
     }
     public String toString()
     {
-        return this.salas.toString();
+        return this.salas.size() + " salas disponiveis.";
     }
     public int hashCode()
     {

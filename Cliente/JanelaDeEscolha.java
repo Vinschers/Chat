@@ -148,15 +148,19 @@ public class JanelaDeEscolha extends JFrame {
 
 					ObjectOutputStream transmissor = new ObjectOutputStream(conexao.getOutputStream());
 
+					String nomeSala = cbxSalas.getSelectedItem().toString().split("\"")[1];
+
 					transmissor.writeObject(txtNome.getText());
-					transmissor.writeObject(cbxSalas.getSelectedItem().toString());
+					transmissor.writeObject(nomeSala);
 					transmissor.flush();
 					
-					if (recebido instanceof AvisoErro)
-						JOptionPane.showMessageDialog(null, ((AvisoErro)recebido).toString());
+					recebido = receptor.readObject();
+
+					if (!recebido.equals("ok"))
+						JOptionPane.showMessageDialog(null, recebido.toString());
 					else
 					{		
-						chat = new Chat(este, cbxSalas.getSelectedItem().toString().split("\"")[1], transmissor);
+						chat = new Chat(este, nomeSala, transmissor);
 						chat.setVisible(true);
 						setVisible(false);
 					}
@@ -194,7 +198,9 @@ public class JanelaDeEscolha extends JFrame {
 						receptor = new ObjectInputStream(conexao.getInputStream());
 
 						SalasDisponiveis recebido = (SalasDisponiveis) receptor.readObject();
-						ArrayList<Sala> salasDisponiveis = recebido.getSalas().getSalas();
+						ArrayList<SalaSerializable> salasDisponiveis = recebido.getSalas();
+
+						JOptionPane.showMessageDialog(null, "Salas disponiveis obtidas: " + salasDisponiveis.toString());
 						for (int i = 0; i < salasDisponiveis.size(); i++)
 							cbxSalas.addItem(salasDisponiveis.get(i).toString());
 					}
