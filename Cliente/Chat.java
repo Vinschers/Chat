@@ -136,6 +136,7 @@ public class Chat extends JFrame {
 		painelMensagens = new JTextPane();
 		painelMensagens.setEditable(false);
 		painelMensagens.setContentType("text/html");
+		painelMensagens.setFont(new Font("Century Gothic", Font.PLAIN, 18));
 		painelMensagens.setText("<html><body></body></html>");
 		panel_2.add(painelMensagens, BorderLayout.CENTER);
 		
@@ -163,7 +164,7 @@ public class Chat extends JFrame {
 	}
 	public void receber(Enviavel recebido)
 	{
-		painelMensagens.setText("<html><body>" + painelMensagens.getText().substring(12, painelMensagens.getText().length() - 10) + recebido.toString() + "</body></html><br>");
+		painelMensagens.setText("<html><body>" + painelMensagens.getText().substring(15, painelMensagens.getText().length() - 17) + recebido.toString() + "</body></html><br>");
 		if (recebido instanceof AvisoDeEntradaNaSala)
 		{
 			modelo.addElement(recebido.getUsuario());

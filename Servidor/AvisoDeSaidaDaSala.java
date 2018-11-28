@@ -6,7 +6,7 @@ public class AvisoDeSaidaDaSala extends Enviavel
     }
     public String toString()
     {
-        return "<center><b><i>" + super.getUsuario() + " saiu da sala</i></b></center>"; 
+        return "<center><h2><i>" + super.getUsuario() + " saiu da sala</i></h2></center>"; 
     }
     public int hashCode()
     {
