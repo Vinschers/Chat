@@ -105,18 +105,14 @@ public class CuidadoraDeUsuario extends Thread
             Enviavel recebido = null;
             Mensagem aux;
             ArrayList<String> dest;
-
             do
             {
                 recebido = (Enviavel)ois.readObject();
-                System.out.println(recebido);
                 if (recebido instanceof Mensagem)
                 {
                     System.out.println("Ola, passou do if");
                     aux = (Mensagem)recebido;
-                    System.out.println("Atribuiu a aux");      
                     dest = aux.getDestinatarios();
-                    System.out.println("Mensagem: " + aux.toString() + "; " + dest.size());
                     for (int i = 0; i < dest.size(); i++)
                         this.usuario.envia(aux, dest.get(i));
                 }
@@ -130,10 +126,7 @@ public class CuidadoraDeUsuario extends Thread
             salaEscolhida.removerUsuario(this.usuario);
             us = salaEscolhida.getUsuarios();
             for (int i = 0; i < us.size(); i++)
-            {
                 this.usuario.envia(new AvisoDeSaidaDaSala(), us.get(i).getNickname());
-                us.get(i).envia(new AvisoDeSaidaDaSala(), this.usuario.getNickname());
-            }
             this.usuario.fechaTudo();
         }
         catch(Exception e){}

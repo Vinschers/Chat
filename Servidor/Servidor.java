@@ -7,7 +7,7 @@ public class Servidor
         try
         {
             Salas salas = new Salas();
-            salas.adicionarSala(new Sala("teste", 2));
+            salas.adicionarSala(new Sala("teste", 20));
             // Adicionar salas do banco de dados
 
             ServerSocket pedido = new ServerSocket(12345);
