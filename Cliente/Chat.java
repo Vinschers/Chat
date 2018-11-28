@@ -29,7 +29,7 @@ public class Chat extends JFrame {
 	protected JPanel contentPane;
 	protected JTextField txtMensagem;
 	protected JComboBox cbxDestino;
-	protected JTextArea textArea;
+	protected JTextPane painelMensagens;
 	protected DefaultListModel modelo;
 
 	/**
@@ -45,6 +45,19 @@ public class Chat extends JFrame {
 		contentPane.setBorder(new EmptyBorder(4, 4, 4, 4));
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
+
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent windowEvent) {
+				try
+				{
+					transmissor.writeObject(new PedidoParaSairDaSala());
+					transmissor.flush();
+					escolha.setVisible(true);
+				}
+				catch (Exception ex) {JOptionPane.showMessageDialog(null, ex.getMessage());}
+			}
+		});
 		
 		JPanel panel = new JPanel();
 		panel.setForeground(Color.WHITE);
@@ -76,7 +89,6 @@ public class Chat extends JFrame {
 					destino.add(nomeUsuario);
 
 					Mensagem novaMensagem = new Mensagem(txtMensagem.getText(), destino);
-					JOptionPane.showMessageDialog(null, novaMensagem.getDestinatarios().size());
 					transmissor.writeObject(novaMensagem);
 					transmissor.flush();
 				}
@@ -121,9 +133,11 @@ public class Chat extends JFrame {
 		JLabel label_2 = new JLabel("     ");
 		panel_2.add(label_2, BorderLayout.EAST);
 		
-		textArea = new JTextArea();
-		textArea.setEditable(false);
-		panel_2.add(textArea, BorderLayout.CENTER);
+		painelMensagens = new JTextPane();
+		painelMensagens.setEditable(false);
+		painelMensagens.setContentType("text/html");
+		painelMensagens.setText("<html><body></body></html>");
+		panel_2.add(painelMensagens, BorderLayout.CENTER);
 		
 		JPanel panel_3 = new JPanel();
 		panel_3.setBackground(Color.DARK_GRAY);
@@ -149,7 +163,7 @@ public class Chat extends JFrame {
 	}
 	public void receber(Enviavel recebido)
 	{
-		textArea.setText(textArea.getText() + recebido.toString() + "\n");
+		painelMensagens.setText("<html><body>" + painelMensagens.getText().substring(12, painelMensagens.getText().length() - 10) + recebido.toString() + "</body></html><br>");
 		if (recebido instanceof AvisoDeEntradaNaSala)
 		{
 			modelo.addElement(recebido.getUsuario());
