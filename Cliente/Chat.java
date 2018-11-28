@@ -35,7 +35,7 @@ public class Chat extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public Chat(JanelaDeEscolha escolha, String nomeSala, ObjectOutputStream transmissor) {
+	public Chat(JanelaDeEscolha escolha, String nomeSala, String nomeUsuario, ObjectOutputStream transmissor) {
 		setTitle("Chat - Sala conectada: " + nomeSala);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 910, 525);
@@ -73,6 +73,9 @@ public class Chat extends JFrame {
 					else
 						destino.add(cbxDestino.getSelectedItem().toString());
 
+					destino.add(nomeUsuario);
+
+					Mensagem novaMensagem = new Mensagem(txtMensagem.getText(), destino);
 					JOptionPane.showMessageDialog(null, novaMensagem.getDestinatarios().size());
 					transmissor.writeObject(novaMensagem);
 					transmissor.flush();
@@ -101,6 +104,8 @@ public class Chat extends JFrame {
 		listUsuarios.setVisibleRowCount(15);
 		listUsuarios.setBackground(Color.LIGHT_GRAY);
 		panel_1.add(listUsuarios, BorderLayout.CENTER);
+
+		modelo.addElement(nomeUsuario);
 		
 		JPanel panel_2 = new JPanel();
 		panel_2.setBackground(Color.DARK_GRAY);

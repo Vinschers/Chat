@@ -160,7 +160,7 @@ public class JanelaDeEscolha extends JFrame {
 						JOptionPane.showMessageDialog(null, recebido.toString());
 					else
 					{		
-						chat = new Chat(este, nomeSala, transmissor);
+						chat = new Chat(este, nomeSala, txtNome.getText(), transmissor);
 						chat.setVisible(true);
 						setVisible(false);
 					}
