@@ -171,8 +171,11 @@ public class Chat extends JFrame {
 	}
 	public void receber(Enviavel recebido)
 	{
+		String texto = recebido.toString();
+		if (recebido.getUsuario().equals(nomeUsuario) && recebido instanceof Mensagem)
+			texto =  "<span style=\"text-align: right\">" + texto + "</span>";
 		painelMensagens.setText("<html><body>" + painelMensagens.getText().substring(15, painelMensagens.getText().length() - 17) + recebido.toString() + "</body></html><br>");
-		if (recebido instanceof AvisoDeEntradaNaSala)
+		if (recebido instanceof AvisoDeEntradaNaSala && !recebido.getUsuario().equals(nomeUsuario))
 		{
 			modelo.addElement(recebido.getUsuario());
 			cbxDestino.addItem(recebido.getUsuario());

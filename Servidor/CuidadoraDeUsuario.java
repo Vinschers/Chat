@@ -86,10 +86,11 @@ public class CuidadoraDeUsuario extends Thread
             oos.flush();
             this.usuario = new Usuario(this.conexao, oos, ois, nomeEscolhido, salaEscolhida);
             salaEscolhida.adicionarUsuario(this.usuario);
-            for (int i = 0; i < us.size() - 1; i++)
+            for (int i = 0; i < us.size(); i++)
             {
                 this.usuario.envia(new AvisoDeEntradaNaSala(), us.get(i).getNickname());
-                us.get(i).envia(new AvisoDeEntradaNaSala(), this.usuario.getNickname());
+                if (i != us.size() - 1)
+                    s.get(i).envia(new AvisoDeEntradaNaSala(), this.usuario.getNickname());
             }
             Enviavel recebido = null;
             Mensagem aux;
