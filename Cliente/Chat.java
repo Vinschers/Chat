@@ -189,6 +189,8 @@ public class Chat extends JFrame {
 				texto = ((Mensagem)recebido).getMensagem() + "<br>";
 			ultimoUsuario = recebido.getUsuario();
 		}
+		else
+			ultimoUsuario = null;
 		painelMensagens.setText("<html><body>" + painelMensagens.getText().substring(15, painelMensagens.getText().length() - 17) + "<font face=\"Century Gothic\">" + texto + "</font></body></html>");
 		if (recebido instanceof AvisoDeEntradaNaSala && !recebido.getUsuario().equals(this.nomeUsuario))
 		{
