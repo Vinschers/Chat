@@ -12,9 +12,42 @@ public class Mensagem extends Enviavel
             throw new Exception("Mensagem inválida!");
         if (dest == null)
             throw new Exception("Destinatário inválido");
-            
         this.mensagem = msg.replace("<", "&lt;").replace(">", "&gt;").replace(" ", "&nbsp;");
+
+        ArrayList<Integer> indicesAsterisco = new ArrayList<Integer>();
+        ArrayList<Integer> indicesTil = new ArrayList<Integer>();
+        ArrayList<Integer> indicesUnderline = new ArrayList<Integer>();
+        for (int i = 0; i < this.mensagem.length(); i++)
+        {
+            switch (this.mensagem.charAt(i))
+            {
+                case '*':
+                    indicesAsterisco.add(i);
+                    break;
+                case '~':
+                    indicesTil.add(i);
+                    break;
+                case '_':
+                    indicesUnderline.add(i);
+                    break;
+            }
+        }
+
+        this.mensagem = this.substituirPares(this.mensagem, indicesAsterisco, 1, "<b>", "</b>");
+        this.mensagem = this.substituirPares(this.mensagem, indicesTil, 1, "<strike>", "</strike>");
+        this.mensagem = this.substituirPares(this.mensagem, indicesUnderline, 1, "<i>", "</i>");
+
         this.destinatarios = dest;
+    }
+
+    protected String substituirPares(String string, ArrayList<Integer> indices, int tamanhoValorASerSubstituido, String primeiroValor, String ultimoValor)
+    {
+        for (int i = 0; i < (indices.size()%2==0?indices.size():indices.size() -1); i += 2)
+        {
+            string = string.substring(0, indices.get(i)) + primeiroValor + string.substring(indices.get(i) + tamanhoValorASerSubstituido);
+            string = string.substring(0, indices.get(i + 1) + tamanhoValorASerSubstituido) + ultimoValor + string.substring(indices.get(i) + tamanhoValorASerSubstituido);
+        }
+        return string;
     }
     public String getMensagem()
     {
