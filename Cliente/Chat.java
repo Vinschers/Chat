@@ -30,6 +30,7 @@ public class Chat extends JFrame {
 	protected JComboBox cbxDestino;
 	protected JTextPane painelMensagens;
 	protected DefaultListModel modelo;
+	protected String nomeUsuario;
 
 	/**
 	 * Create the frame.
@@ -44,6 +45,8 @@ public class Chat extends JFrame {
 		contentPane.setBorder(new EmptyBorder(4, 4, 4, 4));
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
+
+		this.nomeUsuario = nomeUsuario;
 
 		addWindowListener(new WindowAdapter() {
 			@Override
@@ -169,13 +172,21 @@ public class Chat extends JFrame {
 		btnSairDaSala.setFont(new Font("Century Gothic", Font.PLAIN, 18));
 		panel_3.add(btnSairDaSala, BorderLayout.EAST);
 	}
+
+	protected String ultimoUsuario = null;
 	public void receber(Enviavel recebido)
 	{
 		String texto = recebido.toString();
-		if (recebido.getUsuario().equals(nomeUsuario) && recebido instanceof Mensagem)
-			texto =  "<span style=\"text-align: right\">" + texto + "</span>";
+		if (recebido instanceof Mensagem)
+		{
+			if (ultimoUsuario != null && ultimoUsuario.equals(recebido.getUsuario()))
+				texto = ((Mensagem)recebido).getMensagem();
+			if (recebido.getUsuario().equals(this.nomeUsuario))
+				texto =  "<span style=\"text-align: right\">" + texto + "</span>";
+			ultimoUsuario = recebido.getUsuario();
+		}
 		painelMensagens.setText("<html><body>" + painelMensagens.getText().substring(15, painelMensagens.getText().length() - 17) + recebido.toString() + "</body></html><br>");
-		if (recebido instanceof AvisoDeEntradaNaSala && !recebido.getUsuario().equals(nomeUsuario))
+		if (recebido instanceof AvisoDeEntradaNaSala && !recebido.getUsuario().equals(this.nomeUsuario))
 		{
 			modelo.addElement(recebido.getUsuario());
 			cbxDestino.addItem(recebido.getUsuario());
