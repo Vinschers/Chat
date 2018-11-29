@@ -99,7 +99,6 @@ public class CuidadoraDeUsuario extends Thread
                 recebido = (Enviavel)ois.readObject();
                 if (recebido instanceof Mensagem)
                 {
-                    System.out.println("Ola, passou do if");
                     aux = (Mensagem)recebido;
                     dest = aux.getDestinatarios();
                     for (int i = 0; i < dest.size(); i++)

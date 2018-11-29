@@ -1,4 +1,4 @@
-package bd.core;
+package bd;
 
 import java.util.ArrayList;
 import java.sql.Connection;
@@ -364,7 +364,7 @@ public class MeuStatement implements Statement
         return ret;
     }
 
-    // O metodo compareTo, que é, por vezes, obrigatorio, nao esta
+    // O metodo compareTo, que ï¿½, por vezes, obrigatorio, nao esta
     // sendo implementado porque, tendo dois objetos instanciados
     // desta classe, nao faria sentido pensar em qual deles eh o
     // maior ou em qual deles eh o menor.

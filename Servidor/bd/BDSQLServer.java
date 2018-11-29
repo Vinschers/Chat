@@ -1,8 +1,5 @@
 package bd;
 
-import bd.core.*;
-import bd.daos.*;
-
 public class BDSQLServer
 {
     public static final MeuPreparedStatement COMANDO;
@@ -16,8 +13,8 @@ public class BDSQLServer
             comando =
             new MeuPreparedStatement (
             "com.microsoft.sqlserver.jdbc.SQLServerDriver",
-            "jdbc:sqlserver://SERVIDOR:1433;databasename=BD",
-            "USUARIO", "SENHA");
+            "jdbc:sqlserver://regulus.cotuca.unicamp.br:1433;databasename=BD18179",
+            "BD18179", "BD18179");
         }
         catch (Exception erro)
         {

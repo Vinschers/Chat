@@ -33,7 +33,7 @@ public class Mensagem extends Enviavel
 
     public String toString()
     {
-        return super.getHora() + super.getUsuario() + ": " + this.mensagem;
+        return "<i>" + super.getHora() + "</i> <b>" + super.getUsuario() + ":</b> " + this.mensagem + "<br>";
     }
 
     public int hashCode()

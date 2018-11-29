@@ -1,6 +1,6 @@
-package bd.dbos;
+package bd;
 
-public class Sala implements Cloneable
+public class SalaBD implements Cloneable
 {
     private String nome;
     private int  capacidade;
@@ -15,15 +15,10 @@ public class Sala implements Cloneable
 
     public void setCapacidade (int capacidade) throws Exception
     {
-        if (preco <= 0)
-            throw new Exception ("Preco invalido");
+        if (capacidade <= 0)
+            throw new Exception ("Capacidade invalida");
 
-        this.preco = preco;
-    }
-
-    public int getCodigo ()
-    {
-        return this.codigo;
+        this.capacidade = capacidade;
     }
 
     public String getNome ()
@@ -31,14 +26,13 @@ public class Sala implements Cloneable
         return this.nome;
     }
 
-    public float getCapacidade ()
+    public int getCapacidade ()
     {
         return this.capacidade;
     }
 
-    public Sala (int codigo, String nome, int capacidade) throws Exception
+    public SalaBD (String nome, int capacidade) throws Exception
     {
-        this.setCodigo     (codigo);
         this.setNome       (nome);
         this.setCapacidade (capacidade);
     }
@@ -47,7 +41,6 @@ public class Sala implements Cloneable
     {
         String ret="";
 
-        ret+="Codigo....: "+this.codigo+"\n";
         ret+="Nome......: "+this.nome  +"\n";
         ret+="Capacidade: "+this.capacidade;
 
@@ -62,13 +55,10 @@ public class Sala implements Cloneable
         if (obj==null)
             return false;
 
-        if (!(obj instanceof Sala))
+        if (!(obj instanceof SalaBD))
             return false;
 
-        Sala liv = (Sala)obj;
-
-        if (this.codigo!=liv.codigo)
-            return false;
+        SalaBD liv = (SalaBD)obj;
 
         if (this.nome.equals(liv.nome))
             return false;
@@ -81,9 +71,8 @@ public class Sala implements Cloneable
 
     public int hashCode ()
     {
-        String ret=666;
+        int ret=666;
 
-        ret = 7*ret + new Integer(this.codigo).hashCode();
         ret = 7*ret + this.nome.hashCode();
         ret = 7*ret + new Integer(this.capacidade).hashCode();
 
@@ -91,20 +80,19 @@ public class Sala implements Cloneable
     }
 
 
-    public Sala (Sala modelo) throws Exception
+    public SalaBD (SalaBD modelo) throws Exception
     {
-        this.codigo      = modelo.codigo; // nao clono, pq nao eh objeto
         this.nome        = modelo.nome;   // nao clono, pq nao eh clonavel
         this.capacidade  = modelo.capacidade;  // nao clono, pq nao eh objeto
     }
 
     public Object clone ()
     {
-        Sala ret = null;
+        SalaBD ret = null;
 
         try
         {
-            ret = new Sala (this);
+            ret = new SalaBD (this);
         }
         catch (Exception erro)
         {} // nao trato, pq this nunca � null e construtor de

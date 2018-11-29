@@ -16,8 +16,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
@@ -88,15 +87,23 @@ public class Chat extends JFrame {
 
 					destino.add(nomeUsuario);
 
-					Mensagem novaMensagem = new Mensagem(txtMensagem.getText(), destino);
-					transmissor.writeObject(novaMensagem);
+					transmissor.writeObject(new Mensagem(txtMensagem.getText(), destino));
 					transmissor.flush();
+
+					txtMensagem.setText("");
 				}
 				catch (Exception ex) {JOptionPane.showMessageDialog(null, ex.getMessage());}
 			}
 		});
 		btnEnviar.setFont(new Font("Century Gothic", Font.PLAIN, 18));
 		panel.add(btnEnviar, BorderLayout.EAST);
+
+		txtMensagem.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent evt) {
+				if (evt.getKeyCode() == KeyEvent.VK_ENTER)
+					btnEnviar.doClick();
+            }
+        });
 		
 		JPanel panel_1 = new JPanel();
 		panel_1.setForeground(Color.WHITE);
