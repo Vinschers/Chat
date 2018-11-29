@@ -89,8 +89,8 @@ public class CuidadoraDeUsuario extends Thread
             for (int i = 0; i < us.size(); i++)
             {
                 this.usuario.envia(new AvisoDeEntradaNaSala(), us.get(i).getNickname());
-                if (i != us.size() - 1)
-                    s.get(i).envia(new AvisoDeEntradaNaSala(), this.usuario.getNickname());
+                if (this.usuario != us.get(i))
+                    us.get(i).envia(new AvisoDeEntradaNaSala(), this.usuario.getNickname());
             }
             Enviavel recebido = null;
             Mensagem aux;
