@@ -180,10 +180,10 @@ public class Chat extends JFrame {
 		if (recebido instanceof Mensagem)
 		{
 			if (ultimoUsuario != null && ultimoUsuario.equals(recebido.getUsuario()))
-				texto = ((Mensagem)recebido).getMensagem();
+				texto = ((Mensagem)recebido).getMensagem() + "<br>";
 			ultimoUsuario = recebido.getUsuario();
 		}
-		painelMensagens.setText("<html><body>" + painelMensagens.getText().substring(15, painelMensagens.getText().length() - 17) + texto + "<br></body></html>");
+		painelMensagens.setText("<html><body>" + painelMensagens.getText().substring(15, painelMensagens.getText().length() - 17) + texto + "</body></html>");
 		if (recebido instanceof AvisoDeEntradaNaSala && !recebido.getUsuario().equals(this.nomeUsuario))
 		{
 			modelo.addElement(recebido.getUsuario());
