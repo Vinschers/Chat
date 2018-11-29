@@ -10,12 +10,16 @@ import javax.swing.AbstractListModel;
 import javax.swing.JFormattedTextField;
 import javax.swing.JTextArea;
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
 import java.awt.Font;
+import java.awt.Rectangle;
+
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -29,6 +33,7 @@ public class Chat extends JFrame {
 	protected JTextField txtMensagem;
 	protected JComboBox cbxDestino;
 	protected JTextPane painelMensagens;
+	protected JScrollPane scrollPane;
 	protected DefaultListModel modelo;
 	protected String nomeUsuario;
 
@@ -148,7 +153,8 @@ public class Chat extends JFrame {
 		painelMensagens.setContentType("text/html");
 		painelMensagens.setFont(new Font("Century Gothic", Font.PLAIN, 18));
 		painelMensagens.setText("<html><body></body></html>");
-		panel_2.add(painelMensagens, BorderLayout.CENTER);
+		scrollPane = new JScrollPane(painelMensagens);
+		panel_2.add(scrollPane, BorderLayout.CENTER);
 		
 		JPanel panel_3 = new JPanel();
 		panel_3.setBackground(Color.DARK_GRAY);
@@ -198,5 +204,15 @@ public class Chat extends JFrame {
 					modelo.remove(i);
 				}
 		}
+		JScrollBar verticalBar = scrollPane.getVerticalScrollBar();
+		AdjustmentListener downScroller = new AdjustmentListener() {
+			@Override
+			public void adjustmentValueChanged(AdjustmentEvent e) {
+				Adjustable adjustable = e.getAdjustable();
+				adjustable.setValue(adjustable.getMaximum());
+				verticalBar.removeAdjustmentListener(this);
+			}
+		};
+		verticalBar.addAdjustmentListener(downScroller);
 	}
 }

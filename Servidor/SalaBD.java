@@ -1,4 +1,4 @@
-package bd;
+//package bd;
 
 public class SalaBD implements Cloneable
 {

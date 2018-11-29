@@ -1,4 +1,4 @@
-package bd;
+//package bd;
 
 public class BDSQLServer
 {
@@ -18,7 +18,7 @@ public class BDSQLServer
         }
         catch (Exception erro)
         {
-            System.err.println ("Problemas de conexao com o BD");
+            System.err.println (erro.getMessage());
             System.exit(0); // aborta o programa
         }
         

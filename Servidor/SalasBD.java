@@ -1,4 +1,4 @@
-package bd;
+//package bd;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ public class SalasBD
             while (!resultado.isLast())
             {
                 resultado.next();
-                salas.add(new SalaBD(resultado.getString(1), resultado.getInt(2)));
+                salas.add(new SalaBD(resultado.getString("Nome"), resultado.getInt("Capacidade")));
             }
         }
         catch (SQLException erro)
