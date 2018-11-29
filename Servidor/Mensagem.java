@@ -12,7 +12,8 @@ public class Mensagem extends Enviavel
             throw new Exception("Mensagem inválida!");
         if (dest == null)
             throw new Exception("Destinatário inválido");
-        this.mensagem = msg.replace("<", "&lt;").replace(">", "&gt;").replace(" ", "&nbsp;");
+
+        this.mensagem = msg.replace("<", "&lt;").replace(">", "&gt;");
 
         ArrayList<Integer> indicesAsterisco = new ArrayList<Integer>();
         ArrayList<Integer> indicesTil = new ArrayList<Integer>();
@@ -37,6 +38,8 @@ public class Mensagem extends Enviavel
         this.mensagem = this.substituirPares(this.mensagem, indicesTil, 1, "<strike>", "</strike>");
         this.mensagem = this.substituirPares(this.mensagem, indicesUnderline, 1, "<i>", "</i>");
 
+        this.mensagem = this.mensagem.replace(" ", "&nbsp;");
+
         this.destinatarios = dest;
     }
 
@@ -45,7 +48,7 @@ public class Mensagem extends Enviavel
         for (int i = 0; i < (indices.size()%2==0?indices.size():indices.size() -1); i += 2)
         {
             string = string.substring(0, indices.get(i)) + primeiroValor + string.substring(indices.get(i) + tamanhoValorASerSubstituido);
-            string = string.substring(0, indices.get(i + 1) + tamanhoValorASerSubstituido) + ultimoValor + string.substring(indices.get(i) + tamanhoValorASerSubstituido);
+            string = string.substring(0, indices.get(i + 1) + primeiroValor.length() - tamanhoValorASerSubstituido) + ultimoValor + string.substring(indices.get(i + 1) + primeiroValor.length());
         }
         return string;
     }
@@ -67,7 +70,7 @@ public class Mensagem extends Enviavel
 
     public String toString()
     {
-        return "<i>" + super.getHora() + "</i> <b>" + super.getUsuario() + ":</b> " + this.mensagem + "<br>";
+        return "<i>" + super.getHora() + "</i> <b>" + super.getUsuario() + ":</b> " + this.mensagem + "<br></font>";
     }
 
     public int hashCode()

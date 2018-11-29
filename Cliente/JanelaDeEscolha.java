@@ -233,9 +233,7 @@ public class JanelaDeEscolha extends JFrame {
 	{
 		if (chat != null)
 		{
-			System.out.println("Chat nao e mais nulo");
 			Enviavel recebido = (Enviavel) receptor.readObject();
-			System.out.println("Recebeu");
 			chat.receber(recebido);
 		}
 	}
