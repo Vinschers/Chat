@@ -12,7 +12,8 @@ public class Mensagem extends Enviavel
             throw new Exception("Mensagem inválida!");
         if (dest == null)
             throw new Exception("Destinatário inválido");
-        this.mensagem = msg;
+            
+        this.mensagem = msg.replace("<", "&lt;").replace(">", "&gt;").replace(" ", "&nbsp;");
         this.destinatarios = dest;
     }
     public String getMensagem()
