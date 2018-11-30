@@ -57,7 +57,7 @@ public class Chat extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 910, 525);
 		contentPane = new JPanel();
-		contentPane.setBackground(Color.DARK_GRAY);
+		contentPane.setBackground(new Color(30, 30, 30));
 		contentPane.setForeground(Color.WHITE);
 		contentPane.setBorder(new EmptyBorder(4, 4, 4, 4));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -82,7 +82,7 @@ public class Chat extends JFrame {
 		
 		JPanel panel = new JPanel();
 		panel.setForeground(Color.WHITE);
-		panel.setBackground(Color.DARK_GRAY);
+		panel.setBackground(new Color(30, 30, 30));
 		contentPane.add(panel, BorderLayout.SOUTH);
 		panel.setLayout(new BorderLayout(0, 0));
 		
@@ -129,7 +129,7 @@ public class Chat extends JFrame {
 		
 		JPanel panel_1 = new JPanel();
 		panel_1.setForeground(Color.WHITE);
-		panel_1.setBackground(Color.DARK_GRAY);
+		panel_1.setBackground(new Color(30, 30, 30));
 		contentPane.add(panel_1, BorderLayout.WEST);
 		panel_1.setLayout(new BorderLayout(0, 0));
 		
@@ -149,7 +149,7 @@ public class Chat extends JFrame {
 		modelo.addElement(nomeUsuario);
 		
 		JPanel panel_2 = new JPanel();
-		panel_2.setBackground(Color.DARK_GRAY);
+		panel_2.setBackground(new Color(30, 30, 30));
 		contentPane.add(panel_2, BorderLayout.CENTER);
 		panel_2.setLayout(new BorderLayout(0, 0));
 		
@@ -165,9 +165,11 @@ public class Chat extends JFrame {
 		this.folhaDeEstilo = new StyleSheet();
 		this.editor = new HTMLEditorKit();
 
-		this.folhaDeEstilo.addRule("body {background-color: \"#d7d0d6\"; font-size: 14pt;}");
-		this.folhaDeEstilo.addRule("div {display: inline} ");
-		this.folhaDeEstilo.addRule("center {text-align: center; font-weight: bold; font-size: 20pt; margin-bottom: 5px; margin-top: 5px;}");
+		this.folhaDeEstilo.addRule("body {background-color: #004b66; font-size: 16pt; color: white;}");
+		this.folhaDeEstilo.addRule(".proprio, .outro {display: inline-block; padding: 2px; background-color: #00384c;} ");
+		this.folhaDeEstilo.addRule(".proprio {text-align: right; position: absolute; right: 5px;} ");
+		this.folhaDeEstilo.addRule(".espacar {display: block; height: 0px; padding: 0px; margin-top: -3px; margin-bottom: -3px;}");
+		this.folhaDeEstilo.addRule("center {text-align: center; font-weight: bold; font-size: 22pt; margin-bottom: 5px; margin-top: 5px;}");
 		this.folhaDeEstilo.addRule(".negrito {font-weight: bold}");
 		this.editor.setStyleSheet(this.folhaDeEstilo);
 		this.documento = (HTMLDocument) this.editor.createDefaultDocument();
@@ -178,14 +180,14 @@ public class Chat extends JFrame {
 		painelMensagens.setEditorKit(this.editor);
 		//painelMensagens.setDocument(this.documento);
 		painelMensagens.setContentType("text/html");
-		painelMensagens.setBackground(Color.getColor("#d7d0d6"));
+		painelMensagens.setBackground(Color.getColor("#004b66"));
 		painelMensagens.setFont(new Font("Century Gothic", Font.PLAIN, 18));
-		painelMensagens.setText("<html><body bgcolor=\"#d7d0d6\"></body></html>");
+		painelMensagens.setText("<html><body bgcolor=\"#004b66\"></body></html>");
 		scrollPane = new JScrollPane(painelMensagens);
 		panel_2.add(scrollPane, BorderLayout.CENTER);
 			
 		JPanel panel_3 = new JPanel();
-		panel_3.setBackground(Color.DARK_GRAY);
+		panel_3.setBackground(new Color(30, 30, 30));
 		panel_2.add(panel_3, BorderLayout.NORTH);
 		panel_3.setLayout(new BorderLayout(0, 0));
 		
@@ -214,16 +216,18 @@ public class Chat extends JFrame {
 		escolha.morra();
 
 		JanelaDeEscolha novaJanela = new JanelaDeEscolha();
-		novaJanela.setDados(ip, nomeSala, nomeUsuario);
+		//novaJanela.setDados(ip, nomeSala, nomeUsuario);
 		novaJanela.setVisible(true);
+		dispose();
 	}
 
 	protected String ultimoUsuario = null;
+	protected boolean ultimoRecebidoFoiMensagem = false;
 	public void receber(Enviavel recebido)
 	{
 		String texto = recebido.toString();
-		String backcolor = "#d7d0d6";
-		boolean recebidoEhUltimoUsuario = recebido.equals(ultimoUsuario);
+		String classeEmissor = null;
+		boolean recebidoEhUltimoUsuario = recebido.getUsuario().equals(ultimoUsuario);
 
 		if (recebido instanceof Mensagem)
 		{
@@ -232,14 +236,15 @@ public class Chat extends JFrame {
 			ultimoUsuario = recebido.getUsuario();
 
 			if (ultimoUsuario.equals(this.nomeUsuario))
-				backcolor = "#e1fec6";
+				classeEmissor = "proprio";
 			else
-				backcolor = "white";
+				classeEmissor = "outro";
 		}
 		else
 			ultimoUsuario = null;
 
-		painelMensagens.setText("<html><body bgcolor=\"#d7d0d6\">" + painelMensagens.getText().substring(57, painelMensagens.getText().length() - (recebidoEhUltimoUsuario && painelMensagens.getText().length() > 57?23:17)) + (!recebidoEhUltimoUsuario && recebido instanceof Mensagem ?"<div bgcolor=\"" + backcolor + "\">":"") + "<font face=\"Century Gothic\">" + texto + "</font>" + (recebido instanceof Mensagem?"</div>":"") + "</body></html>");
+		//System.out.println((recebido instanceof Mensagem?(recebidoEhUltimoUsuario?"":"<div class=\"espacar\"></div>") + "<div id=\"msg\" class=\"" + classeEmissor + "\">":"") + "<font face=\"Century Gothic\">" + texto + "</font>" + (recebido instanceof Mensagem?"</div>":""));
+		painelMensagens.setText("<html><body bgcolor=\"#004b66\">" + painelMensagens.getText().substring(57, painelMensagens.getText().length() - (recebidoEhUltimoUsuario && painelMensagens.getText().length() > 57?17:17)) + (recebido instanceof Mensagem?(recebidoEhUltimoUsuario || !ultimoRecebidoFoiMensagem?"":"<div class=\"espacar\"></div>") + "<div class=\"" + classeEmissor + "\">":"") + "<font face=\"Century Gothic\">" + texto + "</font>" + (recebido instanceof Mensagem?"</div>":"") + "</body></html>");
 		if (recebido instanceof AvisoDeEntradaNaSala && !recebido.getUsuario().equals(this.nomeUsuario))
 		{
 			modelo.addElement(recebido.getUsuario());
@@ -264,5 +269,7 @@ public class Chat extends JFrame {
 			}
 		};
 		verticalBar.addAdjustmentListener(downScroller);
+
+		ultimoRecebidoFoiMensagem = recebido instanceof Mensagem;
 	}
 }
