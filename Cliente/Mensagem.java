@@ -85,6 +85,7 @@ public class Mensagem extends Enviavel
 
     public String toString()
     {
+        String ret;
         return "<i>" + super.getHora() + "</i> <span class=\"negrito\">" + super.getUsuario() + ":</span> " + this.mensagem + "<br>";
     }
 

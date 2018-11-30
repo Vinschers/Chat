@@ -165,11 +165,13 @@ public class Chat extends JFrame {
 		this.folhaDeEstilo = new StyleSheet();
 		this.editor = new HTMLEditorKit();
 
-		this.folhaDeEstilo.addRule("body {background-color: #004b66; font-size: 16pt; color: white;}");
-		this.folhaDeEstilo.addRule(".proprio, .outro {display: inline-block; padding: 2px; background-color: #00384c;} ");
-		this.folhaDeEstilo.addRule(".proprio {text-align: right; position: absolute; right: 5px;} ");
-		this.folhaDeEstilo.addRule(".espacar {display: block; height: 0px; padding: 0px; margin-top: -3px; margin-bottom: -3px;}");
-		this.folhaDeEstilo.addRule("center {text-align: center; font-weight: bold; font-size: 22pt; margin-bottom: 5px; margin-top: 5px;}");
+		this.folhaDeEstilo.addRule("body {background-color: #004b66; font-size: 16pt; color: #004b66;}");
+		this.folhaDeEstilo.addRule(".proprio, .outro {display: inline-block; padding: 2px; background-color: #00384c; color: white; width 100%;} ");
+		this.folhaDeEstilo.addRule(".proprio {text-align: right;} ");
+		this.folhaDeEstilo.addRule(".espaco {font-size: 3pt;}");
+		this.folhaDeEstilo.addRule("body hr{border: none; height: 0px; color: #004b66; background-color: #004b66; opacity: 0; display: hidden;}");
+		this.folhaDeEstilo.addRule("hr {border: none; height: 0px; color: #004b66; background-color: #004b66; opacity: 0; display: hidden;}");
+		this.folhaDeEstilo.addRule("center {text-align: center; font-weight: bold; font-size: 22pt; margin-bottom: 5px; margin-top: 5px; color: white;}");
 		this.folhaDeEstilo.addRule(".negrito {font-weight: bold}");
 		this.editor.setStyleSheet(this.folhaDeEstilo);
 		this.documento = (HTMLDocument) this.editor.createDefaultDocument();
@@ -217,7 +219,7 @@ public class Chat extends JFrame {
 
 		dispose();
 		JanelaDeEscolha novaJanela = new JanelaDeEscolha();
-		// novaJanela.setDados(ip, nomeSala, nomeUsuario);
+		novaJanela.setDados(ip, nomeSala, nomeUsuario);
 		novaJanela.setVisible(true);
 		escolha.morra();
 	}
@@ -245,7 +247,7 @@ public class Chat extends JFrame {
 			ultimoUsuario = null;
 
 		//System.out.println((recebido instanceof Mensagem?(recebidoEhUltimoUsuario?"":"<div class=\"espacar\"></div>") + "<div id=\"msg\" class=\"" + classeEmissor + "\">":"") + "<font face=\"Century Gothic\">" + texto + "</font>" + (recebido instanceof Mensagem?"</div>":""));
-		painelMensagens.setText("<html><body bgcolor=\"#004b66\">" + painelMensagens.getText().substring(57, painelMensagens.getText().length() - (recebidoEhUltimoUsuario && painelMensagens.getText().length() > 57?17:17)) + (recebido instanceof Mensagem?(recebidoEhUltimoUsuario || !ultimoRecebidoFoiMensagem?"":"<div class=\"espacar\"></div>") + "<div class=\"" + classeEmissor + "\">":"") + "<font face=\"Century Gothic\">" + texto + "</font>" + (recebido instanceof Mensagem?"</div>":"") + "</body></html>");
+		painelMensagens.setText("<html><body bgcolor=\"#004b66\">" + painelMensagens.getText().substring(57, painelMensagens.getText().length() - (recebidoEhUltimoUsuario && painelMensagens.getText().length() > 57?17:17)) + (recebido instanceof Mensagem?(recebidoEhUltimoUsuario || !ultimoRecebidoFoiMensagem?"":"<div class=\"espaco\"></div") + "<div class=\"" + classeEmissor + "\">":"") + "<font face=\"Century Gothic\">" + texto + "</font>" + (recebido instanceof Mensagem?"</div>":"") + "</body></html>");
 		if (recebido instanceof AvisoDeEntradaNaSala && !recebido.getUsuario().equals(this.nomeUsuario))
 		{
 			modelo.addElement(recebido.getUsuario());

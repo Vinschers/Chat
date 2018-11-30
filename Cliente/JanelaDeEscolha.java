@@ -42,9 +42,9 @@ public class JanelaDeEscolha extends JFrame {
 	protected boolean estaEmTesteSemConexao = false;
 	
 	protected Socket conexao;
-	protected static ObjectInputStream receptor;
-	protected static Chat chat = null;
-	protected static Receptor receptorClass;
+	protected ObjectInputStream receptor;
+	protected Chat chat = null;
+	protected Receptor receptorClass;
 
 	/**
 	 * Launch the application.
@@ -165,9 +165,9 @@ public class JanelaDeEscolha extends JFrame {
 						chat = new Chat(este, nomeSala, txtNome.getText(), transmissor, txtIP.getText());
 						chat.setVisible(true);
 						setVisible(false);
+						receptorClass = new Receptor(chat, receptor);
+						receptorClass.start();
 					}
-					receptorClass = new Receptor(chat, receptor);
-					receptorClass.start();
 				}
 				catch (Exception ex) {JOptionPane.showMessageDialog(null, "Deu esse erro: " + ex.getMessage());}
 			}
@@ -214,6 +214,7 @@ public class JanelaDeEscolha extends JFrame {
 					cbxSalas.setEnabled(true);
 					lblDigiteSeuNome.setEnabled(true);
 					txtNome.setEnabled(true);
+					btnEntrar.setEnabled(true);
 					
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(null, "Detalhes: " + e.getMessage(), "Erro de conexao", JOptionPane.ERROR_MESSAGE);
