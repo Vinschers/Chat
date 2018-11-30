@@ -19,6 +19,8 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.*;
+import javax.swing.text.Element;
+import javax.swing.text.html.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.ObjectInputStream;
@@ -34,13 +36,23 @@ public class Chat extends JFrame {
 	protected JComboBox cbxDestino;
 	protected JTextPane painelMensagens;
 	protected JScrollPane scrollPane;
+
+	protected StyleSheet folhaDeEstilo;
+	protected HTMLDocument documento;
+	protected HTMLEditorKit editor;
+	protected Element elementoBody;
+  
 	protected DefaultListModel modelo;
 	protected String nomeUsuario;
+	protected ObjectOutputStream transmissor;
+	protected JanelaDeEscolha escolha;
+	protected String ip;
+	protected String nomeSala;
 
 	/**
 	 * Create the frame.
 	 */
-	public Chat(JanelaDeEscolha escolha, String nomeSala, String nomeUsuario, ObjectOutputStream transmissor) {
+	public Chat(JanelaDeEscolha escolha, String nomeSala, String nomeUsuario, ObjectOutputStream transmissor, String ip) {
 		setTitle("Chat - Sala conectada: " + nomeSala);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 910, 525);
@@ -52,15 +64,17 @@ public class Chat extends JFrame {
 		setContentPane(contentPane);
 
 		this.nomeUsuario = nomeUsuario;
+		this.nomeSala = nomeSala;
+		this.transmissor = transmissor;
+		this.escolha = escolha;
+		this.ip = ip;
 
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent windowEvent) {
 				try
 				{
-					transmissor.writeObject(new PedidoParaSairDaSala());
-					transmissor.flush();
-					escolha.setVisible(true);
+					fechar();
 				}
 				catch (Exception ex) {JOptionPane.showMessageDialog(null, ex.getMessage());}
 			}
@@ -148,14 +162,28 @@ public class Chat extends JFrame {
 		JLabel label_2 = new JLabel("     ");
 		panel_2.add(label_2, BorderLayout.EAST);
 		
+		this.folhaDeEstilo = new StyleSheet();
+		this.editor = new HTMLEditorKit();
+
+		this.folhaDeEstilo.addRule("body {background-color: \"#d7d0d6\"; font-size: 14pt;}");
+		this.folhaDeEstilo.addRule("div {display: inline} ");
+		this.folhaDeEstilo.addRule("center {text-align: center; font-weight: bold; font-size: 20pt; margin-bottom: 5px; margin-top: 5px;}");
+		this.folhaDeEstilo.addRule(".negrito {font-weight: bold}");
+		this.editor.setStyleSheet(this.folhaDeEstilo);
+		this.documento = (HTMLDocument) this.editor.createDefaultDocument();
+		this.elementoBody = documento.getRootElements()[0].getElement(0);
+
 		painelMensagens = new JTextPane();
 		painelMensagens.setEditable(false);
+		painelMensagens.setEditorKit(this.editor);
+		//painelMensagens.setDocument(this.documento);
 		painelMensagens.setContentType("text/html");
+		painelMensagens.setBackground(Color.getColor("#d7d0d6"));
 		painelMensagens.setFont(new Font("Century Gothic", Font.PLAIN, 18));
-		painelMensagens.setText("<html><body></body></html>");
+		painelMensagens.setText("<html><body bgcolor=\"#d7d0d6\"></body></html>");
 		scrollPane = new JScrollPane(painelMensagens);
 		panel_2.add(scrollPane, BorderLayout.CENTER);
-		
+			
 		JPanel panel_3 = new JPanel();
 		panel_3.setBackground(Color.DARK_GRAY);
 		panel_2.add(panel_3, BorderLayout.NORTH);
@@ -166,9 +194,7 @@ public class Chat extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				try
 				{
-					transmissor.writeObject(new PedidoParaSairDaSala());
-					transmissor.flush();
-					escolha.setVisible(true);
+					fechar();
 					dispose();
 				}
 				catch (Exception ex) {JOptionPane.showMessageDialog(null, ex.getMessage());}
@@ -179,19 +205,41 @@ public class Chat extends JFrame {
 		panel_3.add(btnSairDaSala, BorderLayout.EAST);
 	}
 
+	protected void fechar() throws Exception
+	{
+		transmissor.writeObject(new PedidoParaSairDaSala());
+		transmissor.flush();
+
+		transmissor.close();
+		escolha.morra();
+
+		JanelaDeEscolha novaJanela = new JanelaDeEscolha();
+		novaJanela.setDados(ip, nomeSala, nomeUsuario);
+		novaJanela.setVisible(true);
+	}
+
 	protected String ultimoUsuario = null;
 	public void receber(Enviavel recebido)
 	{
 		String texto = recebido.toString();
+		String backcolor = "#d7d0d6";
+		boolean recebidoEhUltimoUsuario = recebido.equals(ultimoUsuario);
+
 		if (recebido instanceof Mensagem)
 		{
 			if (ultimoUsuario != null && ultimoUsuario.equals(recebido.getUsuario()))
 				texto = ((Mensagem)recebido).getMensagem() + "<br>";
 			ultimoUsuario = recebido.getUsuario();
+
+			if (ultimoUsuario.equals(this.nomeUsuario))
+				backcolor = "#e1fec6";
+			else
+				backcolor = "white";
 		}
 		else
 			ultimoUsuario = null;
-		painelMensagens.setText("<html><body>" + painelMensagens.getText().substring(15, painelMensagens.getText().length() - 17) + "<font face=\"Century Gothic\">" + texto + "</font></body></html>");
+
+		painelMensagens.setText("<html><body bgcolor=\"#d7d0d6\">" + painelMensagens.getText().substring(57, painelMensagens.getText().length() - (recebidoEhUltimoUsuario && painelMensagens.getText().length() > 57?23:17)) + (!recebidoEhUltimoUsuario && recebido instanceof Mensagem ?"<div bgcolor=\"" + backcolor + "\">":"") + "<font face=\"Century Gothic\">" + texto + "</font>" + (recebido instanceof Mensagem?"</div>":"") + "</body></html>");
 		if (recebido instanceof AvisoDeEntradaNaSala && !recebido.getUsuario().equals(this.nomeUsuario))
 		{
 			modelo.addElement(recebido.getUsuario());

@@ -9,27 +9,32 @@ public class Servidor
     {
         try
         {
-            boolean puxarDoBd = false;
-
             Salas salas = new Salas();
 
-            ArrayList<SalaBD> salasBD = SalasBD.getSalas();
+            boolean puxarDoBD = false;
 
-            for (int i = 0; i < salasBD.size(); i++)
+            if (puxarDoBD)
             {
-                SalaBD salaDoBanco = salasBD.get(i);
-                salas.adicionarSala(new Sala(salaDoBanco.getNome(), salaDoBanco.getCapacidade()));
+                ArrayList<SalaBD> salasBD = SalasBD.getSalas();
+
+                for (int i = 0; i < salasBD.size(); i++)
+                {
+                    SalaBD salaDoBanco = salasBD.get(i);
+                    salas.adicionarSala(new Sala(salaDoBanco.getNome(), salaDoBanco.getCapacidade()));
+                }
+            }
+            else
+            {
+                salas.adicionarSala(new Sala("Geral", 20));
+                salas.adicionarSala(new Sala("Inform\u00E1tica", 10));
+                salas.adicionarSala(new Sala("Programacao", 10));
+                salas.adicionarSala(new Sala("DM1", 2));
+                salas.adicionarSala(new Sala("DM2", 2));
             }
 
-            /*
-            salas.adicionarSala(new Sala("Geral", 20));
-            salas.adicionarSala(new Sala("Inform\u00E1tica", 10));
-            salas.adicionarSala(new Sala("Programacao", 10));
-            salas.adicionarSala(new Sala("DM1", 2));
-            salas.adicionarSala(new Sala("DM2", 2));*/
+            System.out.println("Servidor iniciado!");
 
             ServerSocket pedido = new ServerSocket(12345);
-            System.out.println("Servidor iniciado!");
             for (;;)
             {
                 Socket conexao = pedido.accept();
@@ -38,6 +43,6 @@ public class Servidor
                 cuidadora.start();
             }
         }
-        catch(Exception e) {System.err.println(e.getMessage());}
+        catch(Exception e) {System.out.println("Deu erro");}
     }
 }

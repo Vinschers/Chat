@@ -28,8 +28,10 @@ public class CuidadoraDeUsuario extends Thread
             boolean houveErro = true;
             ObjectOutputStream oos = new ObjectOutputStream(conexao.getOutputStream());
             SalasDisponiveis sds = new SalasDisponiveis(this.salas);
+
             oos.writeObject(sds);
             oos.flush();
+            
             ObjectInputStream ois = new ObjectInputStream(conexao.getInputStream());
             ArrayList<Usuario> us = null;
             String nomeEscolhido = null;
@@ -37,6 +39,7 @@ public class CuidadoraDeUsuario extends Thread
             ArrayList<Sala> vetSalas = this.salas.getSalas();
             Sala salaEscolhida = null;
             boolean jaExiste;
+
             while(houveErro)
             {
                 houveErro = false;
