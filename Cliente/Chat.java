@@ -211,14 +211,15 @@ public class Chat extends JFrame {
 	{
 		transmissor.writeObject(new PedidoParaSairDaSala());
 		transmissor.flush();
-
+		
 		transmissor.close();
 		escolha.morra();
 
-		JanelaDeEscolha novaJanela = new JanelaDeEscolha();
-		//novaJanela.setDados(ip, nomeSala, nomeUsuario);
-		novaJanela.setVisible(true);
 		dispose();
+		JanelaDeEscolha novaJanela = new JanelaDeEscolha();
+		// novaJanela.setDados(ip, nomeSala, nomeUsuario);
+		novaJanela.setVisible(true);
+		escolha.morra();
 	}
 
 	protected String ultimoUsuario = null;

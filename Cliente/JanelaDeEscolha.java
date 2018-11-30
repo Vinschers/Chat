@@ -42,8 +42,9 @@ public class JanelaDeEscolha extends JFrame {
 	protected boolean estaEmTesteSemConexao = false;
 	
 	protected Socket conexao;
-	protected ObjectInputStream receptor;
-	protected Chat chat = null;
+	protected static ObjectInputStream receptor;
+	protected static Chat chat = null;
+	protected static Receptor receptorClass;
 
 	/**
 	 * Launch the application.
@@ -52,11 +53,6 @@ public class JanelaDeEscolha extends JFrame {
 		try {
 			JanelaDeEscolha frame = new JanelaDeEscolha();
 			frame.setVisible(true);
-			while (true)
-			{
-				frame.receber();
-				Thread.sleep(100);
-			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -170,6 +166,8 @@ public class JanelaDeEscolha extends JFrame {
 						chat.setVisible(true);
 						setVisible(false);
 					}
+					receptorClass = new Receptor(chat, receptor);
+					receptorClass.start();
 				}
 				catch (Exception ex) {JOptionPane.showMessageDialog(null, "Deu esse erro: " + ex.getMessage());}
 			}
@@ -228,9 +226,9 @@ public class JanelaDeEscolha extends JFrame {
 	}
 	public void morra() throws Exception
 	{
+		receptorClass.morrer();
 		receptor.close();
 		conexao.close();
-		dispose();
 	}
 	public void receber() throws Exception
 	{
