@@ -165,9 +165,9 @@ public class JanelaDeEscolha extends JFrame {
 						chat = new Chat(este, nomeSala, txtNome.getText(), transmissor, txtIP.getText());
 						chat.setVisible(true);
 						setVisible(false);
+						receptorClass = new Receptor(chat, receptor);
+						receptorClass.start();
 					}
-					receptorClass = new Receptor(chat, receptor);
-					receptorClass.start();
 				}
 				catch (Exception ex) {JOptionPane.showMessageDialog(null, "Deu esse erro: " + ex.getMessage());}
 			}
