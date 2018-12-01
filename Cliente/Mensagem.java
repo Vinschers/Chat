@@ -9,7 +9,7 @@ public class Mensagem extends Enviavel
     {
         super();
         if (msg == null || msg.equals(""))
-            throw new Exception("Mensagem inválida!");
+            throw new Exception("Mensagem inv\00E1lida!");
         if (dest == null)
             throw new Exception("Destinatário inválido");
 

@@ -1,19 +1,22 @@
+import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Rectangle;
+import java.awt.event.*;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import java.awt.Color;
 import javax.swing.JList;
 import javax.swing.AbstractListModel;
 import javax.swing.JFormattedTextField;
 import javax.swing.JTextArea;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
-import java.awt.Font;
-import java.awt.Rectangle;
-
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JTextField;
@@ -21,13 +24,11 @@ import javax.swing.JButton;
 import javax.swing.*;
 import javax.swing.text.Element;
 import javax.swing.text.html.*;
-import java.awt.*;
-import java.awt.event.*;
+import javax.swing.event.*;
+
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 public class Chat extends JFrame {
 
@@ -74,11 +75,7 @@ public class Chat extends JFrame {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent windowEvent) {
-				try
-				{
-					fechar();
-				}
-				catch (Exception ex) {JOptionPane.showMessageDialog(null, ex.getMessage());}
+				fechar(false, false);
 			}
 		});
 		
@@ -98,6 +95,7 @@ public class Chat extends JFrame {
 		txtMensagem.setColumns(10);
 		
 		JButton btnEnviar = new JButton("Enviar");
+		btnEnviar.setEnabled(false);
 		btnEnviar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				try
@@ -119,16 +117,38 @@ public class Chat extends JFrame {
 
 					txtMensagem.setText("");
 				}
-				catch (Exception ex) {JOptionPane.showMessageDialog(null, ex.getMessage());}
+				catch (Exception ex) 
+				{
+					if (ex.getMessage().equals("Connection reset by peer: socket write error"))
+					{
+
+						JOptionPane.showMessageDialog(null, "Servidor fechado. Voltando ao menu...");
+						fechar(true, true);
+					}
+					else
+						JOptionPane.showMessageDialog(null, ex.getMessage());
+				}
 			}
 		});
 		btnEnviar.setFont(new Font("Century Gothic", Font.PLAIN, 18));
 		panel.add(btnEnviar, BorderLayout.EAST);
 
+		txtMensagem.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				btnEnviar.setEnabled(txtMensagem.getText().length() > 0);
+			}
+			public void removeUpdate(DocumentEvent e) {
+				btnEnviar.setEnabled(txtMensagem.getText().length() > 0);
+			}
+			public void insertUpdate(DocumentEvent e) {
+				btnEnviar.setEnabled(txtMensagem.getText().length() > 0);
+			}
+		});
+
 		txtMensagem.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent evt) {
-				if (evt.getKeyCode() == KeyEvent.VK_ENTER)
-					btnEnviar.doClick();
+				if (btnEnviar.isEnabled() && evt.getKeyCode() == KeyEvent.VK_ENTER)
+					btnEnviar.doClick();			
             }
         });
 		
@@ -201,12 +221,7 @@ public class Chat extends JFrame {
 		JButton btnSairDaSala = new JButton("Sair da sala");
 		btnSairDaSala.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				try
-				{
-					fechar();
-					dispose();
-				}
-				catch (Exception ex) {JOptionPane.showMessageDialog(null, ex.getMessage());}
+				fechar(true, false);
 			}
 		});
 		btnSairDaSala.setBackground(Color.LIGHT_GRAY);
@@ -214,19 +229,30 @@ public class Chat extends JFrame {
 		panel_3.add(btnSairDaSala, BorderLayout.EAST);
 	}
 
-	protected void fechar() throws Exception
+	protected void fechar(boolean abrirNovaJanela, boolean servidorFechou)
 	{
-		transmissor.writeObject(new PedidoParaSairDaSala());
-		transmissor.flush();
-		
-		transmissor.close();
-		escolha.morra();
+		try
+		{
+			if (!servidorFechou)
+			{
+				transmissor.writeObject(new PedidoParaSairDaSala());
+				transmissor.flush();
+				transmissor.close();
+			}
+			else
+				escolha.morra();
 
-		dispose();
-		JanelaDeEscolha novaJanela = new JanelaDeEscolha();
-		novaJanela.setDados(ip, nomeSala, nomeUsuario);
-		novaJanela.setVisible(true);
-		escolha.morra();
+			dispose();
+
+			if (abrirNovaJanela)
+			{
+				JanelaDeEscolha novaJanela = new JanelaDeEscolha();
+				if (!servidorFechou)
+					novaJanela.setDados(ip, nomeSala, nomeUsuario);
+				novaJanela.setVisible(true);
+			}
+		}
+		catch (Exception ex) {JOptionPane.showMessageDialog(null, ex.getMessage());}
 	}
 
 	protected Mensagem ultimaMensagem = null;
@@ -255,7 +281,7 @@ public class Chat extends JFrame {
 		                         painelMensagens.getText().substring(57, painelMensagens.getText().length() - 17) + // Pega todo o conteúdo dentro da tag body
 								 (recebido instanceof Mensagem?((recebidoEhUltimoUsuario && !destinoDiferente)|| ultimaMensagem==null?"":"<div class=\"espaco\"></div") + // Determina se adicionará um espaço em branco
 								 "<p class=\"" + (((Mensagem)recebido).getDestinatarios().get(0).equals("dm")?"dm":"geral") + "\">":"") + // Se for mensagem, especifica o tipo: dm ou geral
-								 /*"<font face=\"Century Gothic\">" + */texto /*+ "</font>"*/ + // Concatena com o conteúdo do recebido
+								 texto + // Concatena com o conteúdo do recebido
 								 (recebido instanceof Mensagem?"</p>":"") + // Se for mensagem, fecha o parágrafo
 								 "</body></html>");
 		if (recebido instanceof Aviso && !recebido.getUsuario().equals(this.nomeUsuario))

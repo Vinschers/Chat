@@ -19,6 +19,7 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.event.*;
 
 import java.net.*;
 import java.util.ArrayList;
@@ -171,7 +172,39 @@ public class JanelaDeEscolha extends JFrame {
 						receptorClass.start();
 					}
 				}
-				catch (Exception ex) {JOptionPane.showMessageDialog(null, "Deu esse erro: " + ex.getMessage());}
+				catch (Exception ex) 
+				{
+					if (ex.getMessage().equals("Connection reset by peer: socket write error"))
+					{
+						try
+						{
+							receptor.close();
+							if (transmissor != null)
+								transmissor.close();
+							transmissor = null;
+							conexao.close();
+							txtNome.setText("");
+							cbxSalas.removeAllItems();
+	
+							btnEntrar.setEnabled(false);
+							lblDigiteSeuNome.setEnabled(false);
+							txtNome.setEnabled(false);
+							lblSelecioneUmaSala.setEnabled(false);
+							cbxSalas.setEnabled(false);
+	
+							lblDigiteOIp.setEnabled(true);
+							txtIP.setEnabled(true);
+							btnConectar.setEnabled(true);
+	
+							lblStatus.setText("Digite o IP do Servidor");
+	
+							JOptionPane.showMessageDialog(null, "Servidor fechado. Escolha outro ou tente novamente mais tarde!");
+						}
+						catch (Exception e) {JOptionPane.showMessageDialog(null, e.getMessage());}
+					}
+					else
+						JOptionPane.showMessageDialog(null, "Deu esse erro: " + ex.getMessage());
+				}
 			}
 		});
 		btnEntrar.setFont(new Font("Century Gothic", Font.PLAIN, 16));
@@ -179,12 +212,18 @@ public class JanelaDeEscolha extends JFrame {
 		contentPane.add(btnEntrar, BorderLayout.SOUTH);
 		
 		txtNome = new JTextField();
-		txtNome.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyTyped(KeyEvent arg0) {
-				btnEntrar.setEnabled(txtNome.getText() != null && !txtNome.getText().equals(""));
+		txtNome.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				btnEntrar.setEnabled(txtNome.getText().length() > 0);
+			}
+			public void removeUpdate(DocumentEvent e) {
+				btnEntrar.setEnabled(txtNome.getText().length() > 0);
+			}
+			public void insertUpdate(DocumentEvent e) {
+				btnEntrar.setEnabled(txtNome.getText().length() > 0);
 			}
 		});
+
 		txtNome.setEnabled(false);
 		txtNome.setFont(new Font("Century Gothic", Font.PLAIN, 16));
 		GridBagConstraints gbc_txtNome = new GridBagConstraints();
@@ -218,7 +257,7 @@ public class JanelaDeEscolha extends JFrame {
 					txtNome.setEnabled(true);
 					
 				} catch (Exception e) {
-					JOptionPane.showMessageDialog(null, "Detalhes: " + e.getMessage(), "Erro de conexao", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Detalhes: " + e.getMessage(), "Erro de conex\00E3o", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});

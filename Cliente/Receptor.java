@@ -10,15 +10,16 @@ public class Receptor extends Thread
         {
             while (!morta)
             {
-                if (chat != null)
-                {
-                    Enviavel recebido = (Enviavel) receptor.readObject();
-                    chat.receber(recebido);
-                }
+                Enviavel recebido = (Enviavel) receptor.readObject();
+                chat.receber(recebido);
                 Thread.sleep(100);
             }
         }
-        catch(Exception e) {System.out.println("Erro no Receptor: " + e.getMessage());}
+        catch(Exception e) 
+        {
+            if (!e.getMessage().equals("Socket closed")) // Necessariamente acontecerá quando o socket fechar
+                System.out.println("Erro no Receptor: " + e.getMessage());
+        }
     }
     public Receptor(Chat c, ObjectInputStream receptor) throws Exception
     {
