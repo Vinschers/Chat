@@ -91,42 +91,54 @@ public class Chat extends JFrame {
 		panel.add(cbxDestino, BorderLayout.WEST);
 		
 		txtMensagem = new JTextField();
+		txtMensagem.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				btnEnviar.setEnabled(txtMensagem.getText().length() > 0);
+			}
+			public void removeUpdate(DocumentEvent e) {
+				btnEnviar.setEnabled(txtMensagem.getText().length() > 0);
+			}
+			public void insertUpdate(DocumentEvent e) {
+				btnEnviar.setEnabled(txtMensagem.getText().length() > 0);
+			}
+		});
 		panel.add(txtMensagem, BorderLayout.CENTER);
 		txtMensagem.setColumns(10);
 		
 		JButton btnEnviar = new JButton("Enviar");
-		btnEnviar.setEnabled(false);
 		btnEnviar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				try
+				if (!txtMensagem.getText().equals(""))
 				{
-					ArrayList<String> destino = new ArrayList<String>();
-					if (cbxDestino.getSelectedIndex() == 0)				
-						for (int i = 0; i < cbxDestino.getItemCount(); i++)
-							destino.add(cbxDestino.getItemAt(i).toString());
-					else
+					try
 					{
-						destino.add("dm");
-						destino.add(cbxDestino.getSelectedItem().toString());
+						ArrayList<String> destino = new ArrayList<String>();
+						if (cbxDestino.getSelectedIndex() == 0)
+							for (int i = 0; i < cbxDestino.getItemCount(); i++)
+								destino.add(cbxDestino.getItemAt(i).toString());
+						else
+						{
+							destino.add("dm");
+							destino.add(cbxDestino.getSelectedItem().toString());
+						}
+						destino.add(nomeUsuario);
+	
+						transmissor.writeObject(new Mensagem(txtMensagem.getText(), destino));
+						transmissor.flush();
+	
+						txtMensagem.setText("");
 					}
-
-					destino.add(nomeUsuario);
-
-					transmissor.writeObject(new Mensagem(txtMensagem.getText(), destino));
-					transmissor.flush();
-
-					txtMensagem.setText("");
-				}
-				catch (Exception ex) 
-				{
-					if (ex.getMessage().equals("Connection reset by peer: socket write error"))
+					catch (Exception ex) 
 					{
+						if (ex.getMessage().equals("Connection reset by peer: socket write error"))
+						{
 
-						JOptionPane.showMessageDialog(null, "Servidor fechado. Voltando ao menu...");
-						fechar(true, true);
+							JOptionPane.showMessageDialog(null, "Servidor fechado. Voltando ao menu...");
+							fechar(true, true);
+						}
+						else
+							JOptionPane.showMessageDialog(null, ex.getMessage());
 					}
-					else
-						JOptionPane.showMessageDialog(null, ex.getMessage());
 				}
 			}
 		});
@@ -178,7 +190,7 @@ public class Chat extends JFrame {
 		contentPane.add(panel_2, BorderLayout.CENTER);
 		panel_2.setLayout(new BorderLayout(0, 0));
 		
-		lblEstaDigitando = new JLabel(" Fulano est\u00E1 digitando... ");
+		lblEstaDigitando = new JLabel("");
 		lblEstaDigitando.setForeground(Color.LIGHT_GRAY);
 		panel_2.add(lblEstaDigitando, BorderLayout.SOUTH);
 		
@@ -301,6 +313,10 @@ public class Chat extends JFrame {
 						modelo.remove(i);
 					}
 			}
+			else if (aux.getTipo() == 4)
+				lblEstaDigitando.setText(" " + aux.getUsuario() + " est\u00E1 digitando... ");
+			else if (aux.getTipo() == 5)
+				lblEstaDigitando.setText("");
 		}
 
 		// Faz a scrollbar ir para baixo quando receber qualquer coisa
