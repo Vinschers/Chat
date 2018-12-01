@@ -14,7 +14,7 @@ public class CuidadoraDeUsuario extends Thread
     public CuidadoraDeUsuario(Socket conexao, Salas s) throws Exception 
     {
         if (conexao == null)
-            throw new Exception("Conexão inexistente");
+            throw new Exception("Conex\u00E3o inexistente");
         if (s == null)
             throw new Exception("Salas vazias");
         this.conexao = conexao;
@@ -55,17 +55,17 @@ public class CuidadoraDeUsuario extends Thread
                 }
                 if (salaEscolhida == null)
                 {
-                    oos.writeObject(new Aviso(3, "Sala nao encontrada"));
+                    oos.writeObject(new Aviso(3, "Sala n\u00E3o encontrada"));
                     houveErro = true;
                 }
                 else if (salaEscolhida.isCheia())
                 {
-                    oos.writeObject(new Aviso(3, "Sala ja esta cheia!"));
+                    oos.writeObject(new Aviso(3, "Sala j\u00E1 est\u00E1 cheia!"));
                     houveErro = true;
                 }
                 else if (nomeEscolhido == null || nomeEscolhido.equals(""))
                 {
-                    oos.writeObject(new Aviso(3, "Nome invalido!"));
+                    oos.writeObject(new Aviso(3, "Nome inv\u00E1lido!"));
                     houveErro = true;
                 }
                 else
@@ -73,9 +73,9 @@ public class CuidadoraDeUsuario extends Thread
                     us = salaEscolhida.getUsuarios();
                     for (int i = 0; i < us.size(); i++)
                     {
-                        if (us.get(i).getNickname() == nomeEscolhido)
+                        if (us.get(i).getNickname().equals(nomeEscolhido))
                         {
-                            oos.writeObject(new Aviso(3, "Nome de usuário já existe na sala!"));
+                            oos.writeObject(new Aviso(3, "Nome de usu\u00E1rio j\u00E1 existe na sala!"));
                             houveErro = true;
                             break;
                         }

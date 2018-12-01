@@ -43,6 +43,7 @@ public class JanelaDeEscolha extends JFrame {
 	
 	protected Socket conexao;
 	protected ObjectInputStream receptor;
+	protected ObjectOutputStream transmissor;
 	protected Chat chat = null;
 	protected Receptor receptorClass;
 
@@ -148,7 +149,8 @@ public class JanelaDeEscolha extends JFrame {
 				{
 					Object recebido = null;
 
-					ObjectOutputStream transmissor = new ObjectOutputStream(conexao.getOutputStream());
+					if (transmissor == null)
+						transmissor = new ObjectOutputStream(conexao.getOutputStream());
 
 					String nomeSala = cbxSalas.getSelectedItem().toString().split("\"")[1];
 
@@ -214,7 +216,6 @@ public class JanelaDeEscolha extends JFrame {
 					cbxSalas.setEnabled(true);
 					lblDigiteSeuNome.setEnabled(true);
 					txtNome.setEnabled(true);
-					btnEntrar.setEnabled(true);
 					
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(null, "Detalhes: " + e.getMessage(), "Erro de conexao", JOptionPane.ERROR_MESSAGE);
@@ -230,18 +231,6 @@ public class JanelaDeEscolha extends JFrame {
 		receptorClass.morrer();
 		receptor.close();
 		conexao.close();
-	}
-	public void receber() throws Exception
-	{
-		try
-		{
-			if (chat != null)
-			{
-				Enviavel recebido = (Enviavel) receptor.readObject();
-				chat.receber(recebido);
-			}
-		}
-		catch (SocketException ex) {}
 	}
 	public void setDados(String ip, String nomeSala, String nome) throws Exception
 	{
@@ -270,6 +259,8 @@ public class JanelaDeEscolha extends JFrame {
 
 		txtIP.setText(ip);
 		txtNome.setText(nome);
+
+		btnEntrar.setEnabled(true);
 	}
 
 }

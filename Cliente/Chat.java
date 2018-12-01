@@ -36,6 +36,7 @@ public class Chat extends JFrame {
 	protected JComboBox cbxDestino;
 	protected JTextPane painelMensagens;
 	protected JScrollPane scrollPane;
+	protected JLabel lblEstaDigitando;
 
 	protected StyleSheet folhaDeEstilo;
 	protected HTMLDocument documento;
@@ -56,6 +57,7 @@ public class Chat extends JFrame {
 		setTitle("Chat - Sala conectada: " + nomeSala);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 910, 525);
+		setMinimumSize(new Dimension(500, 300));
 		contentPane = new JPanel();
 		contentPane.setBackground(new Color(30, 30, 30));
 		contentPane.setForeground(Color.WHITE);
@@ -156,8 +158,9 @@ public class Chat extends JFrame {
 		contentPane.add(panel_2, BorderLayout.CENTER);
 		panel_2.setLayout(new BorderLayout(0, 0));
 		
-		JLabel label = new JLabel(" ");
-		panel_2.add(label, BorderLayout.SOUTH);
+		lblEstaDigitando = new JLabel(" Fulano est\u00E1 digitando... ");
+		lblEstaDigitando.setForeground(Color.LIGHT_GRAY);
+		panel_2.add(lblEstaDigitando, BorderLayout.SOUTH);
 		
 		JLabel label_1 = new JLabel("     ");
 		panel_2.add(label_1, BorderLayout.WEST);
@@ -168,13 +171,11 @@ public class Chat extends JFrame {
 		this.folhaDeEstilo = new StyleSheet();
 		this.editor = new HTMLEditorKit();
 
-		this.folhaDeEstilo.addRule("body {background-color: #004b66; font-size: 16pt; color: white;}");
-		this.folhaDeEstilo.addRule(".proprio, .outro {display: inline-block; padding: 2px; width 100%; text-align: justify} ");
-		this.folhaDeEstilo.addRule("#geral {background-color: #00384c; color: white;} ");
-		this.folhaDeEstilo.addRule("#dm {background-color: #262626; color: #bcbcbc;} ");
+		this.folhaDeEstilo.addRule("body {background-color: #004b66; font-size: 16pt; font-family: Century Gothic; color: white; max-width: 500px; overflow-x: hidden;}");
+		this.folhaDeEstilo.addRule("p {padding: 2px;} ");
+		this.folhaDeEstilo.addRule(".geral {background-color: #00384c; color: white;} ");
+		this.folhaDeEstilo.addRule(".dm {background-color: #262626; color: #bcbcbc;} ");
 		this.folhaDeEstilo.addRule(".espaco {font-size: 3pt;}");
-		this.folhaDeEstilo.addRule("body hr{border: none; height: 0px; color: #004b66; background-color: #004b66; opacity: 0; display: hidden;}");
-		this.folhaDeEstilo.addRule("hr {border: none; height: 0px; color: #004b66; background-color: #004b66; opacity: 0; display: hidden;}");
 		this.folhaDeEstilo.addRule("center {text-align: center; font-weight: bold; font-size: 22pt; margin-bottom: 5px; margin-top: 5px;}");
 		this.folhaDeEstilo.addRule(".negrito {font-weight: bold}");
 		this.editor.setStyleSheet(this.folhaDeEstilo);
@@ -230,6 +231,7 @@ public class Chat extends JFrame {
 
 	protected Mensagem ultimaMensagem = null;
 	protected String ultimoUsuario = null;
+
 	public void receber(Enviavel recebido)
 	{
 		String texto = recebido.toString();
@@ -247,15 +249,15 @@ public class Chat extends JFrame {
 				texto = ((Mensagem)recebido).getMensagem() + "<br>";
 
 			texto = texto.replace("<x>" + this.nomeUsuario + "</x>", "<font color=\"#00d3a5;\">Voc\u00EA</font>");
-
-			if (msg.getUsuario().equals(this.nomeUsuario))
-				classeEmissor = "proprio";
-			else
-				classeEmissor = "outro";
 		}
 
-		//System.out.println((recebido instanceof Mensagem?(recebidoEhUltimoUsuario?"":"<div class=\"espacar\"></div>") + "<div id=\"msg\" class=\"" + classeEmissor + "\">":"") + "<font face=\"Century Gothic\">" + texto + "</font>" + (recebido instanceof Mensagem?"</div>":""));
-		painelMensagens.setText("<html><body bgcolor=\"#004b66\">" + painelMensagens.getText().substring(57, painelMensagens.getText().length() - (recebidoEhUltimoUsuario && painelMensagens.getText().length() > 57?17:17)) + (recebido instanceof Mensagem?((recebidoEhUltimoUsuario && !destinoDiferente)|| ultimaMensagem==null?"":"<div class=\"espaco\"></div") + "<div id=\"" + (((Mensagem)recebido).getDestinatarios().get(0).equals("dm")?"dm":"geral") + "\" class=\"" + classeEmissor + "\">":"") + "<font face=\"Century Gothic\">" + texto + "</font>" + (recebido instanceof Mensagem?"</div>":"") + "</body></html>");
+		painelMensagens.setText("<html><body bgcolor=\"#004b66\">" + 
+		                         painelMensagens.getText().substring(57, painelMensagens.getText().length() - 17) + // Pega todo o conteúdo dentro da tag body
+								 (recebido instanceof Mensagem?((recebidoEhUltimoUsuario && !destinoDiferente)|| ultimaMensagem==null?"":"<div class=\"espaco\"></div") + // Determina se adicionará um espaço em branco
+								 "<p class=\"" + (((Mensagem)recebido).getDestinatarios().get(0).equals("dm")?"dm":"geral") + "\">":"") + // Se for mensagem, especifica o tipo: dm ou geral
+								 /*"<font face=\"Century Gothic\">" + */texto /*+ "</font>"*/ + // Concatena com o conteúdo do recebido
+								 (recebido instanceof Mensagem?"</p>":"") + // Se for mensagem, fecha o parágrafo
+								 "</body></html>");
 		if (recebido instanceof Aviso && !recebido.getUsuario().equals(this.nomeUsuario))
 		{
 			Aviso aux = (Aviso)recebido;
@@ -274,16 +276,21 @@ public class Chat extends JFrame {
 					}
 			}
 		}
-		JScrollBar verticalBar = scrollPane.getVerticalScrollBar();
-		AdjustmentListener downScroller = new AdjustmentListener() {
+
+		// Faz a scrollbar ir para baixo quando receber qualquer coisa
+		JScrollBar barraDeScroll = scrollPane.getVerticalScrollBar();
+		AdjustmentListener jogaScrollParaBaixo = new AdjustmentListener() {
 			@Override
 			public void adjustmentValueChanged(AdjustmentEvent e) {
-				Adjustable adjustable = e.getAdjustable();
-				adjustable.setValue(adjustable.getMaximum());
-				verticalBar.removeAdjustmentListener(this);
+				Adjustable ajustavel = e.getAdjustable();
+				ajustavel.setValue(ajustavel.getMaximum());
+				barraDeScroll.removeAdjustmentListener(this);
 			}
 		};
-		verticalBar.addAdjustmentListener(downScroller);
+		barraDeScroll.addAdjustmentListener(jogaScrollParaBaixo);
+
+		if ((!(recebido instanceof Aviso) || ((Aviso)recebido).getTipo() != 4 && ((Aviso)recebido).getTipo() != 5) && !isFocused())
+			requestFocus(); // Faz a janela piscar se o usuário recebeu uma mensagem, um aviso de entrada ou um aviso de saída
 
 		ultimaMensagem = (recebido instanceof Mensagem?(Mensagem)recebido:null);
 	}
