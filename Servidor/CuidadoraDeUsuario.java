@@ -38,7 +38,6 @@ public class CuidadoraDeUsuario extends Thread
             String nomeSala;
             ArrayList<Sala> vetSalas = this.salas.getSalas();
             Sala salaEscolhida = null;
-            boolean jaExiste;
 
             while(houveErro)
             {
@@ -105,7 +104,7 @@ public class CuidadoraDeUsuario extends Thread
                 {
                     aux = (Mensagem)recebido;
                     dest = aux.getDestinatarios();
-                    for (int i = 0; i < dest.size(); i++)
+                    for (int i = 1; i < dest.size(); i++)
                         this.usuario.envia(aux, dest.get(i));
                 }
             }

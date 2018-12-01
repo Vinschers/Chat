@@ -204,7 +204,7 @@ public class JanelaDeEscolha extends JFrame {
 
 					for (int i = 0; i < salasDisponiveis.size(); i++)
 						cbxSalas.addItem(salasDisponiveis.get(i).toString());
-					lblStatus.setText("Servidor conectado. Selecione uma sala e digite seu nome para come?ar");
+					lblStatus.setText("Servidor conectado. Selecione uma sala e digite seu nome para come\u00E7ar");
 					
 					lblDigiteOIp.setEnabled(false);
 					txtIP.setEnabled(false);

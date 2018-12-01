@@ -102,10 +102,13 @@ public class Chat extends JFrame {
 				{
 					ArrayList<String> destino = new ArrayList<String>();
 					if (cbxDestino.getSelectedIndex() == 0)				
-						for (int i = 1; i < cbxDestino.getItemCount(); i++)
+						for (int i = 0; i < cbxDestino.getItemCount(); i++)
 							destino.add(cbxDestino.getItemAt(i).toString());
 					else
+					{
+						destino.add("dm");
 						destino.add(cbxDestino.getSelectedItem().toString());
+					}
 
 					destino.add(nomeUsuario);
 
@@ -165,13 +168,14 @@ public class Chat extends JFrame {
 		this.folhaDeEstilo = new StyleSheet();
 		this.editor = new HTMLEditorKit();
 
-		this.folhaDeEstilo.addRule("body {background-color: #004b66; font-size: 16pt; color: #004b66;}");
-		this.folhaDeEstilo.addRule(".proprio, .outro {display: inline-block; padding: 2px; background-color: #00384c; color: white; width 100%;} ");
-		this.folhaDeEstilo.addRule(".proprio {text-align: right;} ");
+		this.folhaDeEstilo.addRule("body {background-color: #004b66; font-size: 16pt; color: white;}");
+		this.folhaDeEstilo.addRule(".proprio, .outro {display: inline-block; padding: 2px; width 100%; text-align: justify} ");
+		this.folhaDeEstilo.addRule("#geral {background-color: #00384c; color: white;} ");
+		this.folhaDeEstilo.addRule("#dm {background-color: #262626; color: #bcbcbc;} ");
 		this.folhaDeEstilo.addRule(".espaco {font-size: 3pt;}");
 		this.folhaDeEstilo.addRule("body hr{border: none; height: 0px; color: #004b66; background-color: #004b66; opacity: 0; display: hidden;}");
 		this.folhaDeEstilo.addRule("hr {border: none; height: 0px; color: #004b66; background-color: #004b66; opacity: 0; display: hidden;}");
-		this.folhaDeEstilo.addRule("center {text-align: center; font-weight: bold; font-size: 22pt; margin-bottom: 5px; margin-top: 5px; color: white;}");
+		this.folhaDeEstilo.addRule("center {text-align: center; font-weight: bold; font-size: 22pt; margin-bottom: 5px; margin-top: 5px;}");
 		this.folhaDeEstilo.addRule(".negrito {font-weight: bold}");
 		this.editor.setStyleSheet(this.folhaDeEstilo);
 		this.documento = (HTMLDocument) this.editor.createDefaultDocument();
@@ -224,30 +228,36 @@ public class Chat extends JFrame {
 		escolha.morra();
 	}
 
+	protected Mensagem ultimaMensagem = null;
 	protected String ultimoUsuario = null;
-	protected boolean ultimoRecebidoFoiMensagem = false;
 	public void receber(Enviavel recebido)
 	{
 		String texto = recebido.toString();
 		String classeEmissor = null;
-		boolean recebidoEhUltimoUsuario = recebido.getUsuario().equals(ultimoUsuario);
-
+		boolean recebidoEhUltimoUsuario = ultimaMensagem != null && recebido.getUsuario().equals(ultimaMensagem.getUsuario());
+		boolean destinoDiferente = false;
 		if (recebido instanceof Mensagem)
 		{
-			if (ultimoUsuario != null && ultimoUsuario.equals(recebido.getUsuario()))
-				texto = ((Mensagem)recebido).getMensagem() + "<br>";
-			ultimoUsuario = recebido.getUsuario();
+			Mensagem msg = (Mensagem)recebido;
+			ArrayList<String> destinoAntigo = ultimaMensagem != null?ultimaMensagem.getDestinatarios():null;
+			ArrayList<String> destinoAtual = msg.getDestinatarios();
+			destinoDiferente = destinoAntigo==null || !destinoAntigo.get(0).equals(destinoAtual.get(0)) || (destinoAntigo.get(0).equals("dm") && !destinoAntigo.get(1).equals(destinoAtual.get(1)));
 
-			if (ultimoUsuario.equals(this.nomeUsuario))
+			if (recebidoEhUltimoUsuario && !destinoDiferente)
+				texto = ((Mensagem)recebido).getMensagem() + "<br>";
+
+			if (msg.getUsuario().equals(this.nomeUsuario))
+			{
 				classeEmissor = "proprio";
+				//System.out.println(texto);
+				texto = texto.replace("<x>" + this.nomeUsuario + "</x>", "<font color=\"#00d3a5;\">Voc\u00EA</font>");
+			}
 			else
 				classeEmissor = "outro";
 		}
-		else
-			ultimoUsuario = null;
 
 		//System.out.println((recebido instanceof Mensagem?(recebidoEhUltimoUsuario?"":"<div class=\"espacar\"></div>") + "<div id=\"msg\" class=\"" + classeEmissor + "\">":"") + "<font face=\"Century Gothic\">" + texto + "</font>" + (recebido instanceof Mensagem?"</div>":""));
-		painelMensagens.setText("<html><body bgcolor=\"#004b66\">" + painelMensagens.getText().substring(57, painelMensagens.getText().length() - (recebidoEhUltimoUsuario && painelMensagens.getText().length() > 57?17:17)) + (recebido instanceof Mensagem?(recebidoEhUltimoUsuario || !ultimoRecebidoFoiMensagem?"":"<div class=\"espaco\"></div") + "<div class=\"" + classeEmissor + "\">":"") + "<font face=\"Century Gothic\">" + texto + "</font>" + (recebido instanceof Mensagem?"</div>":"") + "</body></html>");
+		painelMensagens.setText("<html><body bgcolor=\"#004b66\">" + painelMensagens.getText().substring(57, painelMensagens.getText().length() - (recebidoEhUltimoUsuario && painelMensagens.getText().length() > 57?17:17)) + (recebido instanceof Mensagem?((recebidoEhUltimoUsuario && !destinoDiferente)|| ultimaMensagem==null?"":"<div class=\"espaco\"></div") + "<div id=\"" + (((Mensagem)recebido).getDestinatarios().get(0).equals("dm")?"dm":"geral") + "\" class=\"" + classeEmissor + "\">":"") + "<font face=\"Century Gothic\">" + texto + "</font>" + (recebido instanceof Mensagem?"</div>":"") + "</body></html>");
 		if (recebido instanceof AvisoDeEntradaNaSala && !recebido.getUsuario().equals(this.nomeUsuario))
 		{
 			modelo.addElement(recebido.getUsuario());
@@ -273,6 +283,6 @@ public class Chat extends JFrame {
 		};
 		verticalBar.addAdjustmentListener(downScroller);
 
-		ultimoRecebidoFoiMensagem = recebido instanceof Mensagem;
+		ultimaMensagem = (recebido instanceof Mensagem?(Mensagem)recebido:null);
 	}
 }

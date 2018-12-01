@@ -34,7 +34,7 @@ public class Servidor
 
             System.out.println("Servidor iniciado!");
 
-            ServerSocket pedido = new ServerSocket(12345);
+            ServerSocket pedido = new ServerSocket(12345, 5, null);
             for (;;)
             {
                 Socket conexao = pedido.accept();
