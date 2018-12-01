@@ -91,17 +91,6 @@ public class Chat extends JFrame {
 		panel.add(cbxDestino, BorderLayout.WEST);
 		
 		txtMensagem = new JTextField();
-		txtMensagem.getDocument().addDocumentListener(new DocumentListener() {
-			public void changedUpdate(DocumentEvent e) {
-				btnEnviar.setEnabled(txtMensagem.getText().length() > 0);
-			}
-			public void removeUpdate(DocumentEvent e) {
-				btnEnviar.setEnabled(txtMensagem.getText().length() > 0);
-			}
-			public void insertUpdate(DocumentEvent e) {
-				btnEnviar.setEnabled(txtMensagem.getText().length() > 0);
-			}
-		});
 		panel.add(txtMensagem, BorderLayout.CENTER);
 		txtMensagem.setColumns(10);
 		
@@ -190,7 +179,7 @@ public class Chat extends JFrame {
 		contentPane.add(panel_2, BorderLayout.CENTER);
 		panel_2.setLayout(new BorderLayout(0, 0));
 		
-		lblEstaDigitando = new JLabel("");
+		lblEstaDigitando = new JLabel("    ");
 		lblEstaDigitando.setForeground(Color.LIGHT_GRAY);
 		panel_2.add(lblEstaDigitando, BorderLayout.SOUTH);
 		
