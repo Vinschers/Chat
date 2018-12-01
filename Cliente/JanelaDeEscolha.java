@@ -216,6 +216,7 @@ public class JanelaDeEscolha extends JFrame {
 					cbxSalas.setEnabled(true);
 					lblDigiteSeuNome.setEnabled(true);
 					txtNome.setEnabled(true);
+					btnEntrar.setEnabled(true);
 					
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(null, "Detalhes: " + e.getMessage(), "Erro de conexao", JOptionPane.ERROR_MESSAGE);
@@ -249,18 +250,18 @@ public class JanelaDeEscolha extends JFrame {
 		}
 
 		lblDigiteOIp.setEnabled(false);
-		txtIP.setEnabled(false);
+		txtIP.setEnabled(true);
 		btnConectar.setEnabled(true);
 	
 		lblSelecioneUmaSala.setEnabled(true);
-		cbxSalas.setEnabled(true);
-		lblDigiteSeuNome.setEnabled(true);
-		txtNome.setEnabled(true);
+		cbxSalas.setEnabled(false);
+		lblDigiteSeuNome.setEnabled(false);
+		txtNome.setEnabled(false);
 
 		txtIP.setText(ip);
 		txtNome.setText(nome);
 
-		btnEntrar.setEnabled(true);
+		btnEntrar.setEnabled(false);
 	}
 
 }

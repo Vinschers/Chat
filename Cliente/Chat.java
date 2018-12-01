@@ -4,6 +4,9 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
 import java.awt.Color;
 import javax.swing.JList;
 import javax.swing.AbstractListModel;
@@ -11,6 +14,7 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JTextArea;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
+import javax.swing.text.Document;
 import java.awt.Font;
 import java.awt.Rectangle;
 
@@ -26,8 +30,6 @@ import java.awt.event.*;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 public class Chat extends JFrame {
 
@@ -94,16 +96,14 @@ public class Chat extends JFrame {
 		panel.add(cbxDestino, BorderLayout.WEST);
 		
 		txtMensagem = new JTextField();
-		panel.add(txtMensagem, BorderLayout.CENTER);
-		txtMensagem.setColumns(10);
+		txtMensagem.getDocument().addDocumentListener(new DocumentListener(){
 		
-		JButton btnEnviar = new JButton("Enviar");
-		btnEnviar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+			@Override
+			public void removeUpdate(DocumentEvent e) {
 				try
 				{
 					ArrayList<String> destino = new ArrayList<String>();
-					if (cbxDestino.getSelectedIndex() == 0)				
+					if (cbxDestino.getSelectedIndex() == 0)
 						for (int i = 0; i < cbxDestino.getItemCount(); i++)
 							destino.add(cbxDestino.getItemAt(i).toString());
 					else
@@ -111,15 +111,61 @@ public class Chat extends JFrame {
 						destino.add("dm");
 						destino.add(cbxDestino.getSelectedItem().toString());
 					}
-
-					destino.add(nomeUsuario);
-
-					transmissor.writeObject(new Mensagem(txtMensagem.getText(), destino));
-					transmissor.flush();
-
-					txtMensagem.setText("");
+					if (txtMensagem.getText().equals(""))
+						transmissor.writeObject(new Aviso(5, destino));
 				}
-				catch (Exception ex) {JOptionPane.showMessageDialog(null, ex.getMessage());}
+				catch(Exception ex){}
+			}
+		
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				try
+				{
+					ArrayList<String> destino = new ArrayList<String>();
+					if (cbxDestino.getSelectedIndex() == 0)
+						for (int i = 0; i < cbxDestino.getItemCount(); i++)
+							destino.add(cbxDestino.getItemAt(i).toString());
+					else
+					{
+						destino.add("dm");
+						destino.add(cbxDestino.getSelectedItem().toString());
+					}
+					transmissor.writeObject(new Aviso(4, destino));
+				}
+				catch(Exception ex){System.out.println(ex.getMessage());};
+			}
+		
+			@Override
+			public void changedUpdate(DocumentEvent e) {}
+		});
+		panel.add(txtMensagem, BorderLayout.CENTER);
+		txtMensagem.setColumns(10);
+		
+		JButton btnEnviar = new JButton("Enviar");
+		btnEnviar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (!txtMensagem.getText().equals(""))
+				{
+					try
+					{
+						ArrayList<String> destino = new ArrayList<String>();
+						if (cbxDestino.getSelectedIndex() == 0)
+							for (int i = 0; i < cbxDestino.getItemCount(); i++)
+								destino.add(cbxDestino.getItemAt(i).toString());
+						else
+						{
+							destino.add("dm");
+							destino.add(cbxDestino.getSelectedItem().toString());
+						}
+						destino.add(nomeUsuario);
+	
+						transmissor.writeObject(new Mensagem(txtMensagem.getText(), destino));
+						transmissor.flush();
+	
+						txtMensagem.setText("");
+					}
+					catch (Exception ex) {JOptionPane.showMessageDialog(null, ex.getMessage());}
+				}
 			}
 		});
 		btnEnviar.setFont(new Font("Century Gothic", Font.PLAIN, 18));
@@ -158,7 +204,7 @@ public class Chat extends JFrame {
 		contentPane.add(panel_2, BorderLayout.CENTER);
 		panel_2.setLayout(new BorderLayout(0, 0));
 		
-		lblEstaDigitando = new JLabel(" Fulano est\u00E1 digitando... ");
+		lblEstaDigitando = new JLabel("");
 		lblEstaDigitando.setForeground(Color.LIGHT_GRAY);
 		panel_2.add(lblEstaDigitando, BorderLayout.SOUTH);
 		
@@ -220,12 +266,11 @@ public class Chat extends JFrame {
 		transmissor.flush();
 		
 		transmissor.close();
-		escolha.morra();
 
-		dispose();
 		JanelaDeEscolha novaJanela = new JanelaDeEscolha();
 		novaJanela.setDados(ip, nomeSala, nomeUsuario);
 		novaJanela.setVisible(true);
+		dispose();
 		escolha.morra();
 	}
 
@@ -275,6 +320,10 @@ public class Chat extends JFrame {
 						modelo.remove(i);
 					}
 			}
+			else if (aux.getTipo() == 4)
+				lblEstaDigitando.setText(" " + aux.getUsuario() + " est\u00E1 digitando... ");
+			else if (aux.getTipo() == 5)
+				lblEstaDigitando.setText("");
 		}
 
 		// Faz a scrollbar ir para baixo quando receber qualquer coisa
