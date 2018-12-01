@@ -139,9 +139,38 @@ public class Chat extends JFrame {
 				btnEnviar.setEnabled(txtMensagem.getText().length() > 0);
 			}
 			public void removeUpdate(DocumentEvent e) {
-				btnEnviar.setEnabled(txtMensagem.getText().length() > 0);
+				try
+				{
+					ArrayList<String> destino = new ArrayList<String>();
+					if (cbxDestino.getSelectedIndex() == 0)
+						for (int i = 0; i < cbxDestino.getItemCount(); i++)
+							destino.add(cbxDestino.getItemAt(i).toString());
+					else
+					{
+						destino.add("dm");
+						destino.add(cbxDestino.getSelectedItem().toString());
+					}
+					if (txtMensagem.getText().equals(""))
+							transmissor.writeObject(new Aviso(5, destino));
+					btnEnviar.setEnabled(txtMensagem.getText().length() > 0);
+				}
+				catch(Exception ex) {};
 			}
 			public void insertUpdate(DocumentEvent e) {
+				try
+				{
+					ArrayList<String> destino = new ArrayList<String>();
+					if (cbxDestino.getSelectedIndex() == 0)
+						for (int i = 0; i < cbxDestino.getItemCount(); i++)
+							destino.add(cbxDestino.getItemAt(i).toString());
+					else
+					{
+						destino.add("dm");
+						destino.add(cbxDestino.getSelectedItem().toString());
+					}
+					transmissor.writeObject(new Aviso(4, destino));
+				}
+				catch(Exception ex){System.out.println(ex.getMessage());};
 				btnEnviar.setEnabled(txtMensagem.getText().length() > 0);
 			}
 		});
@@ -305,7 +334,7 @@ public class Chat extends JFrame {
 			else if (aux.getTipo() == 4)
 				lblEstaDigitando.setText(" " + aux.getUsuario() + " est\u00E1 digitando... ");
 			else if (aux.getTipo() == 5)
-				lblEstaDigitando.setText("");
+				lblEstaDigitando.setText(" ");
 		}
 
 		// Faz a scrollbar ir para baixo quando receber qualquer coisa
