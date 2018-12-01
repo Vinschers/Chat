@@ -56,17 +56,17 @@ public class CuidadoraDeUsuario extends Thread
                 }
                 if (salaEscolhida == null)
                 {
-                    oos.writeObject(new AvisoErro("Sala nao encontrada"));
+                    oos.writeObject(new Aviso(3, "Sala nao encontrada"));
                     houveErro = true;
                 }
                 else if (salaEscolhida.isCheia())
                 {
-                    oos.writeObject(new AvisoErro("Sala ja esta cheia!"));
+                    oos.writeObject(new Aviso(3, "Sala ja esta cheia!"));
                     houveErro = true;
                 }
                 else if (nomeEscolhido == null || nomeEscolhido.equals(""))
                 {
-                    oos.writeObject(new AvisoErro("Nome invalido!"));
+                    oos.writeObject(new Aviso(3, "Nome invalido!"));
                     houveErro = true;
                 }
                 else
@@ -76,7 +76,7 @@ public class CuidadoraDeUsuario extends Thread
                     {
                         if (us.get(i).getNickname() == nomeEscolhido)
                         {
-                            oos.writeObject(new AvisoErro("Nome de usuário já existe na sala!"));
+                            oos.writeObject(new Aviso(3, "Nome de usuário já existe na sala!"));
                             houveErro = true;
                             break;
                         }
@@ -91,9 +91,9 @@ public class CuidadoraDeUsuario extends Thread
             salaEscolhida.adicionarUsuario(this.usuario);
             for (int i = 0; i < us.size(); i++)
             {
-                this.usuario.envia(new AvisoDeEntradaNaSala(), us.get(i).getNickname());
+                this.usuario.envia(new Aviso(1, null), us.get(i).getNickname());
                 if (this.usuario != us.get(i))
-                    us.get(i).envia(new AvisoDeEntradaNaSala(), this.usuario.getNickname());
+                    us.get(i).envia(new Aviso(1, null), this.usuario.getNickname());
             }
             Enviavel recebido = null;
             Mensagem aux;
@@ -113,7 +113,7 @@ public class CuidadoraDeUsuario extends Thread
             salaEscolhida.removerUsuario(this.usuario);
             us = salaEscolhida.getUsuarios();
             for (int i = 0; i < us.size(); i++)
-                this.usuario.envia(new AvisoDeSaidaDaSala(), us.get(i).getNickname());
+                this.usuario.envia(new Aviso(2, null), us.get(i).getNickname());
             this.usuario.fechaTudo();
         }
         catch(Exception e){}
