@@ -90,29 +90,40 @@ public class CuidadoraDeUsuario extends Thread
             salaEscolhida.adicionarUsuario(this.usuario);
             for (int i = 0; i < us.size(); i++)
             {
-                this.usuario.envia(new Aviso(1, null), us.get(i).getNickname());
+                this.usuario.envia(new Aviso(1), us.get(i).getNickname());
                 if (this.usuario != us.get(i))
-                    us.get(i).envia(new Aviso(1, null), this.usuario.getNickname());
+                    us.get(i).envia(new Aviso(1), this.usuario.getNickname());
             }
             Enviavel recebido = null;
-            Mensagem aux;
+            Mensagem msg;
+            Aviso aviso;
             ArrayList<String> dest;
             do
             {
                 recebido = (Enviavel)ois.readObject();
                 if (recebido instanceof Mensagem)
                 {
-                    aux = (Mensagem)recebido;
-                    dest = aux.getDestinatarios();
+                    msg = (Mensagem)recebido;
+                    dest = msg.getDestinatarios();
                     for (int i = 1; i < dest.size(); i++)
-                        this.usuario.envia(aux, dest.get(i));
+                        this.usuario.envia(msg, dest.get(i));
+                }
+                else if (recebido instanceof Aviso)
+                {
+                    aviso = (Aviso)recebido;
+                    dest = aviso.getDestinatarios();
+                    if (aviso.getTipo() == 4 || aviso.getTipo() == 5)
+                    {
+                        for (int i = 1; i < dest.size(); i++)
+                            this.usuario.envia(aviso, dest.get(i));
+                    }
                 }
             }
             while (!(recebido instanceof PedidoParaSairDaSala));
             salaEscolhida.removerUsuario(this.usuario);
             us = salaEscolhida.getUsuarios();
             for (int i = 0; i < us.size(); i++)
-                this.usuario.envia(new Aviso(2, null), us.get(i).getNickname());
+                this.usuario.envia(new Aviso(2), us.get(i).getNickname());
             this.usuario.fechaTudo();
         }
         catch(Exception e){}

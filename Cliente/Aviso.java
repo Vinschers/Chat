@@ -1,7 +1,22 @@
+import java.util.*;
 public class Aviso extends Enviavel
 {
     protected int tipo;
     protected String mensagem;
+    protected ArrayList<String> destinatarios;
+
+    /**
+     * 
+     * @param tipo 1: Entrada; 2: Saida; 3: Erro; 4: Digitando; 5: Parou de digitar
+     * @throws Exception se o tipo for invalido
+     */
+    public Aviso(int tipo) throws Exception
+    {
+        super();
+        if (tipo < 1 || tipo > 5)
+            throw new Exception("Tipo de aviso invalido");
+        this.tipo = tipo;
+    }
     /**
     * @param tipo 1: Entrada; 2: Saida; 3: Erro; 4: Digitando; 5: Parou de digitar
     * @param msg A mensagem que sera exibida no aviso, se for de erro
@@ -19,10 +34,22 @@ public class Aviso extends Enviavel
             this.mensagem = msg;
         }
     }
+    public Aviso(int tipo, ArrayList<String> dest) throws Exception
+    {
+        super();
+        if (tipo < 1 || tipo > 5)
+            throw new Exception("Tipo de aviso invalido");
+        this.tipo = tipo;
+        if (dest.size() <= 0)
+            throw new Exception("Destinatarios invalidos");
+        if (tipo < 4)
+            throw new Exception("Tipo de aviso nao suporta esse construtor");
+        destinatarios = new ArrayList<String>(dest);
+    }
     public String toString()
     {
         String ret = "";
-        if (this.tipo != 3)
+        if (this.tipo == 1 || this.tipo == 2)
         {
             ret += "<center><h2><i>";
             ret += super.getUsuario();
@@ -30,14 +57,12 @@ public class Aviso extends Enviavel
                 ret += " entrou na sala";
             else if (tipo == 2)
                 ret += " saiu da sala";
-            else if (tipo == 4)
-                ret += " está digitando...";
-            else
-                ret = "parou";
             ret += "</i></h2></center>";
         }
-        else
+        else if (this.tipo == 3)
             ret = this.mensagem;
+        else
+            ret = "";
         return ret;
     }
     public int hashCode()
@@ -51,5 +76,9 @@ public class Aviso extends Enviavel
     public int getTipo()
     {
         return this.tipo;
+    }
+    public ArrayList<String> getDestinatarios()
+    {
+        return this.destinatarios;
     }
 }
