@@ -246,12 +246,10 @@ public class Chat extends JFrame {
 			if (recebidoEhUltimoUsuario && !destinoDiferente)
 				texto = ((Mensagem)recebido).getMensagem() + "<br>";
 
+			texto = texto.replace("<x>" + this.nomeUsuario + "</x>", "<font color=\"#00d3a5;\">Voc\u00EA</font>");
+
 			if (msg.getUsuario().equals(this.nomeUsuario))
-			{
 				classeEmissor = "proprio";
-				//System.out.println(texto);
-				texto = texto.replace("<x>" + this.nomeUsuario + "</x>", "<font color=\"#00d3a5;\">Voc\u00EA</font>");
-			}
 			else
 				classeEmissor = "outro";
 		}

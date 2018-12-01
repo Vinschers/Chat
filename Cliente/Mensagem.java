@@ -86,7 +86,7 @@ public class Mensagem extends Enviavel
     public String toString()
     {
         if (this.destinatarios.get(0).equals("dm"))
-            return "<i><font size=\"4\" color=\"#B0B0B0\">" + super.getHora() + "</font> <span class=\"negrito\"><x>" + super.getUsuario() + "</x> --> <x>" + this.destinatarios.get(1) + "</x>:</span></i>" + this.mensagem + "<br>";
+            return "<i><font size=\"4\" color=\"#B0B0B0\">" + super.getHora() + "</font> <span class=\"negrito\"><x>" + super.getUsuario() + "</x> --> <x>" + this.destinatarios.get(1) + "</x>:</span></i> " + this.mensagem + "<br>";
         return "<i><font size=\"4\" color=\"#B0B0B0\">" + super.getHora() + "</font></i> <span class=\"negrito\"><x>" + super.getUsuario() + "</x>:</span> " + this.mensagem + "<br>";
     }
 

@@ -18,7 +18,7 @@ public class Receptor extends Thread
                 Thread.sleep(100);
             }
         }
-        catch(Exception e) {System.out.println(e.getMessage());}
+        catch(Exception e) {System.out.println("Erro no Receptor: " + e.getMessage());}
     }
     public Receptor(Chat c, ObjectInputStream receptor) throws Exception
     {
