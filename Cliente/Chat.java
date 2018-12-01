@@ -258,19 +258,23 @@ public class Chat extends JFrame {
 
 		//System.out.println((recebido instanceof Mensagem?(recebidoEhUltimoUsuario?"":"<div class=\"espacar\"></div>") + "<div id=\"msg\" class=\"" + classeEmissor + "\">":"") + "<font face=\"Century Gothic\">" + texto + "</font>" + (recebido instanceof Mensagem?"</div>":""));
 		painelMensagens.setText("<html><body bgcolor=\"#004b66\">" + painelMensagens.getText().substring(57, painelMensagens.getText().length() - (recebidoEhUltimoUsuario && painelMensagens.getText().length() > 57?17:17)) + (recebido instanceof Mensagem?((recebidoEhUltimoUsuario && !destinoDiferente)|| ultimaMensagem==null?"":"<div class=\"espaco\"></div") + "<div id=\"" + (((Mensagem)recebido).getDestinatarios().get(0).equals("dm")?"dm":"geral") + "\" class=\"" + classeEmissor + "\">":"") + "<font face=\"Century Gothic\">" + texto + "</font>" + (recebido instanceof Mensagem?"</div>":"") + "</body></html>");
-		if (recebido instanceof AvisoDeEntradaNaSala && !recebido.getUsuario().equals(this.nomeUsuario))
+		if (recebido instanceof Aviso && !recebido.getUsuario().equals(this.nomeUsuario))
 		{
-			modelo.addElement(recebido.getUsuario());
-			cbxDestino.addItem(recebido.getUsuario());
-		}
-		else if (recebido instanceof AvisoDeSaidaDaSala)
-		{
-			for (int i = 0; i < cbxDestino.getItemCount(); i++)
-				if (cbxDestino.getItemAt(i).equals(recebido.getUsuario()))
-				{
-					cbxDestino.removeItemAt(i);
-					modelo.remove(i);
-				}
+			Aviso aux = (Aviso)recebido;
+			if (aux.getTipo() == 1)
+			{
+				modelo.addElement(recebido.getUsuario());
+				cbxDestino.addItem(recebido.getUsuario());
+			}
+			else if(aux.getTipo() == 2)
+			{
+				for (int i = 0; i < cbxDestino.getItemCount(); i++)
+					if (cbxDestino.getItemAt(i).equals(recebido.getUsuario()))
+					{
+						cbxDestino.removeItemAt(i);
+						modelo.remove(i);
+					}
+			}
 		}
 		JScrollBar verticalBar = scrollPane.getVerticalScrollBar();
 		AdjustmentListener downScroller = new AdjustmentListener() {
