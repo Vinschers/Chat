@@ -394,20 +394,6 @@ public class Chat extends JFrame {
 		}
 	}
 
-	protected void descerScroll()
-	{
-		// Faz a scrollbar ir para baixo
-		JScrollBar barraDeScroll = scrollPane.getVerticalScrollBar();
-		AdjustmentListener jogaScrollParaBaixo = new AdjustmentListener() {
-			@Override
-			public void adjustmentValueChanged(AdjustmentEvent e) {
-				Adjustable ajustavel = e.getAdjustable();
-				ajustavel.setValue(ajustavel.getMaximum());
-				barraDeScroll.removeAdjustmentListener(this);
-			}
-		};
-		barraDeScroll.addAdjustmentListener(jogaScrollParaBaixo);
-	}
 	protected void exibirTodos()
 	{
 		String texto = "<html><body bgcolor=\"#004b66\">";
@@ -418,7 +404,7 @@ public class Chat extends JFrame {
 		texto += "</body></html>";
 		painelMensagens.setText(texto);
 
-		descerScroll();
+		painelMensagens.setCaretPosition(painelMensagens.getDocument().getLength());
 	}
 	protected void exibirDMs(String usuario)
 	{
@@ -437,7 +423,7 @@ public class Chat extends JFrame {
 		texto += "</body></html>";
 		painelMensagens.setText(texto);
 
-		descerScroll();
+		painelMensagens.setCaretPosition(painelMensagens.getDocument().getLength());
 	}
 	protected String formatarRecebido(int indiceRecebido)
 	{
