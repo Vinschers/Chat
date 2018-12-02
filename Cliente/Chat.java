@@ -11,10 +11,11 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.event.*;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.font.FontRenderContext;
+import java.awt.geom.AffineTransform;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -41,6 +42,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import java.lang.*;
 
 public class Chat extends JFrame {
 
@@ -238,54 +241,7 @@ public class Chat extends JFrame {
 		panel_2.add(label_2, BorderLayout.EAST);
 		
 		this.folhaDeEstilo = new StyleSheet();
-		this.editor = new HTMLEditorKit(){ 
-			@Override 
-			public ViewFactory getViewFactory(){ 
-  
-				return new HTMLFactory(){ 
-					public View create(Element e){ 
-					   	View v = super.create(e); 
-					   	if(v instanceof InlineView){ 
-						   	return new InlineView(e){ 
-							   	public int getBreakWeight(int axis, float pos, float len) { 
-									return GoodBreakWeight; 
-							   	} 
-							   	public View breakView(int axis, int p0, float pos, float len) { 
-								   	if(axis == View.X_AXIS) { 
-									   	checkPainter(); 
-									   	int p1 = getGlyphPainter().getBoundedPosition(this, p0, pos, len); 
-									   	if(p0 == getStartOffset() && p1 == getEndOffset()) { 
-											return this; 
-									   	} 
-									   	return createFragment(p0, p1); 
-								   	} 
-								   	return this; 
-								} 
-							}; 
-					   	} 
-					   	else if (v instanceof ParagraphView) { 
-						   	return new ParagraphView(e) { 
-							   	protected SizeRequirements calculateMinorAxisRequirements(int axis, SizeRequirements r) { 
-								   	if (r == null) { 
-										r = new SizeRequirements(); 
-								   	} 
-								   	float pref = layoutPool.getPreferredSpan(axis); 
-								   	float min = layoutPool.getMinimumSpan(axis); 
-								   	// Don't include insets, Box.getXXXSpan will include them. 
-									r.minimum = (int)min; 
-									r.preferred = Math.max(r.minimum, (int) pref); 
-									r.maximum = Integer.MAX_VALUE; 
-									r.alignment = 0.5f; 
-								   	return r; 
-								} 
-  
-							}; 
-						} 
-					   	return v; 
-					} 
-				}; 
-			} 
-		};
+		this.editor = new HTMLEditorKit();
 
 		this.folhaDeEstilo.addRule("body {background-color: #004b66; font-size: 16pt; font-family: Century Gothic; color: white; max-width: 500px; overflow-x: hidden;}");
 		this.folhaDeEstilo.addRule("p {padding: 2px;} ");
@@ -325,6 +281,12 @@ public class Chat extends JFrame {
 		btnSairDaSala.setBackground(Color.LIGHT_GRAY);
 		btnSairDaSala.setFont(new Font("Century Gothic", Font.PLAIN, 18));
 		panel_3.add(btnSairDaSala, BorderLayout.EAST);
+
+		addComponentListener(new ComponentAdapter() {
+			public void componentResized(ComponentEvent componentEvent) {
+				reformatarMensagens();
+			}
+		});
 	}
 
 	protected void fechar(boolean abrirNovaJanela, boolean servidorFechou)
@@ -384,7 +346,7 @@ public class Chat extends JFrame {
 		}
 
 		if ((!(recebido instanceof Aviso) || ((Aviso)recebido).getTipo() != 4))
-		{	
+		{
 			recebidos.add(recebido);
 
 			exibirTodos();
@@ -428,12 +390,17 @@ public class Chat extends JFrame {
 	protected String formatarRecebido(int indiceRecebido)
 	{
 		Enviavel recebido = recebidos.get(indiceRecebido);
-		String texto = recebido.toString();
+		String texto;
+		texto = recebido.toString();
 
 		if (recebido instanceof Mensagem)
 		{
 			Mensagem msg = (Mensagem) recebido;
-
+			texto = msg.getMensagem();
+			texto = fazerWrap(texto);
+			if (msg.getDestinatarios().get(0).equals("dm"))
+            	texto = "<i><font size=\"4\" color=\"#B0B0B0\">" + recebido.getHora() + "</font> <span class=\"negrito\"><x>" + recebido.getUsuario() + "</x> --> <x>" + msg.getDestinatarios().get(1) + "</x>:</span></i> " + texto + "<br>";
+        	texto = "<i><font size=\"4\" color=\"#B0B0B0\">" + recebido.getHora() + "</font></i> <span class=\"negrito\"><x>" + recebido.getUsuario() + "</x>:</span> " + texto + "<br>";
 			ArrayList<String> destinoAntigo = null;
 			boolean recebidoEhUltimoUsuario = false;
 			Mensagem ultimaMensagem = null;
@@ -447,111 +414,107 @@ public class Chat extends JFrame {
 			ArrayList<String> destinoAtual = msg.getDestinatarios();
 
 			boolean destinoDiferente = destinoAntigo==null || !destinoAntigo.get(0).equals(destinoAtual.get(0)) || (destinoAntigo.get(0).equals("dm") && !destinoAntigo.get(1).equals(destinoAtual.get(1)));
-
 			if (recebidoEhUltimoUsuario && !destinoDiferente && ultimaMensagem != null)
-				texto = ((Mensagem)recebido).getMensagem() + "<br>";
-			
+				texto = fazerWrap(((Mensagem)recebido).getMensagem()) + "<br>";
 			texto = "<p class=\"" + (((Mensagem)recebido).getDestinatarios().get(0).equals("dm")?"dm":"geral") + "\">" + 
 					texto.replace("<x>" + this.nomeUsuario + "</x>", "<font color=\"#00d3a5;\">Voc\u00EA</font>") + 
 					"</p>";
 
 			if ((!recebidoEhUltimoUsuario || destinoDiferente) && ultimaMensagem != null)
-				texto = "<div class=\"espaco\"></div>" + texto;	
-				
+				texto = "<div class=\"espaco\"></div>" + texto;
 		}
-		
 		return texto;
+	}
+	protected String fazerWrap(String txt)
+	{
+		AffineTransform affinetransform = new AffineTransform();     
+		FontRenderContext frc = new FontRenderContext(affinetransform,true,true);     
+		Font font = new Font("Century Gothic", Font.PLAIN, 18);
+		int widthAtual;
+		int widthPainel = painelMensagens.getWidth();
+		txt = txt.replace("&nbsp;", " ");
+		String[] palavras = txt.split(" ");
+		ArrayList<String> linhas = new ArrayList<String>();
+		String textoFinal = "";
+		String textoAtual = "";
+		String palavraAtual;
+		for (int i = 0; i < palavras.length; i++)
+		{
+			palavraAtual = palavras[i];
+			widthAtual = (int)(font.getStringBounds(textoAtual + " " + palavraAtual, frc).getWidth());
+			if (i == 0 && widthAtual > widthPainel - 40)
+			{
+				linhas.add(textoAtual);
+				textoAtual = " " + palavraAtual;
+			}
+			else if (i > 0 && widthAtual > widthPainel)
+			{
+				linhas.add(textoAtual);
+				textoAtual = " " + palavraAtual;
+			}
+			else
+				textoAtual += " " + palavraAtual;
+			if (i == palavras.length - 1)
+				linhas.add(textoAtual);
+		}
+		for (int i = 0; i < linhas.size(); i++)
+			textoFinal += linhas.get(i) + "";
+		txt.replace(" ", "&nbsp;");
+		return textoFinal;
+	}
+	protected void reformatarMensagens()
+	{
+		//
 	}
 }
 //teste de wrap
 /*
-import java.awt.Dimension; 
-import javax.swing.*; 
-import javax.swing.text.Element; 
-import javax.swing.text.View; 
-import javax.swing.text.ViewFactory; 
-import javax.swing.text.html.HTMLEditorKit; 
-import javax.swing.text.html.InlineView; 
-import javax.swing.text.html.ParagraphView; 
- 
-public class HtmlLetterWrap { 
- 
-    public HtmlLetterWrap(){ 
-        final JFrame frame = new JFrame("Letter wrap test"); 
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
- 
-        final JEditorPane htmlTextPane = newJEditorPane(); 
- 
-        htmlTextPane.setEditorKit(new HTMLEditorKit(){ 
-           @Override 
-           public ViewFactory getViewFactory(){ 
- 
-               return new HTMLFactory(){ 
-                   public View create(Element e){ 
-                      View v = super.create(e); 
-                      if(v instanceof InlineView){ 
-                          return new InlineView(e){ 
-                              public int getBreakWeight(int axis, float pos, float len) { 
-                                  return GoodBreakWeight; 
-                              } 
-                              public View breakView(int axis, int p0, float pos, float len) { 
-                                  if(axis == View.X_AXIS) { 
-                                      checkPainter(); 
-                                      int p1 = getGlyphPainter().getBoundedPosition(this, p0, pos, len); 
-                                      if(p0 == getStartOffset() && p1 == getEndOffset()) { 
-                                          return this; 
-                                      } 
-                                      return createFragment(p0, p1); 
-                                  } 
-                                  return this; 
-                                } 
-                            }; 
-                      } 
-                      else if (v instanceof ParagraphView) { 
-                          return new ParagraphView(e) { 
-                              protected SizeRequirements calculateMinorAxisRequirements(int axis, SizeRequirements r) { 
-                                  if (r == null) { 
-                                        r = new SizeRequirements(); 
-                                  } 
-                                  float pref = layoutPool.getPreferredSpan(axis); 
-                                  float min = layoutPool.getMinimumSpan(axis); 
-                                  // Don't include insets, Box.getXXXSpan will include them. 
-                                    r.minimum = (int)min; 
-                                    r.preferred = Math.max(r.minimum, (int) pref); 
-                                    r.maximum = Integer.MAX_VALUE; 
-                                    r.alignment = 0.5f; 
-                                  return r; 
-                                } 
- 
-                            }; 
-                        } 
-                      return v; 
-                    } 
-                }; 
-            } 
-        }); 
- 
-        htmlTextPane.setContentType("text/html"); 
-        htmlTextPane.setText("This text pane contains html. The custom HTMLEditorKit supports single letter wrapping."); 
- 
-        JEditorPane noHtmlTextPane = new JEditorPane(); 
-        noHtmlTextPane.setText("This text pane contains no html. It supports single letter wrapping!"); 
- 
-        htmlTextPane.setMinimumSize(new Dimension(0, 0)); 
-        noHtmlTextPane.setMinimumSize(new Dimension(0, 0)); 
- 
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, noHtmlTextPane, htmlTextPane); 
-        splitPane.setContinuousLayout(true); 
- 
-        frame.add(splitPane); 
- 
-        frame.setSize(200, 200); 
-        frame.setVisible(true); 
-        splitPane.setDividerLocation(.5); 
-    } 
- 
-  public static void main(String[] args) { 
-      newHtmlLetterWrap(); 
-  } 
-}
-	*/
+		this.editor = new HTMLEditorKit(){ 
+			@Override 
+			public ViewFactory getViewFactory(){ 
+  
+				return new HTMLFactory(){ 
+					public View create(Element e){ 
+					   	View v = super.create(e); 
+					   	if(v instanceof InlineView){ 
+						   	return new InlineView(e){ 
+							   	public int getBreakWeight(int axis, float pos, float len) { 
+									return GoodBreakWeight; 
+							   	} 
+							   	public View breakView(int axis, int p0, float pos, float len) { 
+								   	if(axis == View.X_AXIS) { 
+									   	checkPainter(); 
+									   	int p1 = getGlyphPainter().getBoundedPosition(this, p0, pos, len); 
+									   	if(p0 == getStartOffset() && p1 == getEndOffset()) { 
+											return this; 
+									   	} 
+									   	return createFragment(p0, p1); 
+								   	} 
+								   	return this; 
+								} 
+							}; 
+					   	} 
+					   	else if (v instanceof ParagraphView) { 
+						   	return new ParagraphView(e) { 
+							   	protected SizeRequirements calculateMinorAxisRequirements(int axis, SizeRequirements r) { 
+								   	if (r == null) { 
+										r = new SizeRequirements(); 
+								   	} 
+								   	float pref = layoutPool.getPreferredSpan(axis); 
+								   	float min = layoutPool.getMinimumSpan(axis); 
+								   	// Don't include insets, Box.getXXXSpan will include them. 
+									r.minimum = (int)min; 
+									r.preferred = Math.max(r.minimum, (int) pref); 
+									r.maximum = Integer.MAX_VALUE; 
+									r.alignment = 0.5f; 
+								   	return r; 
+								} 
+  
+							}; 
+						} 
+					   	return v; 
+					} 
+				}; 
+			} 
+		};
+*/
