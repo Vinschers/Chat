@@ -36,7 +36,11 @@ import javax.swing.event.*;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Chat extends JFrame {
 
@@ -158,8 +162,6 @@ public class Chat extends JFrame {
 						destino.add("dm");
 						destino.add(cbxDestino.getSelectedItem().toString());
 					}
-					if (txtMensagem.getText().equals(""))
-							transmissor.writeObject(new Aviso(5, destino));
 					btnEnviar.setEnabled(txtMensagem.getText().length() > 0);
 				}
 				catch(Exception ex) {};
@@ -188,7 +190,14 @@ public class Chat extends JFrame {
 				if (btnEnviar.isEnabled() && evt.getKeyCode() == KeyEvent.VK_ENTER)
 					btnEnviar.doClick();			
             }
-        });
+		});
+		
+		new Timer().scheduleAtFixedRate(new TimerTask(){
+			public void run() {
+				if (quandoRecebeuUltimoDigitando != null && (new Date().getTime() - quandoRecebeuUltimoDigitando.getTime()) > 2500)
+					lblEstaDigitando.setText("   ");
+			}
+		}, 0, 500);
 		
 		JPanel panel_1 = new JPanel();
 		panel_1.setForeground(Color.WHITE);
@@ -342,11 +351,12 @@ public class Chat extends JFrame {
 
 	protected Mensagem ultimaMensagem = null;
 	protected String ultimoUsuario = null;
+	protected Date quandoRecebeuUltimoDigitando = null;
 
 	public void receber(Enviavel recebido)
 	{
 		String texto = recebido.toString();
-		String classeEmissor = null;
+
 		boolean recebidoEhUltimoUsuario = ultimaMensagem != null && recebido.getUsuario().equals(ultimaMensagem.getUsuario());
 		boolean destinoDiferente = false;
 		if (recebido instanceof Mensagem)
@@ -386,28 +396,30 @@ public class Chat extends JFrame {
 						modelo.remove(i);
 					}
 			}
-			else if (aux.getTipo() == 4)
+			else
+			{
 				lblEstaDigitando.setText(" " + aux.getUsuario() + " est\u00E1 digitando... ");
-			else if (aux.getTipo() == 5)
-				lblEstaDigitando.setText(" ");
+				quandoRecebeuUltimoDigitando = new Date();
+			}
 		}
 
-		// Faz a scrollbar ir para baixo quando receber qualquer coisa
-		JScrollBar barraDeScroll = scrollPane.getVerticalScrollBar();
-		AdjustmentListener jogaScrollParaBaixo = new AdjustmentListener() {
-			@Override
-			public void adjustmentValueChanged(AdjustmentEvent e) {
-				Adjustable ajustavel = e.getAdjustable();
-				ajustavel.setValue(ajustavel.getMaximum());
-				barraDeScroll.removeAdjustmentListener(this);
-			}
-		};
-		barraDeScroll.addAdjustmentListener(jogaScrollParaBaixo);
+		if ((!(recebido instanceof Aviso) || ((Aviso)recebido).getTipo() != 4))
+		{
+			JScrollBar barraDeScroll = scrollPane.getVerticalScrollBar();
+			AdjustmentListener jogaScrollParaBaixo = new AdjustmentListener() {
+				@Override
+				public void adjustmentValueChanged(AdjustmentEvent e) {
+					Adjustable ajustavel = e.getAdjustable();
+					ajustavel.setValue(ajustavel.getMaximum());
+					barraDeScroll.removeAdjustmentListener(this);
+				}
+			};
+			barraDeScroll.addAdjustmentListener(jogaScrollParaBaixo);
 
-		if ((!(recebido instanceof Aviso) || ((Aviso)recebido).getTipo() != 4 && ((Aviso)recebido).getTipo() != 5) && !isFocused())
-			requestFocus(); // Faz a janela piscar se o usuário recebeu uma mensagem, um aviso de entrada ou um aviso de saída
-
-		ultimaMensagem = (recebido instanceof Mensagem?(Mensagem)recebido:null);
+			ultimaMensagem = (recebido instanceof Mensagem?(Mensagem)recebido:null); // Faz a scrollbar ir para baixo
+			if (!isFocused())	
+				requestFocus(); // Faz a janela piscar se o usuário recebeu uma mensagem, um aviso de entrada ou um aviso de saída
+		}
 	}
 }
 //teste de wrap
