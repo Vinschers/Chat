@@ -387,7 +387,7 @@ public class Chat extends JFrame {
 		{	
 			recebidos.add(recebido);
 
-			exibirTodas();
+			exibirTodos();
 
 			if (!isFocused())	
 				requestFocus(); // Faz a janela piscar se o usuário recebeu uma mensagem, um aviso de entrada ou um aviso de saída
@@ -408,7 +408,7 @@ public class Chat extends JFrame {
 		};
 		barraDeScroll.addAdjustmentListener(jogaScrollParaBaixo);
 	}
-	protected void exibirTodas()
+	protected void exibirTodos()
 	{
 		String texto = "<html><body bgcolor=\"#004b66\">";
 
