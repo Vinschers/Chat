@@ -63,6 +63,8 @@ public class Chat extends JFrame {
 	protected String ip;
 	protected String nomeSala;
 
+	protected ArrayList<Enviavel> recebidos;
+
 	/**
 	 * Create the frame.
 	 */
@@ -306,6 +308,8 @@ public class Chat extends JFrame {
 		painelMensagens.setText("<html><body bgcolor=\"#004b66\"></body></html>");
 		scrollPane = new JScrollPane(painelMensagens);
 		panel_2.add(scrollPane, BorderLayout.CENTER);
+
+		recebidos = new ArrayList<Enviavel>();
 			
 		JPanel panel_3 = new JPanel();
 		panel_3.setBackground(new Color(30, 30, 30));
@@ -355,30 +359,6 @@ public class Chat extends JFrame {
 
 	public void receber(Enviavel recebido)
 	{
-		String texto = recebido.toString();
-
-		boolean recebidoEhUltimoUsuario = ultimaMensagem != null && recebido.getUsuario().equals(ultimaMensagem.getUsuario());
-		boolean destinoDiferente = false;
-		if (recebido instanceof Mensagem)
-		{
-			Mensagem msg = (Mensagem)recebido;
-			ArrayList<String> destinoAntigo = ultimaMensagem != null?ultimaMensagem.getDestinatarios():null;
-			ArrayList<String> destinoAtual = msg.getDestinatarios();
-			destinoDiferente = destinoAntigo==null || !destinoAntigo.get(0).equals(destinoAtual.get(0)) || (destinoAntigo.get(0).equals("dm") && !destinoAntigo.get(1).equals(destinoAtual.get(1)));
-
-			if (recebidoEhUltimoUsuario && !destinoDiferente)
-				texto = ((Mensagem)recebido).getMensagem() + "<br>";
-
-			texto = texto.replace("<x>" + this.nomeUsuario + "</x>", "<font color=\"#00d3a5;\">Voc\u00EA</font>");
-		}
-
-		painelMensagens.setText("<html><body bgcolor=\"#004b66\">" + 
-		                         painelMensagens.getText().substring(57, painelMensagens.getText().length() - 17) + // Pega todo o conteúdo dentro da tag body
-								 (recebido instanceof Mensagem?((recebidoEhUltimoUsuario && !destinoDiferente)|| ultimaMensagem==null?"":"<div class=\"espaco\"></div") + // Determina se adicionará um espaço em branco
-								 "<p class=\"" + (((Mensagem)recebido).getDestinatarios().get(0).equals("dm")?"dm":"geral") + "\">":"") + // Se for mensagem, especifica o tipo: dm ou geral
-								 texto + // Concatena com o conteúdo do recebido
-								 (recebido instanceof Mensagem?"</p>":"") + // Se for mensagem, fecha o parágrafo
-								 "</body></html>");
 		if (recebido instanceof Aviso && !recebido.getUsuario().equals(this.nomeUsuario))
 		{
 			Aviso aux = (Aviso)recebido;
@@ -404,22 +384,97 @@ public class Chat extends JFrame {
 		}
 
 		if ((!(recebido instanceof Aviso) || ((Aviso)recebido).getTipo() != 4))
-		{
-			JScrollBar barraDeScroll = scrollPane.getVerticalScrollBar();
-			AdjustmentListener jogaScrollParaBaixo = new AdjustmentListener() {
-				@Override
-				public void adjustmentValueChanged(AdjustmentEvent e) {
-					Adjustable ajustavel = e.getAdjustable();
-					ajustavel.setValue(ajustavel.getMaximum());
-					barraDeScroll.removeAdjustmentListener(this);
-				}
-			};
-			barraDeScroll.addAdjustmentListener(jogaScrollParaBaixo);
+		{	
+			recebidos.add(recebido);
 
-			ultimaMensagem = (recebido instanceof Mensagem?(Mensagem)recebido:null); // Faz a scrollbar ir para baixo
+			exibirTodas();
+
 			if (!isFocused())	
 				requestFocus(); // Faz a janela piscar se o usuário recebeu uma mensagem, um aviso de entrada ou um aviso de saída
 		}
+	}
+
+	protected void descerScroll()
+	{
+		// Faz a scrollbar ir para baixo
+		JScrollBar barraDeScroll = scrollPane.getVerticalScrollBar();
+		AdjustmentListener jogaScrollParaBaixo = new AdjustmentListener() {
+			@Override
+			public void adjustmentValueChanged(AdjustmentEvent e) {
+				Adjustable ajustavel = e.getAdjustable();
+				ajustavel.setValue(ajustavel.getMaximum());
+				barraDeScroll.removeAdjustmentListener(this);
+			}
+		};
+		barraDeScroll.addAdjustmentListener(jogaScrollParaBaixo);
+	}
+	protected void exibirTodas()
+	{
+		String texto = "<html><body bgcolor=\"#004b66\">";
+
+		for (int i = 0; i < recebidos.size(); i++)
+			texto += formatarRecebido(i);
+
+		texto += "</body></html>";
+		painelMensagens.setText(texto);
+
+		descerScroll();
+	}
+	protected void exibirDMs(String usuario)
+	{
+		String texto = "<html><body bgcolor=\"#004b66\">";
+
+		for (int i = 0; i < recebidos.size(); i++)
+		{
+			if (recebidos.get(i) instanceof Mensagem)
+			{
+				Mensagem msg = (Mensagem) recebidos.get(i);
+				if (msg.getDestinatarios().get(0).equals("dm") && (msg.getDestinatarios().get(1).equals(usuario) || msg.getUsuario().equals(usuario)))
+					texto += formatarRecebido(i);
+			}
+		}
+
+		texto += "</body></html>";
+		painelMensagens.setText(texto);
+
+		descerScroll();
+	}
+	protected String formatarRecebido(int indiceRecebido)
+	{
+		Enviavel recebido = recebidos.get(indiceRecebido);
+		String texto = recebido.toString();
+
+		if (recebido instanceof Mensagem)
+		{
+			Mensagem msg = (Mensagem) recebido;
+
+			ArrayList<String> destinoAntigo = null;
+			boolean recebidoEhUltimoUsuario = false;
+			Mensagem ultimaMensagem = null;
+
+			if (indiceRecebido > 0 && recebidos.get(indiceRecebido - 1) instanceof Mensagem)
+			{
+				ultimaMensagem = (Mensagem)recebidos.get(indiceRecebido - 1);
+				destinoAntigo = ultimaMensagem.getDestinatarios();
+				recebidoEhUltimoUsuario = ultimaMensagem.getUsuario().equals(recebido.getUsuario());
+			}
+			ArrayList<String> destinoAtual = msg.getDestinatarios();
+
+			boolean destinoDiferente = destinoAntigo==null || !destinoAntigo.get(0).equals(destinoAtual.get(0)) || (destinoAntigo.get(0).equals("dm") && !destinoAntigo.get(1).equals(destinoAtual.get(1)));
+
+			if (recebidoEhUltimoUsuario && !destinoDiferente && ultimaMensagem != null)
+				texto = ((Mensagem)recebido).getMensagem() + "<br>";
+			
+			texto = "<p class=\"" + (((Mensagem)recebido).getDestinatarios().get(0).equals("dm")?"dm":"geral") + "\">" + 
+					texto.replace("<x>" + this.nomeUsuario + "</x>", "<font color=\"#00d3a5;\">Voc\u00EA</font>") + 
+					"</p>";
+
+			if ((!recebidoEhUltimoUsuario || destinoDiferente) && ultimaMensagem != null)
+				texto = "<div class=\"espaco\"></div>" + texto;	
+				
+		}
+		
+		return texto;
 	}
 }
 //teste de wrap
