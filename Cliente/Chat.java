@@ -53,6 +53,7 @@ public class Chat extends JFrame {
 	protected JTextPane painelMensagens;
 	protected JScrollPane scrollPane;
 	protected JLabel lblEstaDigitando;
+	protected JCheckBox chkApenasDMs;
 
 	protected StyleSheet folhaDeEstilo;
 	protected HTMLDocument documento;
@@ -103,6 +104,12 @@ public class Chat extends JFrame {
 		panel.setLayout(new BorderLayout(0, 0));
 		
 		cbxDestino = new JComboBox();
+		cbxDestino.addItemListener(new ItemListener(){
+			public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == e.SELECTED)
+					chkApenasDMs.setVisible(cbxDestino.getSelectedIndex() != 0);
+			}
+		});
 		cbxDestino.setModel(new DefaultComboBoxModel(new String[] {"Mensagem Geral                           "}));
 		cbxDestino.setFont(new Font("Century Gothic", Font.PLAIN, 16));
 		panel.add(cbxDestino, BorderLayout.WEST);
@@ -221,9 +228,35 @@ public class Chat extends JFrame {
 		listUsuarios.setFont(new Font("Century Gothic", Font.PLAIN, 19));
 		listUsuarios.setVisibleRowCount(15);
 		listUsuarios.setBackground(Color.LIGHT_GRAY);
+		listUsuarios.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent evt) {
+				JList list = (JList)evt.getSource();
+				if (evt.getClickCount() >= 2 && listUsuarios.getSelectedIndex() != 0) {
+		
+					// Double-click detected
+					//int index = list.locationToIndex(evt.getPoint());
+					cbxDestino.setSelectedIndex(listUsuarios.getSelectedIndex());
+					
+				}
+			}
+		});
 		panel_1.add(listUsuarios, BorderLayout.CENTER);
 
 		modelo.addElement(nomeUsuario);
+
+		chkApenasDMs = new JCheckBox("Exibir apenas DMs", false);
+		chkApenasDMs.setForeground(Color.WHITE);
+		chkApenasDMs.setBackground(new Color(30, 30, 30));
+		chkApenasDMs.setVisible(false);
+		chkApenasDMs.addItemListener(new ItemListener(){
+			public void itemStateChanged(ItemEvent e) {
+				if (chkApenasDMs.isSelected())
+					exibirDMs((String) cbxDestino.getSelectedItem());
+				else
+					exibirTodos();
+			}
+		});
+		panel_1.add(chkApenasDMs, BorderLayout.SOUTH);
 		
 		JPanel panel_2 = new JPanel();
 		panel_2.setBackground(new Color(30, 30, 30));
@@ -349,7 +382,10 @@ public class Chat extends JFrame {
 		{
 			recebidos.add(recebido);
 
-			exibirTodos();
+			if (chkApenasDMs.isSelected())
+				exibirDMs((String) cbxDestino.getSelectedItem());
+			else
+				exibirTodos();
 
 			if (!isFocused())	
 				requestFocus(); // Faz a janela piscar se o usuário recebeu uma mensagem, um aviso de entrada ou um aviso de saída
