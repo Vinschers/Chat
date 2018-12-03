@@ -31,14 +31,11 @@ public class JanelaDeEscolha extends JFrame {
 
 	protected JPanel contentPane;
 	protected JTextField txtNome;
-	protected JTextField txtIP;
 	protected JComboBox cbxSalas;
 	protected JButton btnEntrar;
-	protected JLabel lblDigiteOIp;
 	protected JLabel lblStatus;
 	protected JLabel lblSelecioneUmaSala;
 	protected JLabel lblDigiteSeuNome;
-	protected JButton btnConectar;
 	
 	protected boolean estaEmTesteSemConexao = false;
 	
@@ -47,6 +44,8 @@ public class JanelaDeEscolha extends JFrame {
 	protected ObjectOutputStream transmissor;
 	protected Chat chat = null;
 	protected Receptor receptorClass;
+
+	public final String ip = "localhost";
 
 	/**
 	 * Launch the application.
@@ -68,13 +67,13 @@ public class JanelaDeEscolha extends JFrame {
 		setFont(new Font("Century Gothic", Font.PLAIN, 12));
 		setTitle("Chat");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 599, 193);
+		setBounds(100, 100, 619, 160);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout(0, 0));
 		
-		lblStatus = new JLabel("Digite o IP do Servidor");
+		lblStatus = new JLabel("Escolha sua sala e seu nome");
 		lblStatus.setHorizontalAlignment(SwingConstants.CENTER);
 		lblStatus.setFont(new Font("Century Gothic", Font.BOLD, 16));
 		contentPane.add(lblStatus, BorderLayout.NORTH);
@@ -85,11 +84,12 @@ public class JanelaDeEscolha extends JFrame {
 		contentPane.add(panel, BorderLayout.CENTER);
 		GridBagLayout gbl_panel = new GridBagLayout();
 		gbl_panel.columnWidths = new int[]{0, 0, 0};
-		gbl_panel.rowHeights = new int[]{0, 0, 0, 0};
+		gbl_panel.rowHeights = new int[]{0, 0, 0};
 		gbl_panel.columnWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
-		gbl_panel.rowWeights = new double[]{1.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_panel.rowWeights = new double[]{1.0, 0.0, Double.MIN_VALUE};
 		panel.setLayout(gbl_panel);
 		
+		/*
 		lblDigiteOIp = new JLabel("IP do Servidor:");
 		lblDigiteOIp.setFont(new Font("Century Gothic", Font.PLAIN, 16));
 		GridBagConstraints gbc_lblDigiteOIp = new GridBagConstraints();
@@ -97,8 +97,9 @@ public class JanelaDeEscolha extends JFrame {
 		gbc_lblDigiteOIp.insets = new Insets(0, 0, 5, 5);
 		gbc_lblDigiteOIp.gridx = 0;
 		gbc_lblDigiteOIp.gridy = 0;
-		panel.add(lblDigiteOIp, gbc_lblDigiteOIp);
+		panel.add(lblDigiteOIp, gbc_lblDigiteOIp);*/
 		
+		/*
 		JPanel panel_1 = new JPanel();
 		GridBagConstraints gbc_panel_1 = new GridBagConstraints();
 		gbc_panel_1.insets = new Insets(0, 0, 5, 0);
@@ -111,7 +112,7 @@ public class JanelaDeEscolha extends JFrame {
 		txtIP = new JTextField();
 		txtIP.setFont(new Font("Century Gothic", Font.PLAIN, 16));
 		panel_1.add(txtIP, BorderLayout.CENTER);
-		txtIP.setColumns(10);
+		txtIP.setColumns(10);*/
 		
 		lblSelecioneUmaSala = new JLabel("Selecione uma sala:");
 		lblSelecioneUmaSala.setEnabled(false);
@@ -120,7 +121,7 @@ public class JanelaDeEscolha extends JFrame {
 		gbc_lblSelecioneUmaSala.insets = new Insets(0, 0, 5, 5);
 		gbc_lblSelecioneUmaSala.anchor = GridBagConstraints.EAST;
 		gbc_lblSelecioneUmaSala.gridx = 0;
-		gbc_lblSelecioneUmaSala.gridy = 1;
+		gbc_lblSelecioneUmaSala.gridy = 0;
 		panel.add(lblSelecioneUmaSala, gbc_lblSelecioneUmaSala);
 		
 		cbxSalas = new JComboBox();
@@ -130,7 +131,7 @@ public class JanelaDeEscolha extends JFrame {
 		gbc_cbxSalas.insets = new Insets(0, 0, 5, 0);
 		gbc_cbxSalas.fill = GridBagConstraints.HORIZONTAL;
 		gbc_cbxSalas.gridx = 1;
-		gbc_cbxSalas.gridy = 1;
+		gbc_cbxSalas.gridy = 0;
 		panel.add(cbxSalas, gbc_cbxSalas);
 		
 		lblDigiteSeuNome = new JLabel("Digite seu nome:");
@@ -140,7 +141,7 @@ public class JanelaDeEscolha extends JFrame {
 		gbc_lblDigiteSeuNome.anchor = GridBagConstraints.EAST;
 		gbc_lblDigiteSeuNome.insets = new Insets(0, 0, 0, 5);
 		gbc_lblDigiteSeuNome.gridx = 0;
-		gbc_lblDigiteSeuNome.gridy = 2;
+		gbc_lblDigiteSeuNome.gridy = 1;
 		panel.add(lblDigiteSeuNome, gbc_lblDigiteSeuNome);
 
 		btnEntrar = new JButton("Entrar");
@@ -165,7 +166,7 @@ public class JanelaDeEscolha extends JFrame {
 						JOptionPane.showMessageDialog(null, recebido.toString());
 					else
 					{		
-						chat = new Chat(este, nomeSala, txtNome.getText(), transmissor, txtIP.getText());
+						chat = new Chat(este, nomeSala, txtNome.getText(), transmissor);
 						chat.setVisible(true);
 						setVisible(false);
 						receptorClass = new Receptor(chat, receptor);
@@ -192,13 +193,7 @@ public class JanelaDeEscolha extends JFrame {
 							lblSelecioneUmaSala.setEnabled(false);
 							cbxSalas.setEnabled(false);
 	
-							lblDigiteOIp.setEnabled(true);
-							txtIP.setEnabled(true);
-							btnConectar.setEnabled(true);
-	
-							lblStatus.setText("Digite o IP do Servidor");
-	
-							JOptionPane.showMessageDialog(null, "Servidor fechado. Escolha outro ou tente novamente mais tarde!");
+							JOptionPane.showMessageDialog(null, "Servidor fechado. Tente novamente mais tarde!");
 						}
 						catch (Exception e) {JOptionPane.showMessageDialog(null, e.getMessage());}
 					}
@@ -229,40 +224,28 @@ public class JanelaDeEscolha extends JFrame {
 		GridBagConstraints gbc_txtNome = new GridBagConstraints();
 		gbc_txtNome.fill = GridBagConstraints.HORIZONTAL;
 		gbc_txtNome.gridx = 1;
-		gbc_txtNome.gridy = 2;
+		gbc_txtNome.gridy = 1;
 		panel.add(txtNome, gbc_txtNome);
 		txtNome.setColumns(10);
-		
-		btnConectar = new JButton("Conectar");
-		btnConectar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				try {
-					conexao = new Socket(txtIP.getText(), 12345);
-					receptor = new ObjectInputStream(conexao.getInputStream());
 
-					SalasDisponiveis recebido = (SalasDisponiveis) receptor.readObject();
-					ArrayList<SalaSerializable> salasDisponiveis = recebido.getSalas();
+		try {
+			conexao = new Socket(ip, 12345);
+			receptor = new ObjectInputStream(conexao.getInputStream());
 
-					for (int i = 0; i < salasDisponiveis.size(); i++)
-						cbxSalas.addItem(salasDisponiveis.get(i).toString());
-					lblStatus.setText("Servidor conectado. Selecione uma sala e digite seu nome para come\u00E7ar");
-					
-					lblDigiteOIp.setEnabled(false);
-					txtIP.setEnabled(false);
-					btnConectar.setEnabled(false);
-				
-					lblSelecioneUmaSala.setEnabled(true);
-					cbxSalas.setEnabled(true);
-					lblDigiteSeuNome.setEnabled(true);
-					txtNome.setEnabled(true);					
-				} catch (Exception e) {
-					JOptionPane.showMessageDialog(null, "Detalhes: " + e.getMessage(), "Erro de conex\00E3o", JOptionPane.ERROR_MESSAGE);
-				}
-			}
-		});
+			SalasDisponiveis recebido = (SalasDisponiveis) receptor.readObject();
+			ArrayList<SalaSerializable> salasDisponiveis = recebido.getSalas();
+
+			for (int i = 0; i < salasDisponiveis.size(); i++)
+				cbxSalas.addItem(salasDisponiveis.get(i).toString());
+			lblStatus.setText("Servidor conectado. Selecione uma sala e digite seu nome para come\u00E7ar");
 		
-		btnConectar.setFont(new Font("Century Gothic", Font.PLAIN, 16));
-		panel_1.add(btnConectar, BorderLayout.EAST);
+			lblSelecioneUmaSala.setEnabled(true);
+			cbxSalas.setEnabled(true);
+			lblDigiteSeuNome.setEnabled(true);
+			txtNome.setEnabled(true);					
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Detalhes: " + e.getMessage(), "Erro de conex\00E3o", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 	public void morra() throws Exception
 	{
@@ -270,32 +253,17 @@ public class JanelaDeEscolha extends JFrame {
 		receptor.close();
 		conexao.close();
 	}
-	public void setDados(String ip, String nomeSala, String nome) throws Exception
+	public void setDados(String nomeSala, String nome) throws Exception
 	{
-		conexao = new Socket(ip, 12345);
-		receptor = new ObjectInputStream(conexao.getInputStream());
-
-		SalasDisponiveis salasDisp = ((SalasDisponiveis)receptor.readObject());
-		
-		ArrayList<SalaSerializable> salas = salasDisp.getSalas();
-
-		for (int i = 0; i < salas.size(); i++)
-		{
-			cbxSalas.addItem(salas.get(i).toString());
-			if (salas.get(i).toString().equals(nomeSala))
+		for (int i = 0; i < cbxSalas.getItemCount(); i++)
+			if (cbxSalas.getItemAt(i).toString().split("\"")[1].equals(nomeSala))
 				cbxSalas.setSelectedIndex(i);
-		}
-
-		lblDigiteOIp.setEnabled(false);
-		txtIP.setEnabled(false);
-		btnConectar.setEnabled(false);
 	
 		lblSelecioneUmaSala.setEnabled(true);
 		cbxSalas.setEnabled(true);
 		lblDigiteSeuNome.setEnabled(true);
 		txtNome.setEnabled(true);
 
-		txtIP.setText(ip);
 		txtNome.setText(nome);
 
 		btnEntrar.setEnabled(true);

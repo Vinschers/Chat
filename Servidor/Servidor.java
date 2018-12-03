@@ -11,7 +11,7 @@ public class Servidor
         {
             Salas salas = new Salas();
 
-            boolean puxarDoBD = false;
+            boolean puxarDoBD = true;
 
             if (puxarDoBD)
             {

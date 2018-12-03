@@ -1,5 +1,5 @@
 import java.awt.*;
-import java.awt.Dimension; 
+
 import javax.swing.*; 
 import javax.swing.text.Element; 
 import javax.swing.text.View; 
@@ -7,13 +7,8 @@ import javax.swing.text.ViewFactory;
 import javax.swing.text.html.HTMLEditorKit; 
 import javax.swing.text.html.InlineView; 
 import javax.swing.text.html.ParagraphView;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Rectangle;
+
 import java.awt.event.*;
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
-import java.awt.Font;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.AffineTransform;
 
@@ -64,7 +59,6 @@ public class Chat extends JFrame {
 	protected String nomeUsuario;
 	protected ObjectOutputStream transmissor;
 	protected JanelaDeEscolha escolha;
-	protected String ip;
 	protected String nomeSala;
 
 	protected ArrayList<Enviavel> recebidos;
@@ -72,11 +66,11 @@ public class Chat extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public Chat(JanelaDeEscolha escolha, String nomeSala, String nomeUsuario, ObjectOutputStream transmissor, String ip) {
+	public Chat(JanelaDeEscolha escolha, String nomeSala, String nomeUsuario, ObjectOutputStream transmissor) {
 		setTitle("Chat - Sala conectada: " + nomeSala);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 910, 525);
-		setMinimumSize(new Dimension(500, 300));
+		setMinimumSize(new Dimension(580, 300));
 		contentPane = new JPanel();
 		contentPane.setBackground(new Color(30, 30, 30));
 		contentPane.setForeground(Color.WHITE);
@@ -88,7 +82,6 @@ public class Chat extends JFrame {
 		this.nomeSala = nomeSala;
 		this.transmissor = transmissor;
 		this.escolha = escolha;
-		this.ip = ip;
 
 		addWindowListener(new WindowAdapter() {
 			@Override
@@ -156,11 +149,12 @@ public class Chat extends JFrame {
 			}
 		});
 		btnEnviar.setFont(new Font("Century Gothic", Font.PLAIN, 18));
+		btnEnviar.setEnabled(false);
 		panel.add(btnEnviar, BorderLayout.EAST);
 
 		txtMensagem.getDocument().addDocumentListener(new DocumentListener() {
 			public void changedUpdate(DocumentEvent e) {
-				btnEnviar.setEnabled(txtMensagem.getText().length() > 0);
+				btnEnviar.setEnabled(txtMensagem.getText().trim().length() > 0);
 			}
 			public void removeUpdate(DocumentEvent e) {
 				try
@@ -174,7 +168,7 @@ public class Chat extends JFrame {
 						destino.add("dm");
 						destino.add(cbxDestino.getSelectedItem().toString());
 					}
-					btnEnviar.setEnabled(txtMensagem.getText().length() > 0);
+					btnEnviar.setEnabled(txtMensagem.getText().trim().length() > 0);
 				}
 				catch(Exception ex) {};
 			}
@@ -193,7 +187,7 @@ public class Chat extends JFrame {
 					transmissor.writeObject(new Aviso(4, destino));
 				}
 				catch(Exception ex){System.out.println(ex.getMessage());};
-				btnEnviar.setEnabled(txtMensagem.getText().length() > 0);
+				btnEnviar.setEnabled(txtMensagem.getText().trim().length() > 0);
 			}
 		});
 
@@ -232,11 +226,7 @@ public class Chat extends JFrame {
 			public void mouseClicked(MouseEvent evt) {
 				JList list = (JList)evt.getSource();
 				if (evt.getClickCount() >= 2 && listUsuarios.getSelectedIndex() != 0) {
-		
-					// Double-click detected
-					//int index = list.locationToIndex(evt.getPoint());
-					cbxDestino.setSelectedIndex(listUsuarios.getSelectedIndex());
-					
+					cbxDestino.setSelectedIndex(listUsuarios.getSelectedIndex());			
 				}
 			}
 		});
@@ -282,7 +272,6 @@ public class Chat extends JFrame {
 		this.folhaDeEstilo.addRule(".dm {background-color: #262626; color: #bcbcbc;} ");
 		this.folhaDeEstilo.addRule(".espaco {font-size: 3pt;}");
 		this.folhaDeEstilo.addRule("center {text-align: center; font-weight: bold; font-size: 22pt; margin-bottom: 5px; margin-top: 5px;}");
-		this.folhaDeEstilo.addRule(".negrito {font-weight: bold}");
 		this.editor.setStyleSheet(this.folhaDeEstilo);
 		this.documento = (HTMLDocument) this.editor.createDefaultDocument();
 		this.elementoBody = documento.getRootElements()[0].getElement(0);
@@ -341,7 +330,7 @@ public class Chat extends JFrame {
 			{
 				JanelaDeEscolha novaJanela = new JanelaDeEscolha();
 				if (!servidorFechou)
-					novaJanela.setDados(ip, nomeSala, nomeUsuario);
+					novaJanela.setDados(nomeSala, nomeUsuario);
 				novaJanela.setVisible(true);
 			}
 		}
@@ -446,7 +435,6 @@ public class Chat extends JFrame {
 		int widthAtual;
 		int widthPalavraAtual;
 		int widthPainel = painelMensagens.getWidth();
-		txt = txt.replace("&nbsp;", " ");
 		String[] palavras = txt.split(" ");
 		ArrayList<String> linhas = new ArrayList<String>();
 		String textoAtual = "";
@@ -457,22 +445,23 @@ public class Chat extends JFrame {
 			String aux = textoAtual + " " + palavraAtual;
 			widthAtual = (int)(font.getStringBounds(aux, frc).getWidth());
 			widthPalavraAtual = (int)(font.getStringBounds(palavraAtual, frc).getWidth());
+
 			if (widthPalavraAtual < widthPainel)
 			{
-				if (linhas.size()==0 && widthAtual > widthPainel - 100)
+				if (linhas.size()==0 && widthAtual > widthPainel - 135)
 				{
-					linhas.add(textoAtual);
+					adicionarLinha(linhas, textoAtual);
 					textoAtual = palavraAtual;
 				}
 				else if (widthAtual > widthPainel)
 				{
-					linhas.add(textoAtual);
+					adicionarLinha(linhas, textoAtual);
 					textoAtual = palavraAtual;
 				}
 				else
 					textoAtual += " " + palavraAtual;
 				if (i == palavras.length - 1)
-					linhas.add(textoAtual);
+					adicionarLinha(linhas, textoAtual);
 			}
 			else
 			{
@@ -482,22 +471,27 @@ public class Chat extends JFrame {
 					widthAtual = (int)(font.getStringBounds(textoAtual + caracteres[k], frc).getWidth());
 					if (linhas.size()==0 && widthAtual > widthPainel-100)
 					{
-						linhas.add(textoAtual);
+						adicionarLinha(linhas, textoAtual);
 						textoAtual = "" + caracteres[k];
 					}
 					else if (widthAtual > widthPainel)
 					{
-						linhas.add(textoAtual);
+						adicionarLinha(linhas, textoAtual);
 						textoAtual = "" + caracteres[k];
 					}
 					else
 						textoAtual += "" + caracteres[k];
 					if (k == caracteres.length-1 && i == palavras.length - 1)
-						linhas.add(textoAtual);
+						adicionarLinha(linhas, textoAtual);
 				}
 			}
 		}
-		return linhas;
+		return consertarDecoracaoDeTexto(linhas);
+	}
+	protected void adicionarLinha(ArrayList<String> array, String linha)
+	{
+		if (linha.trim().length() > 0)
+			array.add(linha.replace(" ", "&nbsp;"));
 	}
 	protected void reformatarMensagens()
 	{
@@ -513,10 +507,10 @@ public class Chat extends JFrame {
 		//*parte em negrito* _parte em italico_ ~parte riscada~ esse daqui vai ser um texto bem grande para fins de teste. eu realmente espero que isso funcione como deveria, separando as palavras e nao apenas as letras.
 		//String texto = formatarComCaracteresEspeciais(txt);
 		String texto = txt;
-		//System.out.println(texto);
 		if (msg.getDestinatarios().get(0).equals("dm"))
-            	texto = "<i><font size=\"4\" color=\"#B0B0B0\">" + msg.getHora() + "</font><span class=\"negrito\"><x>" + msg.getUsuario() + "</x> --> <x>" + msg.getDestinatarios().get(1) + "</x>:</span></i>" + texto;
-		texto = "<i><font size=\"4\" color=\"#B0B0B0\">" + msg.getHora() + "</font></i>&nbsp;<span class=\"negrito\"><x>" + msg.getUsuario() + "</x>:</span>&nbsp;" + texto;
+			texto = "<i><font size=\"4\" color=\"#B0B0B0\">" + msg.getHora() + "</font><b><x>" + msg.getUsuario() + "</x> --> <x>" + msg.getDestinatarios().get(1) + "</x>:</b></i>" + texto;
+		else
+			texto = "<i><font size=\"4\" color=\"#B0B0B0\">" + msg.getHora() + "</font></i>&nbsp;<b><x>" + msg.getUsuario() + "</x>:</b>&nbsp;" + texto;
 		ArrayList<String> destinoAntigo = null;
 		boolean recebidoEhUltimoUsuario = true;
 		Mensagem ultimaMensagem = new Mensagem(msg);
@@ -542,55 +536,32 @@ public class Chat extends JFrame {
 			texto = "<div class=\"espaco\"></div>" + texto;
 		return texto;
 	}
+	protected ArrayList<String> consertarDecoracaoDeTexto(ArrayList<String> texto)
+	{
+		String linhaAtual;
+		for (int i = 0; i < texto.size(); i++)
+		{
+			linhaAtual = texto.get(i);
+
+			String[] aberturas = {"<b>", "<i>", "<strike>"};
+			String[] fechamentos = {"</b>", "</i>", "</strike>"};
+
+			int ultimoIndiceAbreDecoracao;
+			int ultimoIndiceFechaDecoracao;
+			for (int j = 0; j < aberturas.length; j++)
+			{
+				ultimoIndiceAbreDecoracao = linhaAtual.lastIndexOf(aberturas[j]);
+				ultimoIndiceFechaDecoracao = linhaAtual.lastIndexOf(fechamentos[j]);
+
+				if (ultimoIndiceAbreDecoracao > ultimoIndiceFechaDecoracao || 
+					(ultimoIndiceAbreDecoracao > -1 && ultimoIndiceFechaDecoracao == -1))
+				{
+					texto.set(i, linhaAtual + fechamentos[j]);
+					texto.set(i + 1, aberturas[j] + texto.get(i + 1));
+				}
+			}
+		}
+
+		return texto;
+	}
 }
-//teste de wrap
-/*
-		this.editor = new HTMLEditorKit(){ 
-			@Override 
-			public ViewFactory getViewFactory(){ 
-  
-				return new HTMLFactory(){ 
-					public View create(Element e){ 
-					   	View v = super.create(e); 
-					   	if(v instanceof InlineView){ 
-						   	return new InlineView(e){ 
-							   	public int getBreakWeight(int axis, float pos, float len) { 
-									return GoodBreakWeight; 
-							   	} 
-							   	public View breakView(int axis, int p0, float pos, float len) { 
-								   	if(axis == View.X_AXIS) { 
-									   	checkPainter(); 
-									   	int p1 = getGlyphPainter().getBoundedPosition(this, p0, pos, len); 
-									   	if(p0 == getStartOffset() && p1 == getEndOffset()) { 
-											return this; 
-									   	} 
-									   	return createFragment(p0, p1); 
-								   	} 
-								   	return this; 
-								} 
-							}; 
-					   	} 
-					   	else if (v instanceof ParagraphView) { 
-						   	return new ParagraphView(e) { 
-							   	protected SizeRequirements calculateMinorAxisRequirements(int axis, SizeRequirements r) { 
-								   	if (r == null) { 
-										r = new SizeRequirements(); 
-								   	} 
-								   	float pref = layoutPool.getPreferredSpan(axis); 
-								   	float min = layoutPool.getMinimumSpan(axis); 
-								   	// Don't include insets, Box.getXXXSpan will include them. 
-									r.minimum = (int)min; 
-									r.preferred = Math.max(r.minimum, (int) pref); 
-									r.maximum = Integer.MAX_VALUE; 
-									r.alignment = 0.5f; 
-								   	return r; 
-								} 
-  
-							}; 
-						} 
-					   	return v; 
-					} 
-				}; 
-			} 
-		};
-*/

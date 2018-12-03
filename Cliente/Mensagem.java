@@ -14,7 +14,8 @@ public class Mensagem extends Enviavel
             throw new Exception("Destinatário inválido");
 
         this.mensagem = msg.replace("<", "&lt;").replace(">", "&gt;");
-        this.mensagem = this.mensagem.replace(" ", "&nbsp;");
+
+        this.mensagem = formatarMensagem(this.mensagem);
 
         this.destinatarios = dest;
     }
@@ -76,8 +77,10 @@ public class Mensagem extends Enviavel
         this.mensagem = msg.mensagem;
         this.destinatarios = msg.destinatarios;
     }
-    public static String formatarMensagem(String msg)
+    protected static String formatarMensagem(String msg)
     {
+        System.out.println("Formatando");
+
         ArrayList<Integer> indicesAsterisco = new ArrayList<Integer>();
         ArrayList<Integer> indicesTil = new ArrayList<Integer>();
         ArrayList<Integer> indicesUnderline = new ArrayList<Integer>();
@@ -110,10 +113,13 @@ public class Mensagem extends Enviavel
                     break;
             }
         }
-        msg = substituirPares(msg, indicesAsterisco, 1, "<span class=\"negrito\">", "</span>");
+        msg = substituirPares(msg, indicesAsterisco, 1, "<b>", "</b>");
         msg = substituirPares(msg, indicesTil, 1, "<strike>", "</strike>");
         msg = substituirPares(msg, indicesUnderline, 1, "<i>", "</i>");
         msg = substituirPares(msg, indicesCrase, 3, "<font face=\"Lucida Console\">", "</font>");
+
+        System.out.println(msg);
+
         return msg;
     }
 }

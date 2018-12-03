@@ -5,7 +5,7 @@ public class Enviavel implements Serializable
     protected String usuario;
     protected Hora hora;
 
-    private static final long serialVersionUID = 1L;
+    protected static final long serialVersionUID = 1L;
 
     public Enviavel()
     {
