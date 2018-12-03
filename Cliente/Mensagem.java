@@ -14,6 +14,7 @@ public class Mensagem extends Enviavel
             throw new Exception("Destinatário inválido");
 
         this.mensagem = msg.replace("<", "&lt;").replace(">", "&gt;");
+        this.mensagem = this.mensagem.replace(" ", "&nbsp;");
 
         ArrayList<Integer> indicesAsterisco = new ArrayList<Integer>();
         ArrayList<Integer> indicesTil = new ArrayList<Integer>();
@@ -52,8 +53,6 @@ public class Mensagem extends Enviavel
         this.mensagem = this.substituirPares(this.mensagem, indicesTil, 1, "<strike>", "</strike>");
         this.mensagem = this.substituirPares(this.mensagem, indicesUnderline, 1, "<i>", "</i>");
         this.mensagem = this.substituirPares(this.mensagem, indicesCrase, 3, "<font face=\"Lucida Console\">", "</font>");
-
-        this.mensagem = this.mensagem.replace(" ", "&nbsp;");
 
         this.destinatarios = dest;
     }
