@@ -55,4 +55,19 @@ public class Enviavel implements Serializable
             throw new Exception("Usuário inválido");
         this.usuario = u;
     }
+    public Object clone()
+    {
+        Enviavel en = null;
+        try
+        {
+            en = new Enviavel(this);
+        }
+        catch(Exception e){}
+        return en;
+    }
+    public Enviavel(Enviavel outro)
+    {
+        this.usuario = outro.usuario;
+        this.hora = outro.hora;
+    }
 }

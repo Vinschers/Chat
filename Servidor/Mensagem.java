@@ -102,4 +102,25 @@ public class Mensagem extends Enviavel
     {
         return this.destinatarios;
     }
+
+    public void setMensagem(String nova)
+    {
+        this.mensagem = nova;
+    }
+
+    public Object clone()
+    {
+        Mensagem msg = null;
+        try{
+            msg = new Mensagem(this);
+        }
+        catch(Exception e){}
+        return msg;
+    }
+    public Mensagem(Mensagem msg)
+    {
+        super(msg);
+        this.mensagem = msg.mensagem;
+        this.destinatarios = msg.destinatarios;
+    }
 }

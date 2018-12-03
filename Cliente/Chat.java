@@ -428,79 +428,121 @@ public class Chat extends JFrame {
 		Enviavel recebido = recebidos.get(indiceRecebido);
 		String texto;
 		texto = recebido.toString();
-
 		if (recebido instanceof Mensagem)
 		{
-			Mensagem msg = (Mensagem) recebido;
+			Mensagem msg = (Mensagem)recebido;
 			texto = msg.getMensagem();
-			texto = fazerWrap(texto);
-			if (msg.getDestinatarios().get(0).equals("dm"))
-            	texto = "<i><font size=\"4\" color=\"#B0B0B0\">" + recebido.getHora() + "</font> <span class=\"negrito\"><x>" + recebido.getUsuario() + "</x> --> <x>" + msg.getDestinatarios().get(1) + "</x>:</span></i> " + texto + "<br>";
-        	texto = "<i><font size=\"4\" color=\"#B0B0B0\">" + recebido.getHora() + "</font></i> <span class=\"negrito\"><x>" + recebido.getUsuario() + "</x>:</span> " + texto + "<br>";
-			ArrayList<String> destinoAntigo = null;
-			boolean recebidoEhUltimoUsuario = false;
-			Mensagem ultimaMensagem = null;
-
-			if (indiceRecebido > 0 && recebidos.get(indiceRecebido - 1) instanceof Mensagem)
-			{
-				ultimaMensagem = (Mensagem)recebidos.get(indiceRecebido - 1);
-				destinoAntigo = ultimaMensagem.getDestinatarios();
-				recebidoEhUltimoUsuario = ultimaMensagem.getUsuario().equals(recebido.getUsuario());
-			}
-			ArrayList<String> destinoAtual = msg.getDestinatarios();
-
-			boolean destinoDiferente = destinoAntigo==null || !destinoAntigo.get(0).equals(destinoAtual.get(0)) || (destinoAntigo.get(0).equals("dm") && !destinoAntigo.get(1).equals(destinoAtual.get(1)));
-			if (recebidoEhUltimoUsuario && !destinoDiferente && ultimaMensagem != null)
-				texto = fazerWrap(((Mensagem)recebido).getMensagem()) + "<br>";
-			texto = "<p class=\"" + (((Mensagem)recebido).getDestinatarios().get(0).equals("dm")?"dm":"geral") + "\">" + 
-					texto.replace("<x>" + this.nomeUsuario + "</x>", "<font color=\"#00d3a5;\">Voc\u00EA</font>") + 
-					"</p>";
-
-			if ((!recebidoEhUltimoUsuario || destinoDiferente) && ultimaMensagem != null)
-				texto = "<div class=\"espaco\"></div>" + texto;
+			System.out.println(texto);
+			ArrayList<String> linhas = fazerWrap(texto);
+			texto = "";
+			for (int i = 0; i < linhas.size(); i++)
+				texto += new String(formatarMensagem(msg, linhas.get(i), indiceRecebido, i));
 		}
 		return texto;
 	}
-	protected String fazerWrap(String txt)
+	protected ArrayList<String> fazerWrap(String txt)
 	{
 		AffineTransform affinetransform = new AffineTransform();     
 		FontRenderContext frc = new FontRenderContext(affinetransform,true,true);     
 		Font font = new Font("Century Gothic", Font.PLAIN, 18);
 		int widthAtual;
+		int widthPalavraAtual;
 		int widthPainel = painelMensagens.getWidth();
 		txt = txt.replace("&nbsp;", " ");
 		String[] palavras = txt.split(" ");
 		ArrayList<String> linhas = new ArrayList<String>();
-		String textoFinal = "";
 		String textoAtual = "";
 		String palavraAtual;
 		for (int i = 0; i < palavras.length; i++)
 		{
 			palavraAtual = palavras[i];
-			widthAtual = (int)(font.getStringBounds(textoAtual + " " + palavraAtual, frc).getWidth());
-			if (i == 0 && widthAtual > widthPainel - 40)
+			String aux = textoAtual + " " + palavraAtual;
+			widthAtual = (int)(font.getStringBounds(aux, frc).getWidth());
+			widthPalavraAtual = (int)(font.getStringBounds(palavraAtual, frc).getWidth());
+			if (widthPalavraAtual < widthPainel)
 			{
-				linhas.add(textoAtual);
-				textoAtual = " " + palavraAtual;
-			}
-			else if (i > 0 && widthAtual > widthPainel)
-			{
-				linhas.add(textoAtual);
-				textoAtual = " " + palavraAtual;
+				if (linhas.size()==0 && widthAtual > widthPainel - 100)
+				{
+					linhas.add(textoAtual);
+					textoAtual = palavraAtual;
+				}
+				else if (widthAtual > widthPainel)
+				{
+					linhas.add(textoAtual);
+					textoAtual = palavraAtual;
+				}
+				else
+					textoAtual += " " + palavraAtual;
+				if (i == palavras.length - 1)
+					linhas.add(textoAtual);
 			}
 			else
-				textoAtual += " " + palavraAtual;
-			if (i == palavras.length - 1)
-				linhas.add(textoAtual);
+			{
+				char[] caracteres = palavraAtual.toCharArray();
+				for (int k = 0; k < caracteres.length; k++)
+				{
+					widthAtual = (int)(font.getStringBounds(textoAtual + caracteres[k], frc).getWidth());
+					if (linhas.size()==0 && widthAtual > widthPainel-100)
+					{
+						linhas.add(textoAtual);
+						textoAtual = "" + caracteres[k];
+					}
+					else if (widthAtual > widthPainel)
+					{
+						linhas.add(textoAtual);
+						textoAtual = "" + caracteres[k];
+					}
+					else
+						textoAtual += "" + caracteres[k];
+					if (k == caracteres.length-1 && i == palavras.length - 1)
+						linhas.add(textoAtual);
+				}
+			}
 		}
-		for (int i = 0; i < linhas.size(); i++)
-			textoFinal += linhas.get(i) + "";
-		txt.replace(" ", "&nbsp;");
-		return textoFinal;
+		return linhas;
 	}
 	protected void reformatarMensagens()
 	{
-		//
+		for(int i = 0; i < recebidos.size(); i++)
+			formatarRecebido(i);
+		if (chkApenasDMs.isSelected())
+			exibirDMs((String) cbxDestino.getSelectedItem());
+		else
+			exibirTodos();
+	}
+	protected String formatarMensagem(Mensagem msg, String txt, int indiceRecebido, int linhaAtual)
+	{
+		//*parte em negrito* _parte em italico_ ~parte riscada~ esse daqui vai ser um texto bem grande para fins de teste. eu realmente espero que isso funcione como deveria, separando as palavras e nao apenas as letras.
+		//String texto = formatarComCaracteresEspeciais(txt);
+		String texto = txt;
+		//System.out.println(texto);
+		if (msg.getDestinatarios().get(0).equals("dm"))
+            	texto = "<i><font size=\"4\" color=\"#B0B0B0\">" + msg.getHora() + "</font><span class=\"negrito\"><x>" + msg.getUsuario() + "</x> --> <x>" + msg.getDestinatarios().get(1) + "</x>:</span></i>" + texto;
+		texto = "<i><font size=\"4\" color=\"#B0B0B0\">" + msg.getHora() + "</font></i>&nbsp;<span class=\"negrito\"><x>" + msg.getUsuario() + "</x>:</span>&nbsp;" + texto;
+		ArrayList<String> destinoAntigo = null;
+		boolean recebidoEhUltimoUsuario = true;
+		Mensagem ultimaMensagem = new Mensagem(msg);
+
+		if (linhaAtual == 0 && indiceRecebido > 0 && recebidos.get(indiceRecebido - 1) instanceof Mensagem)
+		{
+			ultimaMensagem = (Mensagem)recebidos.get(indiceRecebido - 1);
+			destinoAntigo = ultimaMensagem.getDestinatarios();
+			recebidoEhUltimoUsuario = ultimaMensagem.getUsuario().equals(msg.getUsuario());
+		}
+		ArrayList<String> destinoAtual = msg.getDestinatarios();
+
+		boolean destinoDiferente = false;
+		if (linhaAtual == 0)
+			destinoDiferente = destinoAntigo==null || !destinoAntigo.get(0).equals(destinoAtual.get(0)) || (destinoAntigo.get(0).equals("dm") && !destinoAntigo.get(1).equals(destinoAtual.get(1)));
+		if (recebidoEhUltimoUsuario && !destinoDiferente && ultimaMensagem != null)
+			texto = txt + "<br>";
+		texto = "<p class=\"" + (msg.getDestinatarios().get(0).equals("dm")?"dm":"geral") + "\">" + 
+				texto.replace("<x>" + this.nomeUsuario + "</x>", "<font color=\"#00d3a5;\">Voc\u00EA</font>") + 
+				"</p>";
+
+		if ((!recebidoEhUltimoUsuario || destinoDiferente) && ultimaMensagem != null)
+			texto = "<div class=\"espaco\"></div>" + texto;
+		return texto;
 	}
 }
 //teste de wrap
