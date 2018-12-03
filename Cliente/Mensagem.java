@@ -16,48 +16,9 @@ public class Mensagem extends Enviavel
         this.mensagem = msg.replace("<", "&lt;").replace(">", "&gt;");
         this.mensagem = this.mensagem.replace(" ", "&nbsp;");
 
-        ArrayList<Integer> indicesAsterisco = new ArrayList<Integer>();
-        ArrayList<Integer> indicesTil = new ArrayList<Integer>();
-        ArrayList<Integer> indicesUnderline = new ArrayList<Integer>();
-        ArrayList<Integer> indicesCrase = new ArrayList<Integer>();
-
-        int qtasCrasesJaForam = 0;
-        for (int i = 0; i < this.mensagem.length(); i++)
-        {
-            switch (this.mensagem.charAt(i))
-            {
-                case '*':
-                    indicesAsterisco.add(i);
-                    qtasCrasesJaForam = 0;
-                    break;
-                case '~':
-                    indicesTil.add(i);
-                    qtasCrasesJaForam = 0;
-                    break;
-                case '_':
-                    indicesUnderline.add(i);
-                    qtasCrasesJaForam = 0;
-                    break;
-                case '`':
-                    qtasCrasesJaForam++;
-                    if (qtasCrasesJaForam == 3)
-                        indicesCrase.add(i - 2);
-                    break;
-                default:
-                    qtasCrasesJaForam = 0;
-                    break;
-            }
-        }
-
-        this.mensagem = this.substituirPares(this.mensagem, indicesAsterisco, 1, "<span class=\"negrito\">", "</span>");
-        this.mensagem = this.substituirPares(this.mensagem, indicesTil, 1, "<strike>", "</strike>");
-        this.mensagem = this.substituirPares(this.mensagem, indicesUnderline, 1, "<i>", "</i>");
-        this.mensagem = this.substituirPares(this.mensagem, indicesCrase, 3, "<font face=\"Lucida Console\">", "</font>");
-
         this.destinatarios = dest;
     }
-
-    protected String substituirPares(String string, ArrayList<Integer> indices, int tamanhoValorASerSubstituido, String primeiroValor, String ultimoValor)
+    protected static String substituirPares(String string, ArrayList<Integer> indices, int tamanhoValorASerSubstituido, String primeiroValor, String ultimoValor)
     {
         for (int i = 0; i < (indices.size()%2==0?indices.size():indices.size() -1); i += 2)
         {
@@ -66,7 +27,7 @@ public class Mensagem extends Enviavel
         }
         return string;
     }
-    public String getMensagem()
+    public String toString()
     {
         return this.mensagem;
     }
@@ -80,13 +41,6 @@ public class Mensagem extends Enviavel
         if (!this.mensagem.equals(m.mensagem))
             return false;
         return true;
-    }
-
-    public String toString()
-    {
-        if (this.destinatarios.get(0).equals("dm"))
-            return "<i><font size=\"4\" color=\"#B0B0B0\">" + super.getHora() + "</font> <span class=\"negrito\"><x>" + super.getUsuario() + "</x> --> <x>" + this.destinatarios.get(1) + "</x>:</span></i> " + this.mensagem + "<br>";
-        return "<i><font size=\"4\" color=\"#B0B0B0\">" + super.getHora() + "</font></i> <span class=\"negrito\"><x>" + super.getUsuario() + "</x>:</span> " + this.mensagem + "<br>";
     }
 
     public int hashCode()
@@ -121,5 +75,45 @@ public class Mensagem extends Enviavel
         super(msg);
         this.mensagem = msg.mensagem;
         this.destinatarios = msg.destinatarios;
+    }
+    public static String formatarMensagem(String msg)
+    {
+        ArrayList<Integer> indicesAsterisco = new ArrayList<Integer>();
+        ArrayList<Integer> indicesTil = new ArrayList<Integer>();
+        ArrayList<Integer> indicesUnderline = new ArrayList<Integer>();
+        ArrayList<Integer> indicesCrase = new ArrayList<Integer>();
+
+        int qtasCrasesJaForam = 0;
+        for (int i = 0; i < msg.length(); i++)
+        {
+            switch (msg.charAt(i))
+            {
+                case '*':
+                    indicesAsterisco.add(i);
+                    qtasCrasesJaForam = 0;
+                    break;
+                case '~':
+                    indicesTil.add(i);
+                    qtasCrasesJaForam = 0;
+                    break;
+                case '_':
+                    indicesUnderline.add(i);
+                    qtasCrasesJaForam = 0;
+                    break;
+                case '`':
+                    qtasCrasesJaForam++;
+                    if (qtasCrasesJaForam == 3)
+                        indicesCrase.add(i - 2);
+                    break;
+                default:
+                    qtasCrasesJaForam = 0;
+                    break;
+            }
+        }
+        msg = substituirPares(msg, indicesAsterisco, 1, "<span class=\"negrito\">", "</span>");
+        msg = substituirPares(msg, indicesTil, 1, "<strike>", "</strike>");
+        msg = substituirPares(msg, indicesUnderline, 1, "<i>", "</i>");
+        msg = substituirPares(msg, indicesCrase, 3, "<font face=\"Lucida Console\">", "</font>");
+        return msg;
     }
 }

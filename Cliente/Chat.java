@@ -431,8 +431,6 @@ public class Chat extends JFrame {
 		if (recebido instanceof Mensagem)
 		{
 			Mensagem msg = (Mensagem)recebido;
-			texto = msg.getMensagem();
-			System.out.println(texto);
 			ArrayList<String> linhas = fazerWrap(texto);
 			texto = "";
 			for (int i = 0; i < linhas.size(); i++)
