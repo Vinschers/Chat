@@ -21,6 +21,13 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.event.*;
 
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DocumentFilter;
+
 import java.net.*;
 import java.util.ArrayList;
 import java.io.*;
@@ -207,6 +214,7 @@ public class JanelaDeEscolha extends JFrame {
 		contentPane.add(btnEntrar, BorderLayout.SOUTH);
 		
 		txtNome = new JTextField();
+		((AbstractDocument) txtNome.getDocument()).setDocumentFilter(new LimitDocumentFilter(30));
 		txtNome.getDocument().addDocumentListener(new DocumentListener() {
 			public void changedUpdate(DocumentEvent e) {
 				btnEntrar.setEnabled(txtNome.getText().length() > 0);

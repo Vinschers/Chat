@@ -83,12 +83,6 @@ public class Mensagem extends Enviavel
     }
     public static String formatarMensagem(String msg)
     {
-        ArrayList<Integer> indicesAsterisco = new ArrayList<Integer>();
-        ArrayList<Integer> indicesTil = new ArrayList<Integer>();
-        ArrayList<Integer> indicesUnderline = new ArrayList<Integer>();
-        ArrayList<Integer> indicesCrase = new ArrayList<Integer>();
-
-        int qtasCrasesJaForam = 0;
         for (int i = 0; i < msg.length(); i++)
             if (msg.charAt(i) == '*')
                 indicesAsterisco.add(i);

@@ -99,7 +99,7 @@ public class Chat extends JFrame {
 		cbxDestino = new JComboBox();
 		cbxDestino.addItemListener(new ItemListener(){
 			public void itemStateChanged(ItemEvent e) {
-				if (e.getStateChange() == e.SELECTED)
+				if (e.getStateChange() == ItemEvent.SELECTED)
 					chkApenasDMs.setVisible(cbxDestino.getSelectedIndex() != 0);
 			}
 		});
@@ -224,7 +224,6 @@ public class Chat extends JFrame {
 		listUsuarios.setBackground(Color.LIGHT_GRAY);
 		listUsuarios.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent evt) {
-				JList list = (JList)evt.getSource();
 				if (evt.getClickCount() >= 2 && listUsuarios.getSelectedIndex() != 0) {
 					cbxDestino.setSelectedIndex(listUsuarios.getSelectedIndex());			
 				}
@@ -508,9 +507,9 @@ public class Chat extends JFrame {
 		//String texto = formatarComCaracteresEspeciais(txt);
 		String texto = txt;
 		if (msg.getDestinatarios().get(0).equals("dm"))
-			texto = "<i><font size=\"4\" color=\"#B0B0B0\">" + msg.getHora() + "</font><b><x>" + msg.getUsuario() + "</x> --> <x>" + msg.getDestinatarios().get(1) + "</x>:</b></i>" + texto;
+			texto = "<i><font size=\"4\" color=\"#B0B0B0\">" + msg.getHora() + "</font><b><x>" + msg.getUsuario().replace(" ", "&nbsp;") + "</x> --> <x>" + msg.getDestinatarios().get(1).replace(" ", "&nbsp;") + "</x>:</b></i>" + texto;
 		else
-			texto = "<i><font size=\"4\" color=\"#B0B0B0\">" + msg.getHora() + "</font></i>&nbsp;<b><x>" + msg.getUsuario() + "</x>:</b>&nbsp;" + texto;
+			texto = "<i><font size=\"4\" color=\"#B0B0B0\">" + msg.getHora() + "</font></i>&nbsp;<b><x>" + msg.getUsuario().replace(" ", "&nbsp;") + "</x>:</b>&nbsp;" + texto;
 		ArrayList<String> destinoAntigo = null;
 		boolean recebidoEhUltimoUsuario = true;
 		Mensagem ultimaMensagem = new Mensagem(msg);
@@ -529,7 +528,7 @@ public class Chat extends JFrame {
 		if (recebidoEhUltimoUsuario && !destinoDiferente && ultimaMensagem != null)
 			texto = txt + "<br>";
 		texto = "<p class=\"" + (msg.getDestinatarios().get(0).equals("dm")?"dm":"geral") + "\">" + 
-				texto.replace("<x>" + this.nomeUsuario + "</x>", "<font color=\"#00d3a5;\">Voc\u00EA</font>") + 
+				texto.replace("<x>" + this.nomeUsuario.replace(" ", "&nbsp;") + "</x>", "<font color=\"#00d3a5;\">Voc\u00EA</font>") + 
 				"</p>";
 
 		if ((!recebidoEhUltimoUsuario || destinoDiferente) && ultimaMensagem != null)
