@@ -83,9 +83,6 @@ public class Mensagem extends Enviavel
     }
     public static String formatarMensagem(String msg)
     {
-        for (int i = 0; i < msg.length(); i++)
-            if (msg.charAt(i) == '*')
-                indicesAsterisco.add(i);
         msg = substituirPares(msg, '*', "<b>", "</b>");
         msg = substituirPares(msg, '~', "<strike>", "</strike>");
         msg = substituirPares(msg, '_', "<i>", "</i>");

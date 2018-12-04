@@ -163,7 +163,7 @@ public class JanelaDeEscolha extends JFrame {
 
 					String nomeSala = cbxSalas.getSelectedItem().toString().split("\"")[1];
 
-					transmissor.writeObject(txtNome.getText());
+					transmissor.writeObject(txtNome.getText().trim());
 					transmissor.writeObject(nomeSala);
 					transmissor.flush();
 					
@@ -173,7 +173,7 @@ public class JanelaDeEscolha extends JFrame {
 						JOptionPane.showMessageDialog(null, recebido.toString());
 					else
 					{		
-						chat = new Chat(este, nomeSala, txtNome.getText(), transmissor);
+						chat = new Chat(este, nomeSala, txtNome.getText().trim(), transmissor);
 						chat.setVisible(true);
 						setVisible(false);
 						receptorClass = new Receptor(chat, receptor);
@@ -214,16 +214,16 @@ public class JanelaDeEscolha extends JFrame {
 		contentPane.add(btnEntrar, BorderLayout.SOUTH);
 		
 		txtNome = new JTextField();
-		((AbstractDocument) txtNome.getDocument()).setDocumentFilter(new LimitDocumentFilter(30));
+		((AbstractDocument) txtNome.getDocument()).setDocumentFilter(new LimitDocumentFilter(25));
 		txtNome.getDocument().addDocumentListener(new DocumentListener() {
 			public void changedUpdate(DocumentEvent e) {
-				btnEntrar.setEnabled(txtNome.getText().length() > 0);
+				btnEntrar.setEnabled(txtNome.getText().trim().length() > 0);
 			}
 			public void removeUpdate(DocumentEvent e) {
-				btnEntrar.setEnabled(txtNome.getText().length() > 0);
+				btnEntrar.setEnabled(txtNome.getText().trim().length() > 0);
 			}
 			public void insertUpdate(DocumentEvent e) {
-				btnEntrar.setEnabled(txtNome.getText().length() > 0);
+				btnEntrar.setEnabled(txtNome.getText().trim().length() > 0);
 			}
 		});
 

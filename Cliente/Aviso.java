@@ -52,7 +52,7 @@ public class Aviso extends Enviavel
         if (this.tipo == 1 || this.tipo == 2)
         {
             ret += "<center><h2><i>";
-            ret += super.getUsuario();
+            ret += super.getUsuario().replace(" ", "&nbsp;");
             if (tipo == 1)
                 ret += " entrou na sala";
             else if (tipo == 2)

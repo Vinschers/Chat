@@ -70,7 +70,7 @@ public class Chat extends JFrame {
 		setTitle("Chat - Sala conectada: " + nomeSala);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 910, 525);
-		setMinimumSize(new Dimension(580, 300));
+		setMinimumSize(new Dimension(900, 300));
 		contentPane = new JPanel();
 		contentPane.setBackground(new Color(30, 30, 30));
 		contentPane.setForeground(Color.WHITE);
@@ -270,7 +270,7 @@ public class Chat extends JFrame {
 		this.folhaDeEstilo.addRule(".geral {background-color: #00384c; color: white;} ");
 		this.folhaDeEstilo.addRule(".dm {background-color: #262626; color: #bcbcbc;} ");
 		this.folhaDeEstilo.addRule(".espaco {font-size: 3pt;}");
-		this.folhaDeEstilo.addRule("center {text-align: center; font-weight: bold; font-size: 22pt; margin-bottom: 5px; margin-top: 5px;}");
+		this.folhaDeEstilo.addRule("center {text-align: center; font-weight: bold; font-size: 21pt; margin-bottom: 5px; margin-top: 5px;}");
 		this.editor.setStyleSheet(this.folhaDeEstilo);
 		this.documento = (HTMLDocument) this.editor.createDefaultDocument();
 		this.elementoBody = documento.getRootElements()[0].getElement(0);
