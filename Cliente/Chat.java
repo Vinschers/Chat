@@ -543,6 +543,25 @@ public class Chat extends JFrame {
 		{
 			linhaAtual = texto.get(i);
 
+			char[] caracteresEspeciais = {'*', '_', '~'};
+			int[] quantidadeCaracteres = {0, 0, 0};
+
+			for (int j = 0; j < linhaAtual.length(); j++)
+			{
+				for (int k = 0; k < caracteresEspeciais.length; k++)
+					if (linhaAtual.charAt(j) == caracteresEspeciais[k])
+						quantidadeCaracteres[k]++;
+			}
+			for (int j = 0; j < caracteresEspeciais.length; j++)
+				if (quantidadeCaracteres[j] % 2 == 1 && i < texto.size() - 1 && texto.get(i + 1).indexOf(caracteresEspeciais[j]) > -1)
+				{
+					linhaAtual += caracteresEspeciais[j];
+					texto.set(i + 1, caracteresEspeciais[j] + texto.get(i + 1));
+				}
+
+			texto.set(i, Mensagem.formatarMensagem(linhaAtual));
+			linhaAtual = texto.get(i);
+
 			String[] aberturas = {"<b>", "<i>", "<strike>"};
 			String[] fechamentos = {"</b>", "</i>", "</strike>"};
 

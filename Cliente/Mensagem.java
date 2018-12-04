@@ -15,16 +15,20 @@ public class Mensagem extends Enviavel
 
         this.mensagem = msg.replace("<", "&lt;").replace(">", "&gt;");
 
-        this.mensagem = formatarMensagem(this.mensagem);
-
         this.destinatarios = dest;
     }
-    protected static String substituirPares(String string, ArrayList<Integer> indices, int tamanhoValorASerSubstituido, String primeiroValor, String ultimoValor)
+    protected static String substituirPares(String string, char caracterASerSubstituido, String primeiroValor, String ultimoValor)
     {
+        ArrayList<Integer> indices = new ArrayList<Integer>();
+
+        for (int i = 0; i < string.length(); i++)
+            if (string.charAt(i) == caracterASerSubstituido)
+                indices.add(i);
+
         for (int i = 0; i < (indices.size()%2==0?indices.size():indices.size() -1); i += 2)
         {
-            string = string.substring(0, indices.get(i) + (primeiroValor.length() + ultimoValor.length() - 2 * tamanhoValorASerSubstituido) * i/2) + primeiroValor + string.substring(indices.get(i) + (primeiroValor.length() + ultimoValor.length() - 2 * tamanhoValorASerSubstituido) * i/2 + tamanhoValorASerSubstituido);
-            string = string.substring(0, indices.get(i + 1) + (primeiroValor.length() + ultimoValor.length() - 2 * tamanhoValorASerSubstituido) * i/2 + primeiroValor.length() - tamanhoValorASerSubstituido) + ultimoValor + string.substring(indices.get(i + 1) + (primeiroValor.length() + ultimoValor.length() - 2 * tamanhoValorASerSubstituido) * i/2 + primeiroValor.length());
+            string = string.substring(0, indices.get(i) + (primeiroValor.length() + ultimoValor.length() - 2) * i/2) + primeiroValor + string.substring(indices.get(i) + (primeiroValor.length() + ultimoValor.length() - 2) * i/2 + 1);
+            string = string.substring(0, indices.get(i + 1) + (primeiroValor.length() + ultimoValor.length() - 2) * i/2 + primeiroValor.length() - 1) + ultimoValor + string.substring(indices.get(i + 1) + (primeiroValor.length() + ultimoValor.length() - 2 * 1) * i/2 + primeiroValor.length());
         }
         return string;
     }
@@ -77,10 +81,8 @@ public class Mensagem extends Enviavel
         this.mensagem = msg.mensagem;
         this.destinatarios = msg.destinatarios;
     }
-    protected static String formatarMensagem(String msg)
+    public static String formatarMensagem(String msg)
     {
-        System.out.println("Formatando");
-
         ArrayList<Integer> indicesAsterisco = new ArrayList<Integer>();
         ArrayList<Integer> indicesTil = new ArrayList<Integer>();
         ArrayList<Integer> indicesUnderline = new ArrayList<Integer>();
@@ -88,37 +90,11 @@ public class Mensagem extends Enviavel
 
         int qtasCrasesJaForam = 0;
         for (int i = 0; i < msg.length(); i++)
-        {
-            switch (msg.charAt(i))
-            {
-                case '*':
-                    indicesAsterisco.add(i);
-                    qtasCrasesJaForam = 0;
-                    break;
-                case '~':
-                    indicesTil.add(i);
-                    qtasCrasesJaForam = 0;
-                    break;
-                case '_':
-                    indicesUnderline.add(i);
-                    qtasCrasesJaForam = 0;
-                    break;
-                case '`':
-                    qtasCrasesJaForam++;
-                    if (qtasCrasesJaForam == 3)
-                        indicesCrase.add(i - 2);
-                    break;
-                default:
-                    qtasCrasesJaForam = 0;
-                    break;
-            }
-        }
-        msg = substituirPares(msg, indicesAsterisco, 1, "<b>", "</b>");
-        msg = substituirPares(msg, indicesTil, 1, "<strike>", "</strike>");
-        msg = substituirPares(msg, indicesUnderline, 1, "<i>", "</i>");
-        msg = substituirPares(msg, indicesCrase, 3, "<font face=\"Lucida Console\">", "</font>");
-
-        System.out.println(msg);
+            if (msg.charAt(i) == '*')
+                indicesAsterisco.add(i);
+        msg = substituirPares(msg, '*', "<b>", "</b>");
+        msg = substituirPares(msg, '~', "<strike>", "</strike>");
+        msg = substituirPares(msg, '_', "<i>", "</i>");
 
         return msg;
     }
