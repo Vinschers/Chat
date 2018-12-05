@@ -32,4 +32,15 @@ public class SalasDisponiveis extends Enviavel
     {
         return this.salas.hashCode();
     }
+    public boolean equals(Object obj)
+    {
+        if (!super.equals(obj))
+            return false;
+        if (obj.getClass() != this.getClass())
+            return false;
+        SalasDisponiveis s = (SalasDisponiveis) obj;
+        if (!s.salas.equals(this.salas))
+            return false;
+        return true;
+    }
 }
