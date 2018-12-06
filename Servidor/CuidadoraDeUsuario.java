@@ -31,53 +31,52 @@ public class CuidadoraDeUsuario extends Thread
     {
         try
         {
-            String nomeEscolhido = null;
-            enviarSalas(oos, sds);
-            String nomeSala = ;
-            verificarErro(nomeSala);
-            enviarAvisoDeEntrada();
-            interagir();
-            removerUsuario();
+            enviarSalas(); //envia as salas disponíveis para o usuário escolher
+            String nome = "";
+            lerNomeESala(nome); //lê o nome e a sala do usuário e faz as verificações necessárias
+            adicionarUsuario(nome); //instancia o usuário, adiciona na sala e manda aviso de entrada para todos
+            interagir(); //método principal responsável por receber e enviar mensagens do usuário
+            removerUsuario(); //quando o aviso de saida chegar, remove o usuário da sala
         }
         catch(Exception e){}
     }
-    protected void enviarSalas(ObjectOutputStream oos, SalasDisponiveis sds)
+    protected void enviarSalas() throws Exception
     {
-        oos = new ObjectOutputStream(conexao.getOutputStream());
-        sds = new SalasDisponiveis(this.salas);
-        oos.writeObject(sds);
+        oos = new ObjectOutputStream(conexao.getOutputStream()); //instancia o ObjectOutputStream
+        sds = new SalasDisponiveis(this.salas); //instancia o objeto serializable que contém todas as salas disponíveis
+        oos.writeObject(sds); //envia as salas disponíveis
         oos.flush();
     }
-    protected void verificarErro(String nomeSala)
+    protected void lerNomeESala(String nomeEscolhido) throws Exception
     {
         boolean houveErro = true;
-        nomeEscolhido = (String)ois.readObject();
-        nomeSala = (String)ois.readObject();
-        salaEscolhida = null;
-        ois = new ObjectInputStream(conexao.getInputStream());
-        for (int i = 0; i < vetSalas.size(); i++)
-        {
-            if(vetSalas.get(i).getNome().equals(nomeSala))
-            {
-                salaEscolhida = vetSalas.get(i);
-                break;
-            }
-        }
-        us = salaEscolhida.getUsuarios();
         while(houveErro)
         {
+            nomeEscolhido = (String)ois.readObject();
+            String nomeSala = (String)ois.readObject();
+            ois = new ObjectInputStream(conexao.getInputStream()); //instanciação do ObjectInputStream
+            for (int i = 0; i < vetSalas.size(); i++)
+            {
+                if(vetSalas.get(i).getNome().equals(nomeSala))
+                {
+                    salaEscolhida = vetSalas.get(i); //acha a sala que o usuário escolheu
+                    break;
+                }
+            }
+            if (salaEscolhida != null)
+                us = salaEscolhida.getUsuarios(); //pega os usuários dessa sala se ela existir
             houveErro = false;
-            if (salaEscolhida == null)
+            if (salaEscolhida == null) //se a sala não existir
             {
                 oos.writeObject(new Aviso(3, "Sala n\u00E3o encontrada"));
                 houveErro = true;
             }
-            else if (salaEscolhida.isCheia())
+            else if (salaEscolhida.isCheia()) //se a sala estiver cheia
             {
                 oos.writeObject(new Aviso(3, "Sala j\u00E1 est\u00E1 cheia!"));
                 houveErro = true;
             }
-            else if (nomeEscolhido == null || nomeEscolhido.equals(""))
+            else if (nomeEscolhido == null || nomeEscolhido.equals("")) //se o nome do usuário estiver vazio ou for nulo
             {
                 oos.writeObject(new Aviso(3, "Nome inv\u00E1lido!"));
                 houveErro = true;
@@ -86,7 +85,7 @@ public class CuidadoraDeUsuario extends Thread
             {
                 for (int i = 0; i < us.size(); i++)
                 {
-                    if (us.get(i).getNickname().equals(nomeEscolhido))
+                    if (us.get(i).getNickname().equals(nomeEscolhido)) //se houver algum usuário na sala com o nome do usuário atual
                     {
                         oos.writeObject(new Aviso(3, "Nome de usu\u00E1rio j\u00E1 existe na sala!"));
                         houveErro = true;
@@ -97,29 +96,29 @@ public class CuidadoraDeUsuario extends Thread
             if (houveErro)
                 oos.flush();
         }
-        oos.writeObject("ok");
+        oos.writeObject("ok"); // quando não houverem erros, um "ok" é mandado para identificar o sucesso
         oos.flush();
     }
-    protected void enviarAvisoDeEntrada()
+    protected void adicionarUsuario(String nomeEscolhido) throws Exception
     {
-        this.usuario = new Usuario(this.conexao, oos, ois, nomeEscolhido, salaEscolhida);
-        salaEscolhida.adicionarUsuario(this.usuario);
+        this.usuario = new Usuario(conexao, oos, ois, nomeEscolhido, salaEscolhida); //instanciação do usuário
+        salaEscolhida.adicionarUsuario(this.usuario); //adiciona o usuário na sala
         for (int i = 0; i < us.size(); i++)
         {
-            this.usuario.envia(new Aviso(1), us.get(i).getNickname());
+            this.usuario.envia(new Aviso(1), us.get(i).getNickname()); //envia que o usuário entrou para todos presentes
             if (this.usuario != us.get(i))
-                us.get(i).envia(new Aviso(1), this.usuario.getNickname());
+                us.get(i).envia(new Aviso(1), this.usuario.getNickname()); //envia para o usuário todos que entraram, menos ele mesmo
         }
     }
-    protected void removerUsuario()
+    protected void removerUsuario() throws Exception
     {
-        salaEscolhida.removerUsuario(this.usuario);
+        salaEscolhida.removerUsuario(this.usuario); //retira o usuário da sala
         us = salaEscolhida.getUsuarios();
         for (int i = 0; i < us.size(); i++)
-            this.usuario.envia(new Aviso(2), us.get(i).getNickname());
-        this.usuario.fechaTudo();
+            this.usuario.envia(new Aviso(2), us.get(i).getNickname()); // manda para todos os restantes que o usuário saiu
+        this.usuario.fechaTudo(); //usuário fecha toda forma de conexão
     }
-    protected void interagir()
+    protected void interagir() throws Exception
     {
         Enviavel recebido = null;
         Mensagem msg;
@@ -128,20 +127,20 @@ public class CuidadoraDeUsuario extends Thread
         do
         {
             recebido = (Enviavel)ois.readObject();
-            if (recebido instanceof Mensagem)
+            if (recebido instanceof Mensagem) //se o usuário receber uma mensagem
             {
                 msg = (Mensagem)recebido;
-                dest = msg.getDestinatarios();
+                dest = msg.getDestinatarios(); //acessa os destinatários da mensagem
                 for (int i = 1; i < dest.size(); i++)
-                    this.usuario.envia(msg, dest.get(i));
+                    this.usuario.envia(msg, dest.get(i)); //envia a mensagem para todos os destinatários
             }
-            else if (recebido instanceof Aviso)
+            else if (recebido instanceof Aviso) //se o usuário receber um aviso
             {
                 aviso = (Aviso)recebido;
-                dest = aviso.getDestinatarios();
-                if (aviso.getTipo() == 4 || aviso.getTipo() == 5)
+                dest = aviso.getDestinatarios(); //acessa para quem o aviso é destinado
+                if (aviso.getTipo() == 4) //se o aviso for de digitação de outro usuário
                     for (int i = 1; i < dest.size(); i++)
-                        this.usuario.envia(aviso, dest.get(i));
+                        this.usuario.envia(aviso, dest.get(i)); //envia para todos que o usuário que mandou o aviso está digitando
             }
         }
         while (!(recebido instanceof PedidoParaSairDaSala));
