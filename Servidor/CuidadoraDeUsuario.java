@@ -14,8 +14,9 @@ public class CuidadoraDeUsuario extends Thread
     private SalasDisponiveis sds;
     private ObjectInputStream ois;
     private ArrayList<Usuario> us = null;
-    private ArrayList<Sala> vetSalas = this.salas.getSalas();
+    private ArrayList<Sala> vetSalas;
     private Sala salaEscolhida = null;
+    private String nomeEscolhido = null;
 
     public CuidadoraDeUsuario(Socket conexao, Salas s) throws Exception 
     {
@@ -29,16 +30,19 @@ public class CuidadoraDeUsuario extends Thread
 
     public void run()
     {
+        vetSalas = this.salas.getSalas();
+
         try
         {
             enviarSalas(); //envia as salas disponíveis para o usuário escolher
-            String nome = "";
-            lerNomeESala(nome); //lê o nome e a sala do usuário e faz as verificações necessárias
-            adicionarUsuario(nome); //instancia o usuário, adiciona na sala e manda aviso de entrada para todos
+            System.out.println("Enviou salas");
+            lerNomeESala(); //lê o nome e a sala do usuário e faz as verificações necessárias
+            System.out.println("Leu nome e sala");
+            adicionarUsuario(); //instancia o usuário, adiciona na sala e manda aviso de entrada para todos
             interagir(); //método principal responsável por receber e enviar mensagens do usuário
             removerUsuario(); //quando o aviso de saida chegar, remove o usuário da sala
         }
-        catch(Exception e){System.out.println(e.getMessage());}
+        catch(Exception e){System.out.println("Erro na cuidadora: " + e.getMessage());}
     }
     protected void enviarSalas() throws Exception
     {
@@ -47,14 +51,16 @@ public class CuidadoraDeUsuario extends Thread
         oos.writeObject(sds); //envia as salas disponíveis
         oos.flush();
     }
-    protected void lerNomeESala(String nomeEscolhido) throws Exception
+    protected void lerNomeESala() throws Exception
     {
+        ois = new ObjectInputStream(conexao.getInputStream());
+
         boolean houveErro = true;
         while(houveErro)
         {
             nomeEscolhido = (String)ois.readObject();
             String nomeSala = (String)ois.readObject();
-            ois = new ObjectInputStream(conexao.getInputStream()); //instanciação do ObjectInputStream
+            
             for (int i = 0; i < vetSalas.size(); i++)
             {
                 if(vetSalas.get(i).getNome().equals(nomeSala))
@@ -99,7 +105,7 @@ public class CuidadoraDeUsuario extends Thread
         oos.writeObject("ok"); // quando não houverem erros, um "ok" é mandado para identificar o sucesso
         oos.flush();
     }
-    protected void adicionarUsuario(String nomeEscolhido) throws Exception
+    protected void adicionarUsuario() throws Exception
     {
         this.usuario = new Usuario(conexao, oos, ois, nomeEscolhido, salaEscolhida); //instanciação do usuário
         salaEscolhida.adicionarUsuario(this.usuario); //adiciona o usuário na sala
