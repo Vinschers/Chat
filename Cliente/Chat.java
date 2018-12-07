@@ -1,42 +1,21 @@
 import java.awt.*;
 
 import javax.swing.*; 
-import javax.swing.text.Element; 
-import javax.swing.text.View; 
-import javax.swing.text.ViewFactory; 
-import javax.swing.text.html.HTMLEditorKit; 
-import javax.swing.text.html.InlineView; 
-import javax.swing.text.html.ParagraphView;
+import javax.swing.text.*;
+import javax.swing.text.html.*;
 
 import java.awt.event.*;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.AffineTransform;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JList;
-import javax.swing.AbstractListModel;
-import javax.swing.JFormattedTextField;
-import javax.swing.JTextArea;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
-import javax.swing.JComboBox;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JTextField;
-import javax.swing.JButton;
-import javax.swing.*;
-import javax.swing.text.Element;
-import javax.swing.text.html.*;
 import javax.swing.event.*;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.*;
 import java.util.Timer;
-import java.util.TimerTask;
 
 import java.lang.*;
 
@@ -157,36 +136,11 @@ public class Chat extends JFrame {
 				btnEnviar.setEnabled(txtMensagem.getText().trim().length() > 0);
 			}
 			public void removeUpdate(DocumentEvent e) {
-				try
-				{
-					ArrayList<String> destino = new ArrayList<String>();
-					if (cbxDestino.getSelectedIndex() == 0)
-						for (int i = 0; i < cbxDestino.getItemCount(); i++)
-							destino.add(cbxDestino.getItemAt(i).toString());
-					else
-					{
-						destino.add("dm");
-						destino.add(cbxDestino.getSelectedItem().toString());
-					}
-					btnEnviar.setEnabled(txtMensagem.getText().trim().length() > 0);
-				}
-				catch(Exception ex) {};
+				enviarDigitando();
+				btnEnviar.setEnabled(txtMensagem.getText().trim().length() > 0);
 			}
 			public void insertUpdate(DocumentEvent e) {
-				try
-				{
-					ArrayList<String> destino = new ArrayList<String>();
-					if (cbxDestino.getSelectedIndex() == 0)
-						for (int i = 0; i < cbxDestino.getItemCount(); i++)
-							destino.add(cbxDestino.getItemAt(i).toString());
-					else
-					{
-						destino.add("dm");
-						destino.add(cbxDestino.getSelectedItem().toString());
-					}
-					transmissor.writeObject(new Aviso(4, destino));
-				}
-				catch(Exception ex){System.out.println(ex.getMessage());};
+				enviarDigitando();
 				btnEnviar.setEnabled(txtMensagem.getText().trim().length() > 0);
 			}
 		});
@@ -309,6 +263,23 @@ public class Chat extends JFrame {
 			}
 		});
 	}
+	protected void enviarDigitando()
+	{
+		try
+		{
+			ArrayList<String> destino = new ArrayList<String>();
+			if (cbxDestino.getSelectedIndex() == 0)
+				for (int i = 0; i < cbxDestino.getItemCount(); i++)
+					destino.add(cbxDestino.getItemAt(i).toString());
+			else
+			{
+				destino.add("dm");
+				destino.add(cbxDestino.getSelectedItem().toString());
+			}
+			transmissor.writeObject(new Aviso(4, destino));
+		}
+		catch(Exception ex){System.out.println(ex.getMessage());};
+	}
 
 	protected void fechar(boolean abrirNovaJanela, boolean servidorFechou)
 	{
@@ -400,26 +371,6 @@ public class Chat extends JFrame {
 		painelMensagens.setText(texto);
 		painelMensagens.setCaretPosition(painelMensagens.getDocument().getLength());
 	}
-	/*
-	protected String formatarRecebido(int indiceRecebido)
-	{
-		Enviavel recebido = recebidos.get(indiceRecebido);
-		String texto;
-		texto = recebido.toString();
-		if (recebido instanceof Mensagem)
-		{
-			Mensagem msg = (Mensagem)recebido;
-			ArrayList<String> linhas = fazerWrap(texto);
-			texto = "";
-			for (int i = 0; i < linhas.size(); i++)
-				texto += new String(formatarMensagem(msg, linhas.get(i), indiceRecebido, i));
-		}
-		return texto;
-	}
-	protected ArrayList<String> fazerWrap(String txt)
-	{
-		return Wrapper.fazerWrap(txt);
-	}*/
 	protected void exibir()
 	{
 		if (chkApenasDMs.isSelected())
@@ -427,84 +378,4 @@ public class Chat extends JFrame {
 		else
 			exibirTodos();
 	}
-	/*
-	protected String formatarMensagem(Mensagem msg, String txt, int indiceRecebido, int linhaAtual)
-	{
-		String texto = txt;
-		if (msg.getDestinatarios().get(0).equals("dm"))
-			texto = "<i><font size=\"4\" color=\"#B0B0B0\">" + msg.getHora() + "</font><b><x>" + msg.getUsuario().replace(" ", "&nbsp;") + "</x> --> <x>" + msg.getDestinatarios().get(1).replace(" ", "&nbsp;") + "</x>:</b></i>" + texto;
-		else
-			texto = "<i><font size=\"4\" color=\"#B0B0B0\">" + msg.getHora() + "</font></i>&nbsp;<b><x>" + msg.getUsuario().replace(" ", "&nbsp;") + "</x>:</b>&nbsp;" + texto;
-		ArrayList<String> destinoAntigo = null;
-		boolean recebidoEhUltimoUsuario = true;
-		Mensagem ultimaMensagem = new Mensagem(msg);
-
-		if (linhaAtual == 0 && indiceRecebido > 0 && recebidos.get(indiceRecebido - 1) instanceof Mensagem)
-		{
-			ultimaMensagem = (Mensagem)recebidos.get(indiceRecebido - 1);
-			destinoAntigo = ultimaMensagem.getDestinatarios();
-			recebidoEhUltimoUsuario = ultimaMensagem.getUsuario().equals(msg.getUsuario());
-		}
-		ArrayList<String> destinoAtual = msg.getDestinatarios();
-
-		boolean destinoDiferente = false;
-		if (linhaAtual == 0)
-			destinoDiferente = destinoAntigo==null || !destinoAntigo.get(0).equals(destinoAtual.get(0)) || (destinoAntigo.get(0).equals("dm") && !destinoAntigo.get(1).equals(destinoAtual.get(1)));
-		if (recebidoEhUltimoUsuario && !destinoDiferente && ultimaMensagem != null)
-			texto = txt + "<br>";
-		texto = "<p class=\"" + (msg.getDestinatarios().get(0).equals("dm")?"dm":"geral") + "\">" + 
-				texto.replace("<x>" + this.nomeUsuario.replace(" ", "&nbsp;") + "</x>", "<font color=\"#00d3a5;\">Voc\u00EA</font>") + 
-				"</p>";
-
-		if ((!recebidoEhUltimoUsuario || destinoDiferente) && ultimaMensagem != null)
-			texto = "<div class=\"espaco\"></div>" + texto;
-		return texto;
-	}
-	protected ArrayList<String> consertarDecoracaoDeTexto(ArrayList<String> texto)
-	{
-		String linhaAtual;
-		for (int i = 0; i < texto.size(); i++)
-		{
-			linhaAtual = texto.get(i);
-
-			char[] caracteresEspeciais = {'*', '_', '~'};
-			int[] quantidadeCaracteres = {0, 0, 0};
-
-			for (int j = 0; j < linhaAtual.length(); j++)
-			{
-				for (int k = 0; k < caracteresEspeciais.length; k++)
-					if (linhaAtual.charAt(j) == caracteresEspeciais[k])
-						quantidadeCaracteres[k]++;
-			}
-			for (int j = 0; j < caracteresEspeciais.length; j++)
-				if (quantidadeCaracteres[j] % 2 == 1 && i < texto.size() - 1 && texto.get(i + 1).indexOf(caracteresEspeciais[j]) > -1)
-				{
-					linhaAtual += caracteresEspeciais[j];
-					texto.set(i + 1, caracteresEspeciais[j] + texto.get(i + 1));
-				}
-
-			texto.set(i, Mensagem.formatarMensagem(linhaAtual));
-			linhaAtual = texto.get(i);
-
-			String[] aberturas = {"<b>", "<i>", "<strike>"};
-			String[] fechamentos = {"</b>", "</i>", "</strike>"};
-
-			int ultimoIndiceAbreDecoracao;
-			int ultimoIndiceFechaDecoracao;
-			for (int j = 0; j < aberturas.length; j++)
-			{
-				ultimoIndiceAbreDecoracao = linhaAtual.lastIndexOf(aberturas[j]);
-				ultimoIndiceFechaDecoracao = linhaAtual.lastIndexOf(fechamentos[j]);
-
-				if (ultimoIndiceAbreDecoracao > ultimoIndiceFechaDecoracao || 
-					(ultimoIndiceAbreDecoracao > -1 && ultimoIndiceFechaDecoracao == -1))
-				{
-					texto.set(i, linhaAtual + fechamentos[j]);
-					texto.set(i + 1, aberturas[j] + texto.get(i + 1));
-				}
-			}
-		}
-
-		return texto;
-	}*/
 }

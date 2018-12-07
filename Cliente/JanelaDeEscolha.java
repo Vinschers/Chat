@@ -1,38 +1,15 @@
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import javax.swing.JLabel;
-import javax.swing.SwingConstants;
-import java.awt.Font;
-import javax.swing.JLayeredPane;
-import javax.swing.JOptionPane;
-import javax.swing.JComboBox;
-import java.awt.FlowLayout;
-import javax.swing.JButton;
-import javax.swing.JTextField;
-import java.awt.GridLayout;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import javax.swing.event.*;
-
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.text.AbstractDocument;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DocumentFilter;
+import java.awt.*;
+import java.awt.event.*;
 
 import java.net.*;
-import java.util.ArrayList;
 import java.io.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.*;
+import javax.swing.text.*;
+
+import java.util.ArrayList;
 
 public class JanelaDeEscolha extends JFrame {
 
@@ -95,31 +72,6 @@ public class JanelaDeEscolha extends JFrame {
 		gbl_panel.columnWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
 		gbl_panel.rowWeights = new double[]{1.0, 0.0, Double.MIN_VALUE};
 		panel.setLayout(gbl_panel);
-		
-		/*
-		lblDigiteOIp = new JLabel("IP do Servidor:");
-		lblDigiteOIp.setFont(new Font("Century Gothic", Font.PLAIN, 16));
-		GridBagConstraints gbc_lblDigiteOIp = new GridBagConstraints();
-		gbc_lblDigiteOIp.anchor = GridBagConstraints.EAST;
-		gbc_lblDigiteOIp.insets = new Insets(0, 0, 5, 5);
-		gbc_lblDigiteOIp.gridx = 0;
-		gbc_lblDigiteOIp.gridy = 0;
-		panel.add(lblDigiteOIp, gbc_lblDigiteOIp);*/
-		
-		/*
-		JPanel panel_1 = new JPanel();
-		GridBagConstraints gbc_panel_1 = new GridBagConstraints();
-		gbc_panel_1.insets = new Insets(0, 0, 5, 0);
-		gbc_panel_1.fill = GridBagConstraints.HORIZONTAL;
-		gbc_panel_1.gridx = 1;
-		gbc_panel_1.gridy = 0;
-		panel.add(panel_1, gbc_panel_1);
-		panel_1.setLayout(new BorderLayout(0, 0));
-		
-		txtIP = new JTextField();
-		txtIP.setFont(new Font("Century Gothic", Font.PLAIN, 16));
-		panel_1.add(txtIP, BorderLayout.CENTER);
-		txtIP.setColumns(10);*/
 		
 		lblSelecioneUmaSala = new JLabel("Selecione uma sala:");
 		lblSelecioneUmaSala.setEnabled(false);
