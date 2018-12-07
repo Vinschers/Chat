@@ -38,7 +38,7 @@ public class CuidadoraDeUsuario extends Thread
             interagir(); //método principal responsável por receber e enviar mensagens do usuário
             removerUsuario(); //quando o aviso de saida chegar, remove o usuário da sala
         }
-        catch(Exception e){}
+        catch(Exception e){System.out.println(e.getMessage());}
     }
     protected void enviarSalas() throws Exception
     {

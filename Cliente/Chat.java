@@ -305,7 +305,7 @@ public class Chat extends JFrame {
 
 		addComponentListener(new ComponentAdapter() {
 			public void componentResized(ComponentEvent componentEvent) {
-				reformatarMensagens();
+				exibir();
 			}
 		});
 	}
@@ -370,31 +370,21 @@ public class Chat extends JFrame {
 		{
 			recebidos.add(recebido);
 
-			if (chkApenasDMs.isSelected())
-				exibirDMs((String) cbxDestino.getSelectedItem());
-			else
-				exibirTodos();
+			exibir();
 
 			if (!isFocused())	
 				requestFocus(); // Faz a janela piscar se o usuário recebeu uma mensagem, um aviso de entrada ou um aviso de saída
 		}
 	}
-
 	protected void exibirTodos()
 	{
-		String texto = "<html><body bgcolor=\"#004b66\">";
-
-		for (int i = 0; i < recebidos.size(); i++)
-			texto += formatarRecebido(i);
-
-		texto += "</body></html>";
+		String texto = "<html><body bgcolor=\"#004b66\">" + Formatador.formatar(recebidos, nomeUsuario, painelMensagens.getWidth()) + "</body></html>";
 		painelMensagens.setText(texto);
-
 		painelMensagens.setCaretPosition(painelMensagens.getDocument().getLength());
 	}
 	protected void exibirDMs(String usuario)
 	{
-		String texto = "<html><body bgcolor=\"#004b66\">";
+		ArrayList<Enviavel> dmsComUsuario = new ArrayList<Enviavel>();
 
 		for (int i = 0; i < recebidos.size(); i++)
 		{
@@ -402,15 +392,15 @@ public class Chat extends JFrame {
 			{
 				Mensagem msg = (Mensagem) recebidos.get(i);
 				if (msg.getDestinatarios().get(0).equals("dm") && (msg.getDestinatarios().get(1).equals(usuario) || msg.getUsuario().equals(usuario)))
-					texto += formatarRecebido(i);
+					dmsComUsuario.add(msg);
 			}
 		}
 
-		texto += "</body></html>";
+		String texto = "<html><body bgcolor=\"#004b66\">" + Formatador.formatar(dmsComUsuario, nomeUsuario, painelMensagens.getWidth()) + "</body></html>";
 		painelMensagens.setText(texto);
-
 		painelMensagens.setCaretPosition(painelMensagens.getDocument().getLength());
 	}
+	/*
 	protected String formatarRecebido(int indiceRecebido)
 	{
 		Enviavel recebido = recebidos.get(indiceRecebido);
@@ -428,83 +418,18 @@ public class Chat extends JFrame {
 	}
 	protected ArrayList<String> fazerWrap(String txt)
 	{
-		AffineTransform affinetransform = new AffineTransform();     
-		FontRenderContext frc = new FontRenderContext(affinetransform,true,true);     
-		Font font = new Font("Century Gothic", Font.PLAIN, 18);
-		int widthAtual;
-		int widthPalavraAtual;
-		int widthPainel = painelMensagens.getWidth();
-		String[] palavras = txt.split(" ");
-		ArrayList<String> linhas = new ArrayList<String>();
-		String textoAtual = "";
-		String palavraAtual;
-		for (int i = 0; i < palavras.length; i++)
-		{
-			palavraAtual = palavras[i];
-			String aux = textoAtual + " " + palavraAtual;
-			widthAtual = (int)(font.getStringBounds(aux, frc).getWidth());
-			widthPalavraAtual = (int)(font.getStringBounds(palavraAtual, frc).getWidth());
-
-			if (widthPalavraAtual < widthPainel)
-			{
-				if (linhas.size()==0 && widthAtual > widthPainel - 135)
-				{
-					adicionarLinha(linhas, textoAtual);
-					textoAtual = palavraAtual;
-				}
-				else if (widthAtual > widthPainel)
-				{
-					adicionarLinha(linhas, textoAtual);
-					textoAtual = palavraAtual;
-				}
-				else
-					textoAtual += " " + palavraAtual;
-				if (i == palavras.length - 1)
-					adicionarLinha(linhas, textoAtual);
-			}
-			else
-			{
-				char[] caracteres = palavraAtual.toCharArray();
-				for (int k = 0; k < caracteres.length; k++)
-				{
-					widthAtual = (int)(font.getStringBounds(textoAtual + caracteres[k], frc).getWidth());
-					if (linhas.size()==0 && widthAtual > widthPainel-100)
-					{
-						adicionarLinha(linhas, textoAtual);
-						textoAtual = "" + caracteres[k];
-					}
-					else if (widthAtual > widthPainel)
-					{
-						adicionarLinha(linhas, textoAtual);
-						textoAtual = "" + caracteres[k];
-					}
-					else
-						textoAtual += "" + caracteres[k];
-					if (k == caracteres.length-1 && i == palavras.length - 1)
-						adicionarLinha(linhas, textoAtual);
-				}
-			}
-		}
-		return consertarDecoracaoDeTexto(linhas);
-	}
-	protected void adicionarLinha(ArrayList<String> array, String linha)
+		return Wrapper.fazerWrap(txt);
+	}*/
+	protected void exibir()
 	{
-		if (linha.trim().length() > 0)
-			array.add(linha.replace(" ", "&nbsp;"));
-	}
-	protected void reformatarMensagens()
-	{
-		for(int i = 0; i < recebidos.size(); i++)
-			formatarRecebido(i);
 		if (chkApenasDMs.isSelected())
 			exibirDMs((String) cbxDestino.getSelectedItem());
 		else
 			exibirTodos();
 	}
+	/*
 	protected String formatarMensagem(Mensagem msg, String txt, int indiceRecebido, int linhaAtual)
 	{
-		//*parte em negrito* _parte em italico_ ~parte riscada~ esse daqui vai ser um texto bem grande para fins de teste. eu realmente espero que isso funcione como deveria, separando as palavras e nao apenas as letras.
-		//String texto = formatarComCaracteresEspeciais(txt);
 		String texto = txt;
 		if (msg.getDestinatarios().get(0).equals("dm"))
 			texto = "<i><font size=\"4\" color=\"#B0B0B0\">" + msg.getHora() + "</font><b><x>" + msg.getUsuario().replace(" ", "&nbsp;") + "</x> --> <x>" + msg.getDestinatarios().get(1).replace(" ", "&nbsp;") + "</x>:</b></i>" + texto;
@@ -581,5 +506,5 @@ public class Chat extends JFrame {
 		}
 
 		return texto;
-	}
+	}*/
 }

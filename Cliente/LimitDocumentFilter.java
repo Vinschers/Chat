@@ -32,4 +32,24 @@ public class LimitDocumentFilter extends DocumentFilter {
             super.replace(fb, offset, length, text, attrs); 
         }
     }
+    public String toString() {
+        return super.toString();
+    }
+    public int hashCode() {
+        int ret = super.hashCode();
+
+        ret = 2 * Integer.valueOf(limite).hashCode();
+
+        return ret;
+    }
+    public boolean equals(Object obj) {
+        if (!super.equals(obj))
+            return false;
+        if (!obj.getClass().equals(this.getClass()))
+            return false;
+        if (this.limite != ((LimitDocumentFilter) obj).limite)
+            return false;
+
+        return true;
+    }
 }

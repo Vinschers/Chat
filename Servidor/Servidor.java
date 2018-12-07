@@ -1,7 +1,6 @@
 import java.net.*;
 import java.util.ArrayList;
 
-//import bd.*;
 
 public class Servidor
 {
@@ -11,7 +10,7 @@ public class Servidor
         {
             Salas salas = new Salas();
 
-            boolean puxarDoBD = true;
+            boolean puxarDoBD = false;
 
             if (puxarDoBD)
             {
@@ -43,6 +42,6 @@ public class Servidor
                 cuidadora.start();
             }
         }
-        catch(Exception e) {System.out.println("Deu erro");}
+        catch(Exception e) {System.out.println(e.getLocalizedMessage());}
     }
 }
