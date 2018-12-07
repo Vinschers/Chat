@@ -105,7 +105,7 @@ public class CuidadoraDeUsuario extends Thread
         oos.writeObject("ok"); // quando não houverem erros, um "ok" é mandado para identificar o sucesso
         oos.flush();
     }
-    protected void adicionarUsuario() throws Exception
+    synchronized protected void adicionarUsuario() throws Exception
     {
         this.usuario = new Usuario(conexao, oos, ois, nomeEscolhido, salaEscolhida); //instanciação do usuário
         salaEscolhida.adicionarUsuario(this.usuario); //adiciona o usuário na sala
@@ -116,7 +116,7 @@ public class CuidadoraDeUsuario extends Thread
                 us.get(i).envia(new Aviso(1), this.usuario.getNickname()); //envia para o usuário todos que entraram, menos ele mesmo
         }
     }
-    protected void removerUsuario() throws Exception
+    synchronized protected void removerUsuario() throws Exception
     {
         salaEscolhida.removerUsuario(this.usuario); //retira o usuário da sala
         us = salaEscolhida.getUsuarios();
